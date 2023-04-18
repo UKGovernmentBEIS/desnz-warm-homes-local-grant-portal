@@ -1,4 +1,4 @@
-# Find Energy Saving Grants You May Be Eligible For BETA
+# Home Energy Retrofit Portal BETA
 
 ## Deployment
 
@@ -11,7 +11,7 @@ Migrations will be run automatically on deployment. If a migration needs to be r
 2. Generate and run a rollback script
    1. Check out the same commit locally
    2. [Install EF Core CLI tools](https://docs.microsoft.com/en-us/ef/core/cli/dotnet) if you haven't already
-   3. Generate a rollback script using `dotnet ef migrations script 2022010112345678_BadMigration 2022010112345678_LastGoodMigration -o revert.sql` from the `HerPublicWebsite` directory
+   3. Generate a rollback script using `dotnet ef migrations script 2022010112345678_BadMigration 2022010112345678_LastGoodMigration -o revert.sql` from the `HerPortal` directory
    4. Review the script 
    5. TODO Add instructions for running the script on the Azure environment
 
@@ -45,7 +45,7 @@ For critical bug fixes on production
 - Node v14+ (https://nodejs.org/en/)
 - If you're using Rider then you will need to install the ".net core user secrets" plugin
 
-In HerPublicWebsite run `npm install`
+In HerPortal run `npm install`
 
 ### GovUkDesignSystem
 
@@ -70,7 +70,7 @@ If you need to make changes to the GovUkDesignSystem (e.g. to add a new componen
 The app communicates with a number of APIs. You will need to obtain and configure credentials for these APIs in your user secrets file.
 
 In Rider:
-- Right-click on the `HerPublicWebsite` project
+- Right-click on the `HerPortal` project
 - Select `Tools`
 - Select `Open Project User Secrets`
 
@@ -93,7 +93,7 @@ Fill in the opened `secrets.json` file with:
     },
    
     "GoogleAnalytics": {
-        "ApiSecret": "REAL_VALUE_HERE"
+        "ApiSecret": "REAL_VALUE_HERE",
         "MeasurementId": "REAL_VALUE_HERE"
     }
 }
@@ -107,8 +107,8 @@ cat secrets.json | dotnet user-secrets set
 ### Running Locally
 
 - In Visual Studio / Rider build the solution
-- In `HerPublicWebsite` run `npm run watch`
-- In Visual Studio / Rider run the `HerPublicWebsite` project
+- In `HerPortal` run `npm run watch`
+- In Visual Studio / Rider run the `HerPortal` project
 
 ## Database
 
@@ -121,18 +121,18 @@ cat secrets.json | dotnet user-secrets set
 ### Creating/updating the local database
 
 - You can just run the website project and it will create and update the database on startup
-- If you want to manually update the database (e.g. to test a new migration) in the terminal (from the solution directory) run `dotnet ef database update --project .\HerPublicWebsite`
+- If you want to manually update the database (e.g. to test a new migration) in the terminal (from the solution directory) run `dotnet ef database update --project .\HerPortal`
 
 ### Adding Migrations
 
-- In the terminal (from the solution directory) run `dotnet ef migrations add <YOUR_MIGRATION_NAME> --project .\HerPublicWebsite.Data --startup-project .\HerPublicWebsite`
+- In the terminal (from the solution directory) run `dotnet ef migrations add <YOUR_MIGRATION_NAME> --project .\HerPortal.Data --startup-project .\HerPortal`
 - Then update the local database
 
 ### Reverting Migrations
 
 You may want to revert a migration on your local database as part of a merge, or just because it's wrong and you need to fix it (only do this for migrations that haven't been merged to main yet)
-- Run `dotnet ef database update <MIGRATION_BEFORE_YOURS> --project .\HerPublicWebsite` to rollback your local database
-- Run `dotnet ef migrations remove --project .\HerPublicWebsite.Data --startup-project .\HerPublicWebsite` to delete the migration and undo the snapshot changes
+- Run `dotnet ef database update <MIGRATION_BEFORE_YOURS> --project .\HerPortal` to rollback your local database
+- Run `dotnet ef migrations remove --project .\HerPortal.Data --startup-project .\HerPortal` to delete the migration and undo the snapshot changes
 
 #### Merging Migrations
 
@@ -143,7 +143,7 @@ The solution is unfortunately tedious. Given branch 1 with migration A and branc
 - On branch 2
 - Revert and remove migration B
 - Merge main into branch 2
-- Recreate migration B (which will now be on top of migation A)
+- Recreate migration B (which will now be on top of migration A)
 - Merge branch 2 into main
 
 ## Environments
