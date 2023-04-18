@@ -1,0 +1,46 @@
+﻿@using GovUkDesignSystem
+@using GovUkDesignSystem.GovUkDesignSystemComponents
+<h2 class="govuk-heading-l">Referral Files</h2>
+<p class="govuk-body">For the Home Upgrade Grant 2.</p>
+<p class="govuk-body govuk-!-font-weight-bold">You have not received any applications yet.</p>
+
+@(await Html.GovUkTable(new TableGovUkViewModel
+{
+    Head = new List<TableCellViewModel>
+    {
+        new()
+        {
+            Text = "Month/Year",
+        },
+        new()
+        {
+            Text = "Last updated",
+        },
+        new()
+        {
+            Text = "Updates",
+        },
+    },
+    Rows = new List<TableRowViewModel>
+    {
+        new()
+        {
+            Row = new List<TableCellViewModel>
+            {
+                new()
+                {
+                    Html = @<a class="govuk-link" href="#">January 2023</a>
+                },
+                new()
+                {
+                    Text = "01/01/23",
+                },
+                new()
+                {
+                    Text = "...",
+                },
+            },
+        },
+    },
+    FirstCellIsHeader = false,
+}))
