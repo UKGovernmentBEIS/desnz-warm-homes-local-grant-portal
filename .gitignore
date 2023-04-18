@@ -1,0 +1,12 @@
+
+# User preferences
+.idea
+
+# Dependencies
+node_modules/
+
+# Build results
+bin/
+obj/
+**/wwwroot/compiled
+ci-server-build/
