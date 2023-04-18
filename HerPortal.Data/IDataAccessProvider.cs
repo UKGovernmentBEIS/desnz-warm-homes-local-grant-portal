@@ -1,6 +1,4 @@
-﻿using HerPortal.BusinessLogic.Models;
-
-namespace HerPortal.Data;
+﻿namespace HerPortal.Data;
 
 public interface IDataAccessProvider
 {

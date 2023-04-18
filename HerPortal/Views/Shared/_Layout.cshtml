@@ -1,16 +1,11 @@
 ﻿@using GovUkDesignSystem
 @using GovUkDesignSystem.GovUkDesignSystemComponents
-@using HerPortal.ExternalServices.GoogleAnalytics
 @using HerPortal.Controllers
 @using HerPortal.Helpers
 @using HerPortal.Services
-@using HerPortal.Services.Cookies
 @inject StaticAssetsVersioningService StaticAssetsVersioning
-@inject CookieService CookieService
-@inject GoogleAnalyticsService GoogleAnalytics
 @{
     string assetsPath = "/assets/images";
-    ViewBag.FeedbackUrl ??= Constants.FEEDBACK_URL_DEFAULT;
 }
 <!DOCTYPE html>
 
@@ -19,19 +14,6 @@
 
 <html lang="en" class="govuk-template app-html-class">
 <head>
-    @if (CookieService.HasAcceptedGoogleAnalytics(Context.Request))
-    {
-        var id = GoogleAnalytics.Configuration.MeasurementId;
-        <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=@id"></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-    
-            gtag('config', '@id');
-        </script>
-    }
     <meta charset="utf-8"/>
     <title>@(ViewBag.Title != null ? ViewBag.Title + " -" : "") @Constants.SERVICE_NAME - Gov.UK</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -67,8 +49,6 @@
         document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
     </script>
 
-    @{ await Html.RenderPartialAsync("_CookieBanner"); }
-
     <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">Skip to main content</a>
 
     @{
@@ -98,7 +78,7 @@
         @(await Html.GovUkPhaseBanner(new PhaseBannerViewModel
         {
             Phase = "Beta",
-            Html = @<text>This is a new service – your <a class="govuk-link" href="@ViewBag.FeedbackUrl" target="_blank">feedback (opens in new tab)</a> will help us to improve it.</text>
+            Html = @<text>This is a new service.</text>
         }))
 
         @(RenderSection("BeforeMain", false))
@@ -117,16 +97,6 @@
             {
                 new FooterLinksViewModel
                 {
-                    Text = "Contact Us",
-                    Href = ViewBag.FeedbackUrl
-                },
-                new FooterLinksViewModel
-                {
-                    Text = "Cookies",
-                    Href = Url.Action(nameof(CookieController.CookieSettings_Get), "Cookie")
-                },
-                new FooterLinksViewModel
-                {
                     Text = "Privacy Policy",
                     Href = Url.Action(nameof(StaticPagesController.PrivacyPolicy), "StaticPages")
                 },
@@ -141,10 +111,5 @@
 
     <script src="@(StaticAssetsVersioning.GetAppJsFilename())"></script>
     <script>window.GOVUKFrontend.initAll()</script>
-    
-    @if (CookieService.HasAcceptedGoogleAnalytics(Context.Request))
-    {
-        <script>setUpGoogleAnalytics()</script>   
-    }
 </body>
 </html>

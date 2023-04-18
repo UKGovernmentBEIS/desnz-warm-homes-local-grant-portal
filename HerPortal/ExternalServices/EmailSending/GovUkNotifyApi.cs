@@ -51,8 +51,7 @@ namespace HerPortal.ExternalServices.EmailSending
             {
                 { template.ReferencePlaceholder, reference },
                 { template.MagicLinkPlaceholder, govUkNotifyConfig.BaseUrl + "returning-user/" + reference },
-                { template.ReturningUserLinkPlaceholder, govUkNotifyConfig.BaseUrl + "new-or-returning-user" },
-                { template.FeedbackLinkPlaceholder, Constants.FEEDBACK_URL_DEFAULT }
+                { template.ReturningUserLinkPlaceholder, govUkNotifyConfig.BaseUrl + "new-or-returning-user" }
             };
             var emailModel = new GovUkNotifyEmailModel
             {

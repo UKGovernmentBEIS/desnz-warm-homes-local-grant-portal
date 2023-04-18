@@ -8,14 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using HerPortal.BusinessLogic.ExternalServices.EpbEpc;
 using HerPortal.Data;
 using HerPortal.ErrorHandling;
 using HerPortal.ExternalServices.EmailSending;
-using HerPortal.ExternalServices.GoogleAnalytics;
 using HerPortal.Middleware;
 using HerPortal.Services;
-using HerPortal.Services.Cookies;
 
 namespace HerPortal
 {
@@ -38,11 +35,8 @@ namespace HerPortal
             // This allows encrypted cookies to be understood across multiple web server instances
             services.AddDataProtection().PersistKeysToDbContext<HerDbContext>();
 
-            ConfigureEpcApi(services);
             ConfigureGovUkNotify(services);
-            ConfigureCookieService(services);
             ConfigureDatabaseContext(services);
-            ConfigureGoogleAnalyticsService(services);
 
             if (!webHostEnvironment.IsProduction())
             {
@@ -70,13 +64,6 @@ namespace HerPortal
             services.AddHttpContextAccessor();
         }
 
-        private void ConfigureGoogleAnalyticsService(IServiceCollection services)
-        {
-            services.Configure<GoogleAnalyticsConfiguration>(
-                configuration.GetSection(GoogleAnalyticsConfiguration.ConfigSection));
-            services.AddScoped<GoogleAnalyticsService, GoogleAnalyticsService>();
-        }
-
         private void ConfigureDatabaseContext(IServiceCollection services)
         {
             var databaseConnectionString = configuration.GetConnectionString("PostgreSQLConnection");
@@ -86,22 +73,6 @@ namespace HerPortal
             }
             services.AddDbContext<HerDbContext>(opt =>
                 opt.UseNpgsql(databaseConnectionString));
-        }
-
-        private void ConfigureCookieService(IServiceCollection services)
-        {
-            services.Configure<CookieServiceConfiguration>(
-                configuration.GetSection(CookieServiceConfiguration.ConfigSection));
-            // Change the default antiforgery cookie name so it doesn't include Asp.Net for security reasons
-            services.AddAntiforgery(options => options.Cookie.Name = "Antiforgery");
-            services.AddScoped<CookieService, CookieService>();
-        }
-
-        private void ConfigureEpcApi(IServiceCollection services)
-        {
-            services.Configure<EpbEpcConfiguration>(
-                configuration.GetSection(EpbEpcConfiguration.ConfigSection));
-            services.AddScoped<IEpcApi, EpbEpcApi>();
         }
 
         private void ConfigureGovUkNotify(IServiceCollection services)

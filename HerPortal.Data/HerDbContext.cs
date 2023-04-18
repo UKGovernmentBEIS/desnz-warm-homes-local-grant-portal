@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using HerPortal.BusinessLogic.Models;
 
 namespace HerPortal.Data;
 
