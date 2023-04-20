@@ -83,18 +83,23 @@ Fill in the opened `secrets.json` file with:
         "Password": "<REAL_VALUE_HERE>"
     },
 
-    "EpbEpc": {
-        "Username": "<REAL_VALUE_HERE>",
-        "Password": "<REAL_VALUE_HERE>"
+    "Authentication": {
+        "Cognito": {
+            "ClientId": "<app client id from AWS Cognito>",
+            "ClientSecret": "<app client secret from AWS Cognito>",
+            "IncludeErrorDetails": true,
+            "MetadataAddress": "https://cognito-idp.{your-region-id}.amazonaws.com/{your-user-pool-id}/.well-known/openid-configuration",
+            "RequireHttpsMetadata": false,
+            "ResponseType": "code",
+            "SaveToken": true,
+            "TokenValidationParameters": {
+                "ValidateIssuer": true
+            }
+        }
     },
 
     "GovUkNotify": {
         "ApiKey": "<REAL_VALUE_HERE>"
-    },
-   
-    "GoogleAnalytics": {
-        "ApiSecret": "REAL_VALUE_HERE",
-        "MeasurementId": "REAL_VALUE_HERE"
     }
 }
 ```
