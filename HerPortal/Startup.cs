@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Configuration;
 using GovUkDesignSystem.ModelBinders;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -11,8 +13,10 @@ using Microsoft.Extensions.Hosting;
 using HerPortal.Data;
 using HerPortal.ErrorHandling;
 using HerPortal.ExternalServices.EmailSending;
-using HerPortal.Middleware;
 using HerPortal.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HerPortal
 {
@@ -38,17 +42,30 @@ namespace HerPortal
             ConfigureGovUkNotify(services);
             ConfigureDatabaseContext(services);
 
-            if (!webHostEnvironment.IsProduction())
-            {
-                services.Configure<BasicAuthMiddlewareConfiguration>(
-                    configuration.GetSection(BasicAuthMiddlewareConfiguration.ConfigSection));
-            }
-
             services.AddControllersWithViews(options =>
             {
                 options.Filters.Add<ErrorHandlingFilter>();
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
                 options.ModelMetadataDetailsProviders.Add(new GovUkDataBindingErrorTextProvider());
+            });
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddCookie()
+            .AddOpenIdConnect(options =>
+            {
+                options.ResponseType = configuration["Authentication:Cognito:ResponseType"];
+                options.MetadataAddress = configuration["Authentication:Cognito:MetadataAddress"];
+                options.ClientId = configuration["Authentication:Cognito:ClientId"];
+                options.ClientSecret = configuration["Authentication:Cognito:ClientSecret"];
+                options.Scope.Add("email");
+                options.Scope.Add("openid");
+                options.Scope.Add("profile");
+                options.SaveTokens = true;
             });
 
             // TODO: Replace this with a database based cache
@@ -102,27 +119,15 @@ namespace HerPortal
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
-            ConfigureHttpBasicAuth(app);
-
-            app.UseMiddleware<SecurityHeadersMiddleware>();
 
             app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers().RequireAuthorization();
             });
-        }
-
-        private void ConfigureHttpBasicAuth(IApplicationBuilder app)
-        {
-            if (!webHostEnvironment.IsProduction())
-            {
-                // Add HTTP Basic Authentication in our non-production environments to make sure people don't accidentally stumble across the site
-                app.UseMiddleware<BasicAuthMiddleware>();
-            }
         }
     }
 }

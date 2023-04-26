@@ -3,10 +3,12 @@
 @using HerPortal.Controllers
 @using HerPortal.Helpers
 @using HerPortal.Services
+@using Microsoft.Extensions.Configuration
 @inject StaticAssetsVersioningService StaticAssetsVersioning
 @{
     string assetsPath = "/assets/images";
 }
+@inject IConfiguration Configuration
 <!DOCTYPE html>
 
 <!-- Build number: @(BuildNumberHelper.GetBuildNumber()) -->
@@ -56,8 +58,8 @@
         {
             new()
             {
-                Text = "(Username) Sign Out",
-                Href = "/",
+                Text = $"({User.GetEmailAddress()}) Sign Out",
+                Href = Configuration["Authentication:Cognito:SignOutUrl"],
                 Active = true
             }
         };
