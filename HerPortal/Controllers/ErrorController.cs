@@ -1,10 +1,8 @@
 ﻿using System;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HerPortal.Controllers;
 
-[Authorize]
 [Route("error")]
 public class ErrorController: Controller
 {

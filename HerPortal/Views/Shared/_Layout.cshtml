@@ -58,7 +58,7 @@
         {
             new()
             {
-                Text = $"({User.Claims.Single(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress").Value}) Sign Out",
+                Text = $"({User.GetEmailAddress()}) Sign Out",
                 Href = Configuration["Authentication:Cognito:SignOutUrl"],
                 Active = true
             }

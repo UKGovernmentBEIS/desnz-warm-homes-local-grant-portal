@@ -16,6 +16,7 @@ using HerPortal.ExternalServices.EmailSending;
 using HerPortal.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HerPortal
 {
@@ -125,7 +126,7 @@ namespace HerPortal
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers().RequireAuthorization();
             });
         }
     }

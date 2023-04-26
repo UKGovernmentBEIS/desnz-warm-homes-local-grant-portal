@@ -78,11 +78,6 @@ Fill in the opened `secrets.json` file with:
 
 ```json
 {
-    "BasicAuth": {
-        "Username": "<REAL_VALUE_HERE>",
-        "Password": "<REAL_VALUE_HERE>"
-    },
-
     "Authentication": {
         "Cognito": {
             "ClientId": "<app client id from AWS Cognito>",

@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace HerPortal.Controllers;
 
-[Authorize]
 public class StaticPagesController : Controller
 {
     [HttpGet("/")]

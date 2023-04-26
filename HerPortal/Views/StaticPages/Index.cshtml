@@ -1,5 +1,6 @@
 ﻿@using GovUkDesignSystem
 @using GovUkDesignSystem.GovUkDesignSystemComponents
+@using HerPortal.Helpers
 @{
     ViewBag.Title = "Home Energy Retrofit Portal BETA";
 }
@@ -8,12 +9,7 @@
 }
 
 <p class="govuk-body-l">
-    Welcome,
-    @(
-        User.Claims
-            .Single(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")
-            .Value
-    )
+    Welcome, @User.GetEmailAddress()
 </p>
 
 @{
