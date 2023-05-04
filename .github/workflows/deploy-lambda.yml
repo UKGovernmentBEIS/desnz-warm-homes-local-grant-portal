@@ -1,0 +1,38 @@
+﻿name: Deploy Lambda pre sign-up hook
+permissions:
+  id-token: write
+  contents: read
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+        
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        
+      - name: Install Node.js dependencies
+        run: npm ci
+        working-directory: ./PreSignUpLambdaHook
+      
+      - name: Create .zip archive
+        run: zip -rv ../pre-sign-up-lambda.zip ./*
+        working-directory: ./PreSignUpLambdaHook
+        
+      - name: Confirm it's there
+        run: ls -al
+        
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::955645175859:role/desnz-lambda-updater
+          role-session-name: deploy-pre-sign-up-lambda
+          aws-region: eu-west-2
+          
+      - name: Update Lambda function
+        run: aws lambda update-function-code --function-name desnz-her-pre-sign-up-sandbox --zip-file fileb://pre-sign-up-lambda.zip
