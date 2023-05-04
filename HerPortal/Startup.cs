@@ -126,7 +126,9 @@ namespace HerPortal
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers().RequireAuthorization();
+                endpoints
+                    .MapControllers()
+                    .RequireAuthorization();  // makes all endpoints require auth by default
             });
         }
     }
