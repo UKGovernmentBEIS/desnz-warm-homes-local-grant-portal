@@ -17,15 +17,11 @@ export const handler = async (event, context, callback) => {
     // https://stackoverflow.com/questions/2140627/how-to-do-case-insensitive-string-comparison
     if (!allowedEmailAddresses.some(
         ea => {
-            console.debug(`Comparing "${event.request.userAttributes.email}" with "${ea}"`);
             const comparison = ea.localeCompare(
                 event.request.userAttributes.email,
                 "en-GB",
                 { sensitivity: "accent" }
             );
-            
-            console.debug(comparison === 0 ? "  Equal!" : "  Not equal.");
-            
             return comparison === 0;
         })
     ) {
