@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using HerPortal.Data;
+using HerPortal.DataStores;
 using HerPortal.ErrorHandling;
 using HerPortal.ExternalServices.EmailSending;
 using HerPortal.Services;
@@ -35,6 +36,8 @@ namespace HerPortal
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMemoryCache();
+            services.AddScoped<UserDataStore>();
+            services.AddScoped<IDataAccessProvider, DataAccessProvider>();
             services.AddSingleton<StaticAssetsVersioningService>();
             // This allows encrypted cookies to be understood across multiple web server instances
             services.AddDataProtection().PersistKeysToDbContext<HerDbContext>();

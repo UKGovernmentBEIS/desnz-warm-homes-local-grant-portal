@@ -1,5 +1,20 @@
 ﻿@using GovUkDesignSystem
 @using GovUkDesignSystem.GovUkDesignSystemComponents
+@using HerPortal.BusinessLogic.Models
+
+@{
+    var userData = ViewBag.UserData as User;
+}
+
+@if (userData is not null && !userData.HasLoggedIn)
+{
+    @(await Html.GovUkNotificationBanner(new NotificationBannerViewModel
+    {
+        TitleText = "Welcome",
+        Text = "Read all contents in the \"Supporting documents\" tab first",
+    }))
+}
+
 <h2 class="govuk-heading-l">Referral Files</h2>
 <p class="govuk-body">For the Home Upgrade Grant 2.</p>
 <p class="govuk-body govuk-!-font-weight-bold">You have not received any applications yet.</p>
