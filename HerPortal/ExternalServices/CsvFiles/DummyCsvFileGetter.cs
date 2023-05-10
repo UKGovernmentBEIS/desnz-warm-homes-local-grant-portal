@@ -9,18 +9,34 @@ public class DummyCsvFileGetter : ICsvFileGetter
 {
     public Task<IEnumerable<CsvFileData>> GetByCustodianCodes(IEnumerable<string> custodianCodes)
     {
+        var ccList = custodianCodes.ToList();
+        
+        if (!ccList.Any())
+        {
+            return Task.FromResult(new List<CsvFileData>().Select(d => d));
+        }
+        
         return Task.FromResult
         (
-            new List<int> { 5, 4, 3, 2, 1 }.SelectMany
+            new List<int> { 4, 3, 2, 1 }.SelectMany
             (
-                month => custodianCodes
+                month => ccList
                     .Select(cc => new CsvFileData(
                         cc,
                         month,
                         2023,
-                        new DateTime(2023, 5, 10)
+                        new DateTime(2023, 3, 10),
+                        new DateTime(2023, 6 - month, 1),
+                        true
                     ))
-            )
+            ).Prepend(new CsvFileData(
+                ccList.First(),
+                5,
+                2023,
+                new DateTime(2023, 5, 1),
+                null,
+                false
+            ))
         );
     }
 }

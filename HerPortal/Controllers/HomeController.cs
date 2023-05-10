@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using HerPortal.DataStores;
 using HerPortal.ExternalServices.CsvFiles;
@@ -32,10 +33,20 @@ public class HomeController : Controller
         var userEmailAddress = HttpContext.User.GetEmailAddress();
         var userData = await userDataStore.GetUserByEmailAsync(userEmailAddress);
 
-        var csvFiles = await csvFileGetter.GetByCustodianCodes
+        var csvFiles = (await csvFileGetter.GetByCustodianCodes
         (
             userData.LocalAuthorities.Select(la => la.CustodianCode)
-        );
+        )).Select(cf => new HomepageViewModel.CsvFile
+        (
+            new DateOnly(cf.Year, cf.Month, 1).ToString("MMMM yyyy"),
+            userData
+                .LocalAuthorities
+                .Single(la => la.CustodianCode == cf.CustodianCode)
+                .Name,
+            cf.LastUpdated.ToString("dd/MM/yy"),
+            cf.HasUpdatedSinceLastDownload,
+            cf.HasApplications
+        ));
         
         var homepageViewModel = new HomepageViewModel(userData, csvFiles);
         if (!userData.HasLoggedIn)

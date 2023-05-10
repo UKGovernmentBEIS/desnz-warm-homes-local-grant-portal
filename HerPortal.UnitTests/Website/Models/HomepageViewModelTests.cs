@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using FluentAssertions;
 using HerPortal.BusinessLogic.Models;
-using HerPortal.ExternalServices.CsvFiles;
 using HerPortal.Models;
 using NUnit.Framework;
 
@@ -24,7 +23,7 @@ public class HomepageViewModelTests
         };
         
         // Act
-        var viewModel = new HomepageViewModel(user, new List<CsvFileData>());
+        var viewModel = new HomepageViewModel(user, new List<HomepageViewModel.CsvFile>());
         
         // Assert
         viewModel.ShouldShowBanner.Should().Be(shouldShowBanner);

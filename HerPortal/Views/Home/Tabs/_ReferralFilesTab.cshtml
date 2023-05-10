@@ -38,17 +38,19 @@
             {
                 new()
                 {
-                    Html = @<a class="govuk-link" href="#">
-                               @(new DateOnly(cf.Year, cf.Month, 1).ToString("MMMM yyyy"))
-                           </a>
+                    Html = @<a class="govuk-link" href="#">@cf.MonthAndYear</a>
                 },
                 new()
                 {
-                    Text = cf.LastUpdated.ToString("dd/MM/yy"),
+                    Text = cf.LastUpdated,
                 },
                 new()
                 {
-                    Text = "...",
+                    Html = cf.HasApplications
+                        ? cf.HasNewUpdates
+                            ? @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--green", Text = "New" }))</text>
+                            : null
+                        : @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--grey", Text = "No applications yet" }))</text>
                 },
             },
         }
