@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using HerPortal.Data;
 using HerPortal.DataStores;
 using HerPortal.ErrorHandling;
+using HerPortal.ExternalServices.CsvFiles;
 using HerPortal.ExternalServices.EmailSending;
 using HerPortal.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -38,6 +39,7 @@ namespace HerPortal
             services.AddMemoryCache();
             services.AddScoped<UserDataStore>();
             services.AddScoped<IDataAccessProvider, DataAccessProvider>();
+            services.AddScoped<ICsvFileGetter, DummyCsvFileGetter>();
             services.AddSingleton<StaticAssetsVersioningService>();
             // This allows encrypted cookies to be understood across multiple web server instances
             services.AddDataProtection().PersistKeysToDbContext<HerDbContext>();

@@ -32,26 +32,26 @@
             Text = "Updates",
         },
     },
-    Rows = new List<TableRowViewModel>
-    {
-        new()
+    Rows = Model.CsvFiles.Select(cf => new TableRowViewModel
         {
             Row = new List<TableCellViewModel>
             {
                 new()
                 {
-                    Html = @<a class="govuk-link" href="#">January 2023</a>
+                    Html = @<a class="govuk-link" href="#">
+                               @(new DateOnly(cf.Year, cf.Month, 1).ToString("MMMM yyyy"))
+                           </a>
                 },
                 new()
                 {
-                    Text = "01/01/23",
+                    Text = cf.LastUpdated.ToString("dd/MM/yy"),
                 },
                 new()
                 {
                     Text = "...",
                 },
             },
-        },
-    },
+        }
+    ).ToList(),
     FirstCellIsHeader = false,
 }))
