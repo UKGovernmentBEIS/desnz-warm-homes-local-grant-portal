@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using HerPortal.DataStores;
 using HerPortal.Helpers;
+using HerPortal.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -20,10 +21,13 @@ public class HomeController : Controller
     [HttpGet("/")]
     public async Task<IActionResult> Index()
     {
-        var principal = HttpContext.User;
-        var emailAddress = principal.GetEmailAddress();
-        var userData = await userDataStore.GetUserByEmailAsync(emailAddress);
-        ViewBag.UserData = userData;
-        return View("Index");
+        var userEmailAddress = HttpContext.User.GetEmailAddress();
+        var userData = await userDataStore.GetUserByEmailAsync(userEmailAddress);
+        var homepageViewModel = new HomepageViewModel(userData);
+        if (!userData.HasLoggedIn)
+        {
+            await userDataStore.MarkUserAsHavingLoggedInAsync(userData.Id);
+        }
+        return View("Index", homepageViewModel);
     }
 }

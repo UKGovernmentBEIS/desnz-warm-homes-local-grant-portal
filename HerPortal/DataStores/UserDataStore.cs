@@ -22,4 +22,9 @@ public class UserDataStore
 
         return user;
     }
+
+    public async Task MarkUserAsHavingLoggedInAsync(int userId)
+    {
+        await dataAccessProvider.MarkUserAsHavingLoggedInAsync(userId);
+    }
 }

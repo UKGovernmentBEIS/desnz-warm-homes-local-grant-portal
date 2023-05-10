@@ -1,12 +1,8 @@
-﻿@using GovUkDesignSystem
+﻿@model HerPortal.Models.HomepageViewModel
+@using GovUkDesignSystem
 @using GovUkDesignSystem.GovUkDesignSystemComponents
-@using HerPortal.BusinessLogic.Models
 
-@{
-    var userData = ViewBag.UserData as User;
-}
-
-@if (userData is not null && !userData.HasLoggedIn)
+@if (Model.ShouldShowBanner)
 {
     @(await Html.GovUkNotificationBanner(new NotificationBannerViewModel
     {

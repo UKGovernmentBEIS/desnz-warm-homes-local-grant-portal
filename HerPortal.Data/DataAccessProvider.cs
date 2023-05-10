@@ -29,4 +29,13 @@ public class DataAccessProvider : IDataAccessProvider
                     StringComparison.CurrentCultureIgnoreCase
                 ));
     }
+
+    public async Task MarkUserAsHavingLoggedInAsync(int userId)
+    {
+        var user = await context.Users
+            .SingleAsync(u => u.Id == userId);
+
+        user.HasLoggedIn = true;
+        await context.SaveChangesAsync();
+    }
 }
