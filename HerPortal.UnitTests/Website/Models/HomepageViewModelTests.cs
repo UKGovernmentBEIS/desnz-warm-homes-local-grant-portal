@@ -59,7 +59,7 @@ public class HomepageViewModelTests
         var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData);
         
         // Assert
-        viewModelCsvFile.MonthAndYear.Should().Be(expectedDateString);
+        viewModelCsvFile.MonthAndYearText.Should().Be(expectedDateString);
     }
     
     [TestCase(26, 1, 2023, "26/01/23")]
@@ -87,7 +87,7 @@ public class HomepageViewModelTests
         var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData);
         
         // Assert
-        viewModelCsvFile.LastUpdated.Should().Be(expectedLastUpdatedString);
+        viewModelCsvFile.LastUpdatedText.Should().Be(expectedLastUpdatedString);
     }
     
     [TestCase("5210", "Camden")]

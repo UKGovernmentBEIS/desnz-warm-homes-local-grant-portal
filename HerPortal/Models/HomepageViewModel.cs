@@ -10,27 +10,27 @@ public class HomepageViewModel
 {
     public class CsvFile
     {
-        public string MonthAndYear { get; }
-        public string LocalAuthorityName { get; }
-        public string LastUpdated { get; }
+        public string CustodianCode { get; }
+        public int Year { get; }
+        public int Month { get; }
+        public string MonthAndYearText => new DateOnly(Year, Month, 1).ToString("MMMM yyyy");
+        public string LocalAuthorityName => LocalAuthorityData.LocalAuthorityNamesByCustodianCode[CustodianCode];
+        public string LastUpdatedText { get; }
         public bool HasNewUpdates { get; }
         public bool HasApplications { get; }
 
         public CsvFile(CsvFileData csvFileData)
         {
-            var localAuthorityExists = LocalAuthorityData
-                .LocalAuthorityNamesByCustodianCode
-                .TryGetValue(csvFileData.CustodianCode, out var laName);
-            
-            if (!localAuthorityExists)
+            if (!LocalAuthorityData.LocalAuthorityNamesByCustodianCode.ContainsKey(csvFileData.CustodianCode))
             {
                 throw new ArgumentOutOfRangeException(nameof(csvFileData.CustodianCode), csvFileData.CustodianCode,
                     "The given custodian code is not known.");
             }
 
-            MonthAndYear = new DateOnly(csvFileData.Year, csvFileData.Month, 1).ToString("MMMM yyyy");
-            LocalAuthorityName = laName;
-            LastUpdated = csvFileData.LastUpdated.ToString("dd/MM/yy");
+            CustodianCode = csvFileData.CustodianCode;
+            Year = csvFileData.Year;
+            Month = csvFileData.Month;
+            LastUpdatedText = csvFileData.LastUpdated.ToString("dd/MM/yy");
             HasNewUpdates = csvFileData.HasUpdatedSinceLastDownload;
             HasApplications = csvFileData.HasApplications;
         }

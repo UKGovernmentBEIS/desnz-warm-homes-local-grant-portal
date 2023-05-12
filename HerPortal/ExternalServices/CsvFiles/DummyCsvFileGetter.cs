@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using HerPortal.BusinessLogic.Models;
 
 namespace HerPortal.ExternalServices.CsvFiles;
 
@@ -38,5 +41,31 @@ public class DummyCsvFileGetter : ICsvFileGetter
                 false
             ))
         );
+    }
+
+    public async Task<Stream> GetFile(string custodianCode, int year, int month)
+    {
+        if (!LocalAuthorityData.LocalAuthorityNamesByCustodianCode.ContainsKey(custodianCode))
+        {
+            throw new ArgumentOutOfRangeException(nameof(custodianCode), custodianCode,
+                "Given custodian code is not valid");
+        }
+        
+        using var writeableMemoryStream = new MemoryStream();
+        await using var streamWriter = new StreamWriter(writeableMemoryStream, Encoding.UTF8);
+        {
+            await streamWriter.WriteLineAsync("Name,Email,Telephone,Preferred contact method,Address1,Address2,Town,County,Postcode,EPC Band,Is off gas grid,Household income band,Is eligible postcode,Tenure");
+            await streamWriter.WriteLineAsync("Full Name1,contact1@example.com,00001 123456,Email,Address 1 line 1,Address 1 line 2,Town1,County1,AL01 1RS,E,yes,Below £31k,no,Owner");
+            await streamWriter.FlushAsync();
+            
+            var resultStream = new MemoryStream
+            (
+                writeableMemoryStream.GetBuffer(),
+                0,
+                (int)writeableMemoryStream.Length,
+                false
+            );
+            return resultStream;
+        }
     }
 }
