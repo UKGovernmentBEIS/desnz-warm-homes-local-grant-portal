@@ -8,8 +8,6 @@ namespace HerPortal.Data;
 public class HerDbContext : DbContext, IDataProtectionKeyContext
 {
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
-    
-    public DbSet<LocalAuthority> LocalAuthorities { get; set; }
     public DbSet<User> Users { get; set; }
 
     public HerDbContext(DbContextOptions<HerDbContext> options) : base(options)

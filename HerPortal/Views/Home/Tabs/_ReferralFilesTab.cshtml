@@ -25,6 +25,10 @@
         },
         new()
         {
+            Text = "Region/LA",
+        },
+        new()
+        {
             Text = "Last updated",
         },
         new()
@@ -39,6 +43,10 @@
                 new()
                 {
                     Html = @<a class="govuk-link" href="#">@cf.MonthAndYear</a>
+                },
+                new()
+                {
+                    Text = cf.LocalAuthorityName,
                 },
                 new()
                 {

@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using HerPortal.BusinessLogic.Models;
+using HerPortal.ExternalServices.CsvFiles;
+using HerPublicWebsite.BusinessLogic.Models;
 
 namespace HerPortal.Models;
 
@@ -13,28 +17,24 @@ public class HomepageViewModel
         public bool HasNewUpdates { get; }
         public bool HasApplications { get; }
 
-        public CsvFile
-        (
-            string monthAndYear,
-            string localAuthorityName,
-            string lastUpdated,
-            bool hasNewUpdates,
-            bool hasApplications
-        ) {
-            MonthAndYear = monthAndYear;
-            LocalAuthorityName = localAuthorityName;
-            LastUpdated = lastUpdated;
-            HasNewUpdates = hasNewUpdates;
-            HasApplications = hasApplications;
+        public CsvFile(CsvFileData csvFileData)
+        {
+            MonthAndYear = new DateOnly(csvFileData.Year, csvFileData.Month, 1).ToString("MMMM yyyy");
+            LocalAuthorityName = LocalAuthorityData
+                .LocalAuthorityDetailsByCustodianCode[csvFileData.CustodianCode]
+                .Name;
+            LastUpdated = csvFileData.LastUpdated.ToString("dd/MM/yy");
+            HasNewUpdates = csvFileData.HasUpdatedSinceLastDownload;
+            HasApplications = csvFileData.HasApplications;
         }
     }
     
     public bool ShouldShowBanner { get; }
     public IEnumerable<CsvFile> CsvFiles { get; }
 
-    public HomepageViewModel(User user, IEnumerable<CsvFile> csvFiles)
+    public HomepageViewModel(User user, IEnumerable<CsvFileData> csvFiles)
     {
         ShouldShowBanner = !user.HasLoggedIn;
-        CsvFiles = new List<CsvFile>(csvFiles);
+        CsvFiles = csvFiles.Select(cf => new CsvFile(cf));
     }
 }
