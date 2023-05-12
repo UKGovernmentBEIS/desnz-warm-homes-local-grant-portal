@@ -19,10 +19,18 @@ public class HomepageViewModel
 
         public CsvFile(CsvFileData csvFileData)
         {
+            var localAuthorityExists = LocalAuthorityData
+                .LocalAuthorityDetailsByCustodianCode
+                .TryGetValue(csvFileData.CustodianCode, out var laDetails);
+            
+            if (!localAuthorityExists)
+            {
+                throw new ArgumentOutOfRangeException(nameof(csvFileData.CustodianCode), csvFileData.CustodianCode,
+                    "The given custodian code is not known.");
+            }
+
             MonthAndYear = new DateOnly(csvFileData.Year, csvFileData.Month, 1).ToString("MMMM yyyy");
-            LocalAuthorityName = LocalAuthorityData
-                .LocalAuthorityDetailsByCustodianCode[csvFileData.CustodianCode]
-                .Name;
+            LocalAuthorityName = laDetails.Name;
             LastUpdated = csvFileData.LastUpdated.ToString("dd/MM/yy");
             HasNewUpdates = csvFileData.HasUpdatedSinceLastDownload;
             HasApplications = csvFileData.HasApplications;
