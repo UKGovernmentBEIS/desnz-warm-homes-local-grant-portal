@@ -13,7 +13,7 @@ public class DummyCsvFileGetter : ICsvFileGetter
         
         if (!ccList.Any())
         {
-            return Task.FromResult(new List<CsvFileData>().Select(d => d));
+            return Task.FromResult<IEnumerable<CsvFileData>>(new List<CsvFileData>());
         }
         
         return Task.FromResult

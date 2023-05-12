@@ -14,7 +14,13 @@ public class DataAccessProvider : IDataAccessProvider
 
     public async Task<User> GetUserByEmailAsync(string emailAddress)
     {
-        var users = await context.Users.ToListAsync();
+        var users = await context.Users
+            .Include(u => u.LocalAuthorities)
+            // In order to compare email addresses case-insensitively, we bring the whole table into memory here
+            //   to perform the comparison in C#, since Entity Framework doesn't allow for the StringComparison
+            //   overload. However, since we don't expect this table to be monstrously huge this is acceptable
+            //   in order to easily allow case-insensitive email addresses.
+            .ToListAsync();
         return users
             .Single(u => string.Equals
                 (

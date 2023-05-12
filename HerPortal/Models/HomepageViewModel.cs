@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using HerPortal.BusinessLogic.Models;
 using HerPortal.ExternalServices.CsvFiles;
-using HerPublicWebsite.BusinessLogic.Models;
 
 namespace HerPortal.Models;
 
@@ -20,8 +19,8 @@ public class HomepageViewModel
         public CsvFile(CsvFileData csvFileData)
         {
             var localAuthorityExists = LocalAuthorityData
-                .LocalAuthorityDetailsByCustodianCode
-                .TryGetValue(csvFileData.CustodianCode, out var laDetails);
+                .LocalAuthorityNamesByCustodianCode
+                .TryGetValue(csvFileData.CustodianCode, out var laName);
             
             if (!localAuthorityExists)
             {
@@ -30,7 +29,7 @@ public class HomepageViewModel
             }
 
             MonthAndYear = new DateOnly(csvFileData.Year, csvFileData.Month, 1).ToString("MMMM yyyy");
-            LocalAuthorityName = laDetails.Name;
+            LocalAuthorityName = laName;
             LastUpdated = csvFileData.LastUpdated.ToString("dd/MM/yy");
             HasNewUpdates = csvFileData.HasUpdatedSinceLastDownload;
             HasApplications = csvFileData.HasApplications;
