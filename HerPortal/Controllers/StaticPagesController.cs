@@ -1,15 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HerPortal.Helpers;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HerPortal.Controllers;
 
 public class StaticPagesController : Controller
 {
-    [HttpGet("/")]
-    public IActionResult Index()
-    {
-        return View("Index");
-    }
-    
     [HttpGet("/accessibility-statement")]
     public IActionResult AccessibilityStatement()
     {

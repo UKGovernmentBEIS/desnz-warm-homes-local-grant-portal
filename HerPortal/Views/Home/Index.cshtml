@@ -1,6 +1,6 @@
-﻿@using GovUkDesignSystem
+﻿@model HerPortal.Models.HomepageViewModel
+@using GovUkDesignSystem
 @using GovUkDesignSystem.GovUkDesignSystemComponents
-@using HerPortal.Helpers
 @{
     ViewBag.Title = "Home Energy Retrofit Portal BETA";
 }
@@ -8,12 +8,8 @@
 @section BeforeMain {
 }
 
-<p class="govuk-body-l">
-    Welcome, @User.GetEmailAddress()
-</p>
-
 @{
-    var referralFilesTab = await Html.PartialAsync("Tabs/_ReferralFilesTab");
+    var referralFilesTab = await Html.PartialAsync("Tabs/_ReferralFilesTab", Model);
     var supportingDocumentsTab = await Html.PartialAsync("Tabs/_SupportingDocumentsTab");
 
     // These slightly strange constructions are required to be able to

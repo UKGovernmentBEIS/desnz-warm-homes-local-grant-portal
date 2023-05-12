@@ -10,6 +10,6 @@ public class SignOutController : Controller
     {
         HttpContext.SignOutAsync();
 
-        return RedirectToAction("Index", "StaticPages");
+        return RedirectToAction("Index", "Home");
     }
 }
