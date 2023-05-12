@@ -8,35 +8,23 @@ namespace Tests.Website.Models;
 [TestFixture]
 public class HomepageViewModelTests
 {
-    [Test]
-    public void ShouldShowBannerIfUserHasNotLoggedIn()
-    {
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    public void HomepageViewModel_OnlyWhenCreatedForUserThatHasntLoggedInBefore_ShouldShowBanner
+    (
+        bool hasUserLoggedIn,
+        bool shouldShowBanner
+    ) {
         // Arrange
         var user = new User
         {
-            HasLoggedIn = false,
+            HasLoggedIn = hasUserLoggedIn,
         };
         
         // Act
         var viewModel = new HomepageViewModel(user);
         
         // Assert
-        viewModel.ShouldShowBanner.Should().BeTrue();
-    }
-    
-    [Test]
-    public void ShouldNotShowBannerIfUserHasLoggedIn()
-    {
-        // Arrange
-        var user = new User
-        {
-            HasLoggedIn = true,
-        };
-        
-        // Act
-        var viewModel = new HomepageViewModel(user);
-        
-        // Assert
-        viewModel.ShouldShowBanner.Should().BeFalse();
+        viewModel.ShouldShowBanner.Should().Be(shouldShowBanner);
     }
 }
