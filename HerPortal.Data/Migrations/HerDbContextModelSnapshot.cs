@@ -34,6 +34,9 @@ namespace HerPortal.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CustodianCode")
+                        .IsUnique();
+
                     b.ToTable("LocalAuthorities");
                 });
 
@@ -52,6 +55,9 @@ namespace HerPortal.Data.Migrations
                         .HasColumnType("boolean");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmailAddress")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

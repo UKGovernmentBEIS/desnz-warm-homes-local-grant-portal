@@ -18,6 +18,15 @@ public class HerDbContext : DbContext, IDataProtectionKeyContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder
+            .Entity<User>()
+            .HasIndex(u => u.EmailAddress)
+            .IsUnique();
+
+        modelBuilder
+            .Entity<LocalAuthority>()
+            .HasIndex(la => la.CustodianCode)
+            .IsUnique();
     }
 
     private void AddRowVersionColumn<T>(EntityTypeBuilder<T> builder) where T : class
