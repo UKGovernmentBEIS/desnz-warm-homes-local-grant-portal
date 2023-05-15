@@ -32,9 +32,6 @@ namespace HerPortal.Data.Migrations
                     b.Property<string>("CustodianCode")
                         .HasColumnType("text");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.ToTable("LocalAuthorities");

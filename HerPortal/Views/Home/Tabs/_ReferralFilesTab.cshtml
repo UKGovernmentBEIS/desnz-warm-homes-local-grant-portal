@@ -25,6 +25,10 @@
         },
         new()
         {
+            Text = "Region/LA",
+        },
+        new()
+        {
             Text = "Last updated",
         },
         new()
@@ -32,26 +36,32 @@
             Text = "Updates",
         },
     },
-    Rows = new List<TableRowViewModel>
-    {
-        new()
+    Rows = Model.CsvFiles.Select(cf => new TableRowViewModel
         {
             Row = new List<TableCellViewModel>
             {
                 new()
                 {
-                    Html = @<a class="govuk-link" href="#">January 2023</a>
+                    Html = @<a class="govuk-link" href="#">@cf.MonthAndYear</a>
                 },
                 new()
                 {
-                    Text = "01/01/23",
+                    Text = cf.LocalAuthorityName,
                 },
                 new()
                 {
-                    Text = "...",
+                    Text = cf.LastUpdated,
+                },
+                new()
+                {
+                    Html = cf.HasApplications
+                        ? cf.HasNewUpdates
+                            ? @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--green", Text = "New" }))</text>
+                            : null
+                        : @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--grey", Text = "No applications yet" }))</text>
                 },
             },
-        },
-    },
+        }
+    ).ToList(),
     FirstCellIsHeader = false,
 }))
