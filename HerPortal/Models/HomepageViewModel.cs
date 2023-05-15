@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HerPortal.BusinessLogic.Models;
 using HerPortal.ExternalServices.CsvFiles;
+using CsvFileData = HerPortal.ExternalServices.CsvFiles.CsvFileData;
 
 namespace HerPortal.Models;
 

@@ -42,7 +42,7 @@ public class CsvFileController : Controller
         Stream file;
         try
         {
-            file = await csvFileGetter.GetFile(custodianCode, year, month);
+            file = await csvFileGetter.GetFileForDownloadAsync(custodianCode, year, month, userData.Id);
         }
         catch (ArgumentOutOfRangeException)
         {

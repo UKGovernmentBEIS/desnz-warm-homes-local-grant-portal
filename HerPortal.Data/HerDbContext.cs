@@ -9,6 +9,7 @@ public class HerDbContext : DbContext, IDataProtectionKeyContext
 {
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
     
+    public DbSet<CsvFileDownloadData> CsvFileDownloadData { get; set; }
     public DbSet<LocalAuthority> LocalAuthorities { get; set; }
     public DbSet<User> Users { get; set; }
 
@@ -27,6 +28,15 @@ public class HerDbContext : DbContext, IDataProtectionKeyContext
             .Entity<LocalAuthority>()
             .HasIndex(la => la.CustodianCode)
             .IsUnique();
+        
+        modelBuilder
+            .Entity<CsvFileDownloadData>()
+            .HasKey(cf => new
+            {
+                cf.CustodianCode,
+                cf.Year,
+                cf.Month
+            });
     }
 
     private void AddRowVersionColumn<T>(EntityTypeBuilder<T> builder) where T : class

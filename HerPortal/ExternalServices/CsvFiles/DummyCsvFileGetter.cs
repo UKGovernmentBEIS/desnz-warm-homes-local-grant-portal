@@ -5,51 +5,72 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HerPortal.BusinessLogic.Models;
+using HerPortal.DataStores;
 
 namespace HerPortal.ExternalServices.CsvFiles;
 
 public class DummyCsvFileGetter : ICsvFileGetter
 {
-    public Task<IEnumerable<CsvFileData>> GetByCustodianCodes(IEnumerable<string> custodianCodes)
+    private readonly CsvFileDownloadDataStore csvFileDownloadDataStore;
+
+    public DummyCsvFileGetter(CsvFileDownloadDataStore csvFileDownloadDataStore)
+    {
+        this.csvFileDownloadDataStore = csvFileDownloadDataStore;
+    }
+    
+    public async Task<IEnumerable<CsvFileData>> GetByCustodianCodesAsync(IEnumerable<string> custodianCodes)
     {
         var ccList = custodianCodes.ToList();
         
         if (!ccList.Any())
         {
-            return Task.FromResult<IEnumerable<CsvFileData>>(new List<CsvFileData>());
+            return new List<CsvFileData>();
         }
-        
-        return Task.FromResult
-        (
-            new List<int> { 4, 3, 2, 1 }.SelectMany
-            (
-                month => ccList
-                    .Select(cc => new CsvFileData(
-                        cc,
-                        month,
-                        2023,
-                        new DateTime(2023, 3, 10),
-                        new DateTime(2023, 6 - month, 1),
-                        true
-                    ))
-            ).Prepend(new CsvFileData(
-                ccList.First(),
-                5,
-                2023,
-                new DateTime(2023, 5, 1),
-                null,
-                false
-            ))
-        );
+
+        // Dummy data
+        var csvFiles = new List<CsvFileData>();
+        const int year = 2023;
+        foreach (var month in new List<int> { 4, 3, 2, 1 })
+        {
+            foreach (var cc in ccList)
+            {
+                if (!await csvFileDownloadDataStore.DoesCsvFileDownloadDataExistAsync(cc, year, month))
+                {
+                    await csvFileDownloadDataStore.BeginTrackingCsvFileDownloadsAsync(cc, year, month);
+                }
+
+                var downloadData = await csvFileDownloadDataStore.GetCsvFileDownloadDataAsync(cc, year, month);
+
+                var csvFileData = new CsvFileData(
+                    cc,
+                    month,
+                    year,
+                    new DateTime(2023, 3, 10),
+                    downloadData.LastDownloaded,
+                    true
+                );
+                
+                csvFiles.Add(csvFileData);
+            }
+        }
+
+        return csvFiles;
     }
 
-    public async Task<Stream> GetFile(string custodianCode, int year, int month)
+    public async Task<Stream> GetFileForDownloadAsync(string custodianCode, int year, int month, int userId)
     {
         if (!LocalAuthorityData.LocalAuthorityNamesByCustodianCode.ContainsKey(custodianCode))
         {
             throw new ArgumentOutOfRangeException(nameof(custodianCode), custodianCode,
                 "Given custodian code is not valid");
         }
+        
+        // In the real CSV getter, here we will want to check the presence of the requested file in S3,
+        //   and begin tracking it if we haven't already
+        
+        // Notably, we can't confirm a download, so it's possible that we mark a file as downloaded
+        //   but the user has some sort of issue and doesn't get it
+        await csvFileDownloadDataStore.MarkCsvFileAsDownloadedAsync(custodianCode, year, month, userId);
         
         using var writeableMemoryStream = new MemoryStream();
         await using var streamWriter = new StreamWriter(writeableMemoryStream, Encoding.UTF8);

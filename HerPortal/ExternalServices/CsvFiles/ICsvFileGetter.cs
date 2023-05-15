@@ -6,6 +6,6 @@ namespace HerPortal.ExternalServices.CsvFiles;
 
 public interface ICsvFileGetter
 {
-    public Task<IEnumerable<CsvFileData>> GetByCustodianCodes(IEnumerable<string> custodianCodes);
-    public Task<Stream> GetFile(string custodianCode, int year, int month);
+    public Task<IEnumerable<CsvFileData>> GetByCustodianCodesAsync(IEnumerable<string> custodianCodes);
+    public Task<Stream> GetFileForDownloadAsync(string custodianCode, int year, int month, int userId);
 }

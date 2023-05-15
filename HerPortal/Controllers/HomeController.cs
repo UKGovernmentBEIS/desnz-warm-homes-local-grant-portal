@@ -34,7 +34,7 @@ public class HomeController : Controller
         var userEmailAddress = HttpContext.User.GetEmailAddress();
         var userData = await userDataStore.GetUserByEmailAsync(userEmailAddress);
 
-        var csvFiles = await csvFileGetter.GetByCustodianCodes
+        var csvFiles = await csvFileGetter.GetByCustodianCodesAsync
         (
             userData.LocalAuthorities.Select(la => la.CustodianCode)
         );

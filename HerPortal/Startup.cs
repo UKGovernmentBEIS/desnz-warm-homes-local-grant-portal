@@ -37,6 +37,7 @@ namespace HerPortal
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMemoryCache();
+            services.AddScoped<CsvFileDownloadDataStore>();
             services.AddScoped<UserDataStore>();
             services.AddScoped<IDataAccessProvider, DataAccessProvider>();
             services.AddScoped<ICsvFileGetter, DummyCsvFileGetter>();
@@ -116,6 +117,10 @@ namespace HerPortal
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 // app.UseHsts();
             }
+            
+            // This solves an issue with casting DateTime objects to the database
+            //   https://stackoverflow.com/questions/69961449/net6-and-datetime-problem-cannot-write-datetime-with-kind-utc-to-postgresql-ty
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
             app.UseStatusCodePagesWithReExecute("/error/{0}");
 

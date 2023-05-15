@@ -38,4 +38,76 @@ public class DataAccessProvider : IDataAccessProvider
         user.HasLoggedIn = true;
         await context.SaveChangesAsync();
     }
+
+    public async Task<bool> DoesCsvFileDownloadDataExistAsync(string custodianCode, int year, int month)
+    {
+        return await context.CsvFileDownloadData.AnyAsync(cf =>
+            cf.CustodianCode == custodianCode && cf.Year == year && cf.Month == month);
+    }
+
+    public async Task<CsvFileDownloadData> GetCsvFileDownloadDataAsync(string custodianCode, int year, int month)
+    {
+        CsvFileDownloadData result;
+        try
+        {
+            result = await context.CsvFileDownloadData
+                .Include(cf => cf.Downloads)
+                .ThenInclude(d => d.User)
+                .SingleAsync(cf => cf.CustodianCode == custodianCode && cf.Year == year && cf.Month == month);
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new ArgumentOutOfRangeException
+            (
+                $"No data found for CSV file with custodian code {custodianCode}, year {year}, month {month}",
+                ex
+            );
+        }
+        return result;
+    }
+
+    public async Task BeginTrackingCsvFileDownloadsAsync(string custodianCode, int year, int month)
+    {
+        if (await DoesCsvFileDownloadDataExistAsync(custodianCode, year, month))
+        {
+            throw new InvalidOperationException
+            (
+                $"Cannot begin tracking CSV file (custodian code {custodianCode}, year {year}, month {month}) as it is already being tracked"
+            );
+        }
+
+        var newFileData = new CsvFileDownloadData
+        {
+            CustodianCode = custodianCode,
+            Year = year,
+            Month = month,
+            Downloads = new List<CsvFileDownload>(),
+        };
+
+        await context.CsvFileDownloadData.AddAsync(newFileData);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task MarkCsvFileAsDownloadedAsync(string custodianCode, int year, int month, int userId)
+    {
+        User user;
+        try
+        {
+            user = await context.Users.SingleAsync(u => u.Id == userId);
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new ArgumentOutOfRangeException($"No user found with ID {userId}", ex);
+        }
+
+        var fileData = await GetCsvFileDownloadDataAsync(custodianCode, year, month);
+        var newDownload = new CsvFileDownload
+        {
+            DateTime = DateTime.Now,
+            User = user,
+        };
+
+        fileData.Downloads.Add(newDownload);
+        await context.SaveChangesAsync();
+    }
 }
