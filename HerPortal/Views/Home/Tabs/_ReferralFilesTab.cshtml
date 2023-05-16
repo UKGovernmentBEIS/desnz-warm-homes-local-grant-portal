@@ -11,57 +11,91 @@
     }))
 }
 
-<h2 class="govuk-heading-l">Referral Files</h2>
-<p class="govuk-body">For the Home Upgrade Grant 2.</p>
-<p class="govuk-body govuk-!-font-weight-bold">You have not received any applications yet.</p>
-
-@(await Html.GovUkTable(new TableGovUkViewModel
-{
-    Head = new List<TableCellViewModel>
-    {
-        new()
-        {
-            Text = "Month/Year",
-        },
-        new()
-        {
-            Text = "Region/LA",
-        },
-        new()
-        {
-            Text = "Last updated",
-        },
-        new()
-        {
-            Text = "Updates",
-        },
-    },
-    Rows = Model.CsvFiles.Select(cf => new TableRowViewModel
-        {
-            Row = new List<TableCellViewModel>
+<div class="govuk-grid-row">
+    <aside class="govuk-grid-column-one-third">
+        <h3 class="govuk-heading-m">Organisations</h3>
+        <form method="get">
+            @(await Html.GovUkCheckboxesFromStringsFor
+                (
+                    model => model.CustodianCodes,
+                    Model.LocalAuthorityCheckboxLabels
+                )
+            )
+            @(await Html.GovUkButton(new ButtonViewModel
             {
-                new()
+                Text = "Apply filters"
+            }))
+        </form>
+    </aside>
+    <div class="govuk-grid-column-two-thirds">
+        <h2 class="govuk-heading-l">Referral Files</h2>
+        <p class="govuk-body">For the Home Upgrade Grant 2.</p>
+        @if (Model.CsvFiles.Any())
+        {
+            @if (Model.CsvFiles.All(cf => !cf.HasApplications))
+            {
+                <p class="govuk-body govuk-!-font-weight-bold">You have not received any applications yet.</p>
+            }
+            else if (Model.CsvFiles.Any(cf => cf.HasNewUpdates))
+            {
+                <p class="govuk-body govuk-!-font-weight-bold">Changes have been made since you last logged in.</p>
+            }
+            
+            @(await Html.GovUkTable(new TableGovUkViewModel
+            {
+                Head = new List<TableCellViewModel>
                 {
-                    Html = @<a class="govuk-link" href="#">@cf.MonthAndYear</a>
+                    new()
+                    {
+                        Text = "Month/Year",
+                    },
+                    new()
+                    {
+                        Text = "Region/LA",
+                    },
+                    new()
+                    {
+                        Text = "Last updated",
+                    },
+                    new()
+                    {
+                        Text = "Updates",
+                    },
                 },
-                new()
-                {
-                    Text = cf.LocalAuthorityName,
-                },
-                new()
-                {
-                    Text = cf.LastUpdated,
-                },
-                new()
-                {
-                    Html = cf.HasApplications
-                        ? cf.HasNewUpdates
-                            ? @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--green", Text = "New" }))</text>
-                            : null
-                        : @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--grey", Text = "No applications yet" }))</text>
-                },
-            },
+                Rows = Model.CsvFiles.Select(cf => new TableRowViewModel
+                    {
+                        Row = new List<TableCellViewModel>
+                        {
+                            new()
+                            {
+                                Html = @<a class="govuk-link" href="#">@cf.MonthAndYear</a>
+                            },
+                            new()
+                            {
+                                Text = cf.LocalAuthorityName,
+                            },
+                            new()
+                            {
+                                Text = cf.LastUpdated,
+                            },
+                            new()
+                            {
+                                Html = cf.HasApplications
+                                    ? cf.HasNewUpdates
+                                        ? @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--green", Text = "New" }))</text>
+                                        : null
+                                    : @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--grey", Text = "No applications yet" }))</text>
+                            },
+                        },
+                    }
+                ).ToList(),
+                FirstCellIsHeader = false,
+            }))
         }
-    ).ToList(),
-    FirstCellIsHeader = false,
-}))
+        else
+        {
+            
+        }
+    </div>
+</div>
+

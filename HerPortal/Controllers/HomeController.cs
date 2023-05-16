@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GovUkDesignSystem.ModelBinders;
 using HerPortal.DataStores;
 using HerPortal.ExternalServices.CsvFiles;
 using HerPortal.Helpers;
@@ -29,15 +30,18 @@ public class HomeController : Controller
     }
     
     [HttpGet("/")]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index([FromQuery] List<string> custodianCodes)
     {
         var userEmailAddress = HttpContext.User.GetEmailAddress();
         var userData = await userDataStore.GetUserByEmailAsync(userEmailAddress);
 
-        var csvFiles = await csvFileGetter.GetByCustodianCodes
-        (
-            userData.LocalAuthorities.Select(la => la.CustodianCode)
-        );
+        var ccList = userData.LocalAuthorities.Select(la => la.CustodianCode);
+        if (custodianCodes.Count > 0)
+        {
+            ccList = ccList.Where(custodianCodes.Contains);
+        }
+
+        var csvFiles = await csvFileGetter.GetByCustodianCodes(ccList);
         
         var homepageViewModel = new HomepageViewModel(userData, csvFiles);
         if (!userData.HasLoggedIn)
