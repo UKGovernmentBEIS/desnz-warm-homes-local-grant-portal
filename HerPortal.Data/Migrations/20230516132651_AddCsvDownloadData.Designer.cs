@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HerPortal.Data.Migrations
 {
     [DbContext(typeof(HerDbContext))]
-    [Migration("20230515103610_AddCsvFileDownloadData")]
-    partial class AddCsvFileDownloadData
+    [Migration("20230516132651_AddCsvDownloadData")]
+    partial class AddCsvDownloadData
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,38 +26,6 @@ namespace HerPortal.Data.Migrations
 
             modelBuilder.Entity("HerPortal.BusinessLogic.Models.CsvFileDownload", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CsvFileDownloadDataCustodianCode")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("CsvFileDownloadDataMonth")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("CsvFileDownloadDataYear")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("CsvFileDownloadDataCustodianCode", "CsvFileDownloadDataYear", "CsvFileDownloadDataMonth");
-
-                    b.ToTable("CsvFileDownload");
-                });
-
-            modelBuilder.Entity("HerPortal.BusinessLogic.Models.CsvFileDownloadData", b =>
-                {
                     b.Property<string>("CustodianCode")
                         .HasColumnType("text");
 
@@ -67,9 +35,17 @@ namespace HerPortal.Data.Migrations
                     b.Property<int>("Month")
                         .HasColumnType("integer");
 
-                    b.HasKey("CustodianCode", "Year", "Month");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
-                    b.ToTable("CsvFileDownloadData");
+                    b.Property<DateTime?>("LastDownloaded")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("CustodianCode", "Year", "Month", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CsvFileDownloads");
                 });
 
             modelBuilder.Entity("HerPortal.BusinessLogic.Models.LocalAuthority", b =>
@@ -151,11 +127,9 @@ namespace HerPortal.Data.Migrations
                 {
                     b.HasOne("HerPortal.BusinessLogic.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.HasOne("HerPortal.BusinessLogic.Models.CsvFileDownloadData", null)
-                        .WithMany("Downloads")
-                        .HasForeignKey("CsvFileDownloadDataCustodianCode", "CsvFileDownloadDataYear", "CsvFileDownloadDataMonth");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -173,11 +147,6 @@ namespace HerPortal.Data.Migrations
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("HerPortal.BusinessLogic.Models.CsvFileDownloadData", b =>
-                {
-                    b.Navigation("Downloads");
                 });
 #pragma warning restore 612, 618
         }

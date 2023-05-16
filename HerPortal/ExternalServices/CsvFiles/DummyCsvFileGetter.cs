@@ -18,7 +18,7 @@ public class DummyCsvFileGetter : ICsvFileGetter
         this.csvFileDownloadDataStore = csvFileDownloadDataStore;
     }
     
-    public async Task<IEnumerable<CsvFileData>> GetByCustodianCodesAsync(IEnumerable<string> custodianCodes)
+    public async Task<IEnumerable<CsvFileData>> GetByCustodianCodesAsync(IEnumerable<string> custodianCodes, int userId)
     {
         var ccList = custodianCodes.ToList();
         
@@ -34,19 +34,19 @@ public class DummyCsvFileGetter : ICsvFileGetter
         {
             foreach (var cc in ccList)
             {
-                if (!await csvFileDownloadDataStore.DoesCsvFileDownloadDataExistAsync(cc, year, month))
+                CsvFileDownload downloadData = null;
+                try
                 {
-                    await csvFileDownloadDataStore.BeginTrackingCsvFileDownloadsAsync(cc, year, month);
+                    downloadData = await csvFileDownloadDataStore.GetLastCsvFileDownloadAsync(cc, year, month, userId);
                 }
-
-                var downloadData = await csvFileDownloadDataStore.GetCsvFileDownloadDataAsync(cc, year, month);
+                catch (ArgumentOutOfRangeException) { }
 
                 var csvFileData = new CsvFileData(
                     cc,
                     month,
                     year,
                     new DateTime(2023, 3, 10),
-                    downloadData.LastDownloaded,
+                    downloadData?.LastDownloaded,
                     true
                 );
                 
@@ -64,9 +64,6 @@ public class DummyCsvFileGetter : ICsvFileGetter
             throw new ArgumentOutOfRangeException(nameof(custodianCode), custodianCode,
                 "Given custodian code is not valid");
         }
-        
-        // In the real CSV getter, here we will want to check the presence of the requested file in S3,
-        //   and begin tracking it if we haven't already
         
         // Notably, we can't confirm a download, so it's possible that we mark a file as downloaded
         //   but the user has some sort of issue and doesn't get it

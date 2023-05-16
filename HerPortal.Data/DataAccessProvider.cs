@@ -39,75 +39,60 @@ public class DataAccessProvider : IDataAccessProvider
         await context.SaveChangesAsync();
     }
 
-    public async Task<bool> DoesCsvFileDownloadDataExistAsync(string custodianCode, int year, int month)
+    public async Task<CsvFileDownload> GetLastCsvFileDownloadAsync(string custodianCode, int year, int month, int userId)
     {
-        return await context.CsvFileDownloadData.AnyAsync(cf =>
-            cf.CustodianCode == custodianCode && cf.Year == year && cf.Month == month);
-    }
-
-    public async Task<CsvFileDownloadData> GetCsvFileDownloadDataAsync(string custodianCode, int year, int month)
-    {
-        CsvFileDownloadData result;
         try
         {
-            result = await context.CsvFileDownloadData
-                .Include(cf => cf.Downloads)
-                .ThenInclude(d => d.User)
-                .SingleAsync(cf => cf.CustodianCode == custodianCode && cf.Year == year && cf.Month == month);
+            return await context.CsvFileDownloads
+                .SingleAsync(cfd =>
+                    cfd.CustodianCode == custodianCode &&
+                    cfd.Year == year &&
+                    cfd.Month == month &&
+                    cfd.UserId == userId
+                );
         }
         catch (InvalidOperationException ex)
         {
             throw new ArgumentOutOfRangeException
             (
-                $"No data found for CSV file with custodian code {custodianCode}, year {year}, month {month}",
+                $"No download found for file (custodian code {custodianCode}, year {year}, month {month}) by user with ID {userId}",
                 ex
             );
         }
-        return result;
-    }
-
-    public async Task BeginTrackingCsvFileDownloadsAsync(string custodianCode, int year, int month)
-    {
-        if (await DoesCsvFileDownloadDataExistAsync(custodianCode, year, month))
-        {
-            throw new InvalidOperationException
-            (
-                $"Cannot begin tracking CSV file (custodian code {custodianCode}, year {year}, month {month}) as it is already being tracked"
-            );
-        }
-
-        var newFileData = new CsvFileDownloadData
-        {
-            CustodianCode = custodianCode,
-            Year = year,
-            Month = month,
-            Downloads = new List<CsvFileDownload>(),
-        };
-
-        await context.CsvFileDownloadData.AddAsync(newFileData);
-        await context.SaveChangesAsync();
     }
 
     public async Task MarkCsvFileAsDownloadedAsync(string custodianCode, int year, int month, int userId)
     {
-        User user;
+        if (!await context.Users.AnyAsync(u => u.Id == userId))
+        {
+            throw new ArgumentOutOfRangeException($"No user found with ID {userId}");
+        }
+        
+        CsvFileDownload download;
         try
         {
-            user = await context.Users.SingleAsync(u => u.Id == userId);
+            download = await context.CsvFileDownloads
+                .SingleAsync(cfd =>
+                    cfd.CustodianCode == custodianCode &&
+                    cfd.Year == year &&
+                    cfd.Month == month &&
+                    cfd.UserId == userId
+                );
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException)
         {
-            throw new ArgumentOutOfRangeException($"No user found with ID {userId}", ex);
+            download = new CsvFileDownload
+            {
+                CustodianCode = custodianCode,
+                Year = year,
+                Month = month,
+                UserId = userId,
+            };
+            await context.CsvFileDownloads.AddAsync(download);
         }
 
-        var fileData = await GetCsvFileDownloadDataAsync(custodianCode, year, month);
-        var newDownload = new CsvFileDownload
-        {
-            DateTime = DateTime.Now,
-            User = user,
-        };
-
-        fileData.Downloads.Add(newDownload);
+        download.LastDownloaded = DateTime.Now;
+        
         await context.SaveChangesAsync();
     }
 }

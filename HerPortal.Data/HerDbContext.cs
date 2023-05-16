@@ -9,7 +9,7 @@ public class HerDbContext : DbContext, IDataProtectionKeyContext
 {
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
     
-    public DbSet<CsvFileDownloadData> CsvFileDownloadData { get; set; }
+    public DbSet<CsvFileDownload> CsvFileDownloads { get; set; }
     public DbSet<LocalAuthority> LocalAuthorities { get; set; }
     public DbSet<User> Users { get; set; }
 
@@ -30,12 +30,13 @@ public class HerDbContext : DbContext, IDataProtectionKeyContext
             .IsUnique();
         
         modelBuilder
-            .Entity<CsvFileDownloadData>()
+            .Entity<CsvFileDownload>()
             .HasKey(cf => new
             {
                 cf.CustodianCode,
                 cf.Year,
-                cf.Month
+                cf.Month,
+                cf.UserId,
             });
     }
 

@@ -36,7 +36,8 @@ public class HomeController : Controller
 
         var csvFiles = await csvFileGetter.GetByCustodianCodesAsync
         (
-            userData.LocalAuthorities.Select(la => la.CustodianCode)
+            userData.LocalAuthorities.Select(la => la.CustodianCode),
+            userData.Id
         );
         
         var homepageViewModel = new HomepageViewModel(userData, csvFiles);

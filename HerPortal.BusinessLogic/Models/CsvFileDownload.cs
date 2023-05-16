@@ -2,7 +2,10 @@
 
 public class CsvFileDownload
 {
-    public int Id { get; set; }
-    public DateTime DateTime { get; set; }
+    public string CustodianCode { get; set; }
+    public int Year { get; set; }
+    public int Month { get; set; }
+    public int UserId { get; set; }
     public User User { get; set; }
+    public DateTime? LastDownloaded { get; set; }
 }

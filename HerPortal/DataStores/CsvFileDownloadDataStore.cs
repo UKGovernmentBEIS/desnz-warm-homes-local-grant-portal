@@ -16,26 +16,9 @@ public class CsvFileDownloadDataStore
         this.logger = logger;
     }
 
-    public async Task<bool> DoesCsvFileDownloadDataExistAsync(string custodianCode, int year, int month)
+    public async Task<CsvFileDownload> GetLastCsvFileDownloadAsync(string custodianCode, int year, int month, int userId)
     {
-        return await dataAccessProvider.DoesCsvFileDownloadDataExistAsync(custodianCode, year, month);
-    }
-    
-    public async Task<CsvFileDownloadData> GetCsvFileDownloadDataAsync(string custodianCode, int year, int month)
-    {
-        return await dataAccessProvider.GetCsvFileDownloadDataAsync(custodianCode, year, month);
-    }
-    
-    public async Task BeginTrackingCsvFileDownloadsAsync(string custodianCode, int year, int month)
-    {
-        logger.LogInformation
-        (
-            "Beginning tracking CSV file data for custodian code {CustodianCode}, year {Year}, month {Month}",
-            custodianCode,
-            year,
-            month
-        );
-        await dataAccessProvider.BeginTrackingCsvFileDownloadsAsync(custodianCode, year, month);
+        return await dataAccessProvider.GetLastCsvFileDownloadAsync(custodianCode, year, month, userId);
     }
     
     public async Task MarkCsvFileAsDownloadedAsync(string custodianCode, int year, int month, int userId)
