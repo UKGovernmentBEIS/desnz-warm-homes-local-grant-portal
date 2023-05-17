@@ -30,6 +30,7 @@
     <div class="govuk-grid-column-two-thirds">
         <h2 class="govuk-heading-l">Referral Files</h2>
         <p class="govuk-body">For the Home Upgrade Grant 2.</p>
+        <p class="govuk-body">Select the "Month/Year" to download the referral file.</p>
         @if (Model.CsvFiles.Any())
         {
             @if (Model.CsvFiles.All(cf => !cf.HasApplications))
@@ -94,7 +95,7 @@
         }
         else
         {
-            
+            <p class="govuk-body govuk-!-font-weight-bold">No applications fit the selected filters.</p>
         }
     </div>
 </div>
