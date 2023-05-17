@@ -39,26 +39,9 @@ public class DataAccessProvider : IDataAccessProvider
         await context.SaveChangesAsync();
     }
 
-    public async Task<CsvFileDownload> GetLastCsvFileDownloadAsync(string custodianCode, int year, int month, int userId)
+    public async Task<List<CsvFileDownload>> GetLastCsvFileDownloadsAsync(int userId)
     {
-        try
-        {
-            return await context.CsvFileDownloads
-                .SingleAsync(cfd =>
-                    cfd.CustodianCode == custodianCode &&
-                    cfd.Year == year &&
-                    cfd.Month == month &&
-                    cfd.UserId == userId
-                );
-        }
-        catch (InvalidOperationException ex)
-        {
-            throw new ArgumentOutOfRangeException
-            (
-                $"No download found for file (custodian code {custodianCode}, year {year}, month {month}) by user with ID {userId}",
-                ex
-            );
-        }
+        return await context.CsvFileDownloads.Where(cfd => cfd.UserId == userId).ToListAsync();
     }
 
     public async Task MarkCsvFileAsDownloadedAsync(string custodianCode, int year, int month, int userId)

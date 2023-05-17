@@ -27,6 +27,8 @@ public class DummyCsvFileGetter : ICsvFileGetter
             return new List<CsvFileData>();
         }
 
+        var downloads = await csvFileDownloadDataStore.GetLastCsvFileDownloadsAsync(userId);
+
         // Dummy data
         var csvFiles = new List<CsvFileData>();
         const int year = 2023;
@@ -34,12 +36,11 @@ public class DummyCsvFileGetter : ICsvFileGetter
         {
             foreach (var cc in ccList)
             {
-                CsvFileDownload downloadData = null;
-                try
-                {
-                    downloadData = await csvFileDownloadDataStore.GetLastCsvFileDownloadAsync(cc, year, month, userId);
-                }
-                catch (ArgumentOutOfRangeException) { }
+                var downloadData = downloads.SingleOrDefault(d =>
+                    d.CustodianCode == cc
+                    && d.Year == year
+                    && d.Month == month
+                );
 
                 var csvFileData = new CsvFileData(
                     cc,

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using HerPortal.BusinessLogic.Models;
 using HerPortal.Data;
 using Microsoft.Extensions.Logging;
@@ -16,9 +17,9 @@ public class CsvFileDownloadDataStore
         this.logger = logger;
     }
 
-    public async Task<CsvFileDownload> GetLastCsvFileDownloadAsync(string custodianCode, int year, int month, int userId)
+    public async Task<List<CsvFileDownload>> GetLastCsvFileDownloadsAsync(int userId)
     {
-        return await dataAccessProvider.GetLastCsvFileDownloadAsync(custodianCode, year, month, userId);
+        return await dataAccessProvider.GetLastCsvFileDownloadsAsync(userId);
     }
     
     public async Task MarkCsvFileAsDownloadedAsync(string custodianCode, int year, int month, int userId)
