@@ -38,6 +38,15 @@ public class HerDbContext : DbContext, IDataProtectionKeyContext
                 cf.Month,
                 cf.UserId,
             });
+        
+        AddAllRowVersioning(modelBuilder);
+    }
+
+    private void AddAllRowVersioning(ModelBuilder modelBuilder)
+    {
+        AddRowVersionColumn(modelBuilder.Entity<CsvFileDownload>());
+        AddRowVersionColumn(modelBuilder.Entity<LocalAuthority>());
+        AddRowVersionColumn(modelBuilder.Entity<User>());
     }
 
     private void AddRowVersionColumn<T>(EntityTypeBuilder<T> builder) where T : class

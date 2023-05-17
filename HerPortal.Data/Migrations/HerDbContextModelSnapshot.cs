@@ -39,6 +39,11 @@ namespace HerPortal.Data.Migrations
                     b.Property<DateTime?>("LastDownloaded")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid");
+
                     b.HasKey("CustodianCode", "Year", "Month", "UserId");
 
                     b.HasIndex("UserId");
@@ -56,6 +61,11 @@ namespace HerPortal.Data.Migrations
 
                     b.Property<string>("CustodianCode")
                         .HasColumnType("text");
+
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid");
 
                     b.HasKey("Id");
 
@@ -78,6 +88,11 @@ namespace HerPortal.Data.Migrations
 
                     b.Property<bool>("HasLoggedIn")
                         .HasColumnType("boolean");
+
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid");
 
                     b.HasKey("Id");
 
