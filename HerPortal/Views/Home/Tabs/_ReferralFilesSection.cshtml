@@ -1,0 +1,73 @@
+﻿@using GovUkDesignSystem
+@using GovUkDesignSystem.GovUkDesignSystemComponents
+@model HerPortal.Models.HomepageViewModel
+
+<h2 class="govuk-heading-l">Referral Files</h2>
+<p class="govuk-body">For the Home Upgrade Grant 2.</p>
+<p class="govuk-body">Select the "Month/Year" to download the referral file.</p>
+@if (Model.CsvFiles.Any())
+{
+    @if (Model.CsvFiles.All(cf => !cf.HasApplications))
+    {
+        <p class="govuk-body govuk-!-font-weight-bold">You have not received any applications yet.</p>
+    }
+    else if (Model.CsvFiles.Any(cf => cf.HasNewUpdates))
+    {
+        <p class="govuk-body govuk-!-font-weight-bold">Changes have been made since you last logged in.</p>
+    }
+    
+    @(await Html.GovUkTable(new TableGovUkViewModel
+    {
+        Head = new List<TableCellViewModel>
+        {
+            new()
+            {
+                Text = "Month/Year",
+            },
+            new()
+            {
+                Text = "Region/LA",
+            },
+            new()
+            {
+                Text = "Last updated",
+            },
+            new()
+            {
+                Text = "Updates",
+            },
+        },
+        Rows = Model.CsvFiles.Select(cf => new TableRowViewModel
+            {
+                Row = new List<TableCellViewModel>
+                {
+                    new()
+                    {
+                        Html = @<a class="govuk-link" href="#">@cf.MonthAndYear</a>
+                    },
+                    new()
+                    {
+                        Text = cf.LocalAuthorityName,
+                    },
+                    new()
+                    {
+                        Text = cf.LastUpdated,
+                    },
+                    new()
+                    {
+                        Html = cf.HasApplications
+                            ? cf.HasNewUpdates
+                                ? @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--green", Text = "New" }))</text>
+                                : null
+                            : @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--grey", Text = "No applications yet" }))</text>
+                    },
+                },
+            }
+        ).ToList(),
+        FirstCellIsHeader = false,
+    }))
+}
+else
+{
+    <p class="govuk-body govuk-!-font-weight-bold">No applications fit the selected filters.</p>
+}
