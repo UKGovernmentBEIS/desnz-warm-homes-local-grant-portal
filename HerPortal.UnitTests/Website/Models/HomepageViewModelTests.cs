@@ -26,6 +26,7 @@ public class HomepageViewModelTests
         var user = new User
         {
             HasLoggedIn = hasUserLoggedIn,
+            LocalAuthorities = new List<LocalAuthority>(),
         };
         
         // Act
