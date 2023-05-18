@@ -73,8 +73,8 @@ public class DummyCsvFileGetter : ICsvFileGetter
         using var writeableMemoryStream = new MemoryStream();
         await using var streamWriter = new StreamWriter(writeableMemoryStream, Encoding.UTF8);
         {
-            await streamWriter.WriteLineAsync("Name,Email,Telephone,Preferred contact method,Address1,Address2,Town,County,Postcode,EPC Band,Is off gas grid,Household income band,Is eligible postcode,Tenure");
-            await streamWriter.WriteLineAsync("Full Name1,contact1@example.com,00001 123456,Email,Address 1 line 1,Address 1 line 2,Town1,County1,AL01 1RS,E,yes,Below £31k,no,Owner");
+            await streamWriter.WriteLineAsync("Referral date,Name,Email,Telephone,Preferred contact method,Address1,Address2,Town,County,Postcode,UPRN,EPC Band,Is off gas grid,Household income band,Is eligible postcode,Tenure");
+            await streamWriter.WriteLineAsync("2023-01-01 13:00:01,Full Name1,contact1@example.com,00001 123456,Email,Address 1 line 1,Address 1 line 2,Town1,County1,AL01 1RS,100 111 222 001,E,yes,Below £31k,no,Owner");
             await streamWriter.FlushAsync();
             
             var resultStream = new MemoryStream
