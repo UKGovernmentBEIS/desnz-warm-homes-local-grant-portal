@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HerPortal.DataStores;
@@ -29,16 +28,18 @@ public class HomeController : Controller
     }
     
     [HttpGet("/")]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index([FromQuery] List<string> custodianCodes)
     {
         var userEmailAddress = HttpContext.User.GetEmailAddress();
         var userData = await userDataStore.GetUserByEmailAsync(userEmailAddress);
 
-        var csvFiles = await csvFileGetter.GetByCustodianCodesAsync
-        (
-            userData.LocalAuthorities.Select(la => la.CustodianCode),
-            userData.Id
-        );
+        var ccList = userData.LocalAuthorities.Select(la => la.CustodianCode);
+        if (custodianCodes.Count > 0)
+        {
+            ccList = ccList.Where(custodianCodes.Contains);
+        }
+
+        var csvFiles = await csvFileGetter.GetByCustodianCodesAsync(ccList, userData.Id);
         
         var homepageViewModel = new HomepageViewModel(userData, csvFiles);
         if (!userData.HasLoggedIn)

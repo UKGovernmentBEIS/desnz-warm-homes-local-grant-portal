@@ -11,57 +11,18 @@
     }))
 }
 
-<h2 class="govuk-heading-l">Referral Files</h2>
-<p class="govuk-body">For the Home Upgrade Grant 2.</p>
-<p class="govuk-body govuk-!-font-weight-bold">You have not received any applications yet.</p>
-
-@(await Html.GovUkTable(new TableGovUkViewModel
+@if (Model.ShouldShowFilters)
 {
-    Head = new List<TableCellViewModel>
-    {
-        new()
-        {
-            Text = "Month/Year",
-        },
-        new()
-        {
-            Text = "Region/LA",
-        },
-        new()
-        {
-            Text = "Last updated",
-        },
-        new()
-        {
-            Text = "Updates",
-        },
-    },
-    Rows = Model.CsvFiles.Select(cf => new TableRowViewModel
-        {
-            Row = new List<TableCellViewModel>
-            {
-                new()
-                {
-                    Html = @<a class="govuk-link" asp-controller="CsvFile" asp-action="GetCsvFile" asp-route-custodianCode="@cf.CustodianCode" asp-route-year="@cf.Year" asp-route-month="@cf.Month" download>@cf.MonthAndYearText</a>
-                },
-                new()
-                {
-                    Text = cf.LocalAuthorityName,
-                },
-                new()
-                {
-                    Text = cf.LastUpdatedText,
-                },
-                new()
-                {
-                    Html = cf.HasApplications
-                        ? cf.HasNewUpdates
-                            ? @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--green", Text = "New" }))</text>
-                            : null
-                        : @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--grey", Text = "No applications yet" }))</text>
-                },
-            },
-        }
-    ).ToList(),
-    FirstCellIsHeader = false,
-}))
+    <div class="govuk-grid-row">
+        <aside class="govuk-grid-column-one-third">
+            @await Html.PartialAsync("Tabs/_MultiRegionFilter", Model)
+        </aside>
+        <div class="govuk-grid-column-two-thirds">
+            @await Html.PartialAsync("Tabs/_ReferralFilesSection", Model)
+        </div>
+    </div>
+}
+else
+{
+    @await Html.PartialAsync("Tabs/_ReferralFilesSection", Model)
+}

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GovUkDesignSystem.GovUkDesignSystemComponents;
 using HerPortal.BusinessLogic.Models;
-using HerPortal.ExternalServices.CsvFiles;
 using CsvFileData = HerPortal.ExternalServices.CsvFiles.CsvFileData;
 
 namespace HerPortal.Models;
@@ -38,11 +38,27 @@ public class HomepageViewModel
     }
     
     public bool ShouldShowBanner { get; }
+    public bool ShouldShowFilters { get; }
+    public List<string> CustodianCodes { get; }
+    public Dictionary<string, LabelViewModel> LocalAuthorityCheckboxLabels { get; }
     public IEnumerable<CsvFile> CsvFiles { get; }
 
     public HomepageViewModel(User user, IEnumerable<CsvFileData> csvFiles)
     {
         ShouldShowBanner = !user.HasLoggedIn;
+        ShouldShowFilters = user.LocalAuthorities.Count >= 2;
+        CustodianCodes = user.LocalAuthorities.Select(la => la.CustodianCode).ToList();
+        LocalAuthorityCheckboxLabels = new Dictionary<string, LabelViewModel>(user.LocalAuthorities
+            .Select(la => new KeyValuePair<string, LabelViewModel>
+                (
+                    la.CustodianCode,
+                    new LabelViewModel
+                    {
+                        Text = LocalAuthorityData.LocalAuthorityNamesByCustodianCode[la.CustodianCode],
+                    }
+                )
+            )
+        );
         CsvFiles = csvFiles.Select(cf => new CsvFile(cf));
     }
 }

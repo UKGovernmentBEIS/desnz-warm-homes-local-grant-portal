@@ -7,6 +7,7 @@ using HerPortal.ExternalServices.CsvFiles;
 using HerPortal.Models;
 using NUnit.Framework;
 using CsvFileData = HerPortal.ExternalServices.CsvFiles.CsvFileData;
+using Tests.Helpers;
 
 namespace Tests.Website.Models;
 
@@ -27,6 +28,7 @@ public class HomepageViewModelTests
         var user = new User
         {
             HasLoggedIn = hasUserLoggedIn,
+            LocalAuthorities = new List<LocalAuthority>(),
         };
         
         // Act
@@ -34,6 +36,32 @@ public class HomepageViewModelTests
         
         // Assert
         viewModel.ShouldShowBanner.Should().Be(shouldShowBanner);
+    }
+    
+    [TestCase(1, false)]
+    [TestCase(2, true)]
+    [TestCase(3, true)]
+    [TestCase(4, true)]
+    [TestCase(100, true)]
+    public void HomepageViewModel_OnlyWhenUserHasOneLocalAuthority_ShouldNotShowFilters
+    (
+        int numberOfLas,
+        bool expected
+    ) {
+        // Arrange
+        var user = new User
+        {
+            HasLoggedIn = true,
+            LocalAuthorities = ValidLocalAuthorityGenerator
+                .GetLocalAuthoritiesWithDifferentCodes(numberOfLas)
+                .ToList(),
+        };
+        
+        // Act
+        var viewModel = new HomepageViewModel(user, new List<CsvFileData>());
+        
+        // Assert
+        viewModel.ShouldShowFilters.Should().Be(expected);
     }
 
     [TestCase(1, 2023, "January 2023")]
