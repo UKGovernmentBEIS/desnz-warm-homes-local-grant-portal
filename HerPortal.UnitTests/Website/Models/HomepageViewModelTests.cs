@@ -6,6 +6,7 @@ using HerPortal.BusinessLogic.Models;
 using HerPortal.ExternalServices.CsvFiles;
 using HerPortal.Models;
 using NUnit.Framework;
+using CsvFileData = HerPortal.ExternalServices.CsvFiles.CsvFileData;
 using Tests.Helpers;
 
 namespace Tests.Website.Models;
@@ -87,7 +88,7 @@ public class HomepageViewModelTests
         var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData);
         
         // Assert
-        viewModelCsvFile.MonthAndYear.Should().Be(expectedDateString);
+        viewModelCsvFile.MonthAndYearText.Should().Be(expectedDateString);
     }
     
     [TestCase(26, 1, 2023, "26/01/23")]
@@ -115,7 +116,7 @@ public class HomepageViewModelTests
         var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData);
         
         // Assert
-        viewModelCsvFile.LastUpdated.Should().Be(expectedLastUpdatedString);
+        viewModelCsvFile.LastUpdatedText.Should().Be(expectedLastUpdatedString);
     }
     
     [TestCase("5210", "Camden")]

@@ -43,7 +43,7 @@
                 {
                     new()
                     {
-                        Html = @<a class="govuk-link" href="#">@cf.MonthAndYear</a>
+                        Html = @<a class="govuk-link" asp-controller="CsvFile" asp-action="GetCsvFile" asp-route-custodianCode="@cf.CustodianCode" asp-route-year="@cf.Year" asp-route-month="@cf.Month" download>@cf.MonthAndYearText</a>
                     },
                     new()
                     {
@@ -51,7 +51,7 @@
                     },
                     new()
                     {
-                        Text = cf.LastUpdated,
+                        Text = cf.LastUpdatedText,
                     },
                     new()
                     {

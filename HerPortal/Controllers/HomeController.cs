@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GovUkDesignSystem.ModelBinders;
 using HerPortal.DataStores;
 using HerPortal.ExternalServices.CsvFiles;
 using HerPortal.Helpers;
@@ -41,7 +39,7 @@ public class HomeController : Controller
             ccList = ccList.Where(custodianCodes.Contains);
         }
 
-        var csvFiles = await csvFileGetter.GetByCustodianCodes(ccList);
+        var csvFiles = await csvFileGetter.GetByCustodianCodesAsync(ccList, userData.Id);
         
         var homepageViewModel = new HomepageViewModel(userData, csvFiles);
         if (!userData.HasLoggedIn)

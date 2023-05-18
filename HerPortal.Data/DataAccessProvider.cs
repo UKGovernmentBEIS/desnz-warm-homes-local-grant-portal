@@ -38,4 +38,44 @@ public class DataAccessProvider : IDataAccessProvider
         user.HasLoggedIn = true;
         await context.SaveChangesAsync();
     }
+
+    public async Task<List<CsvFileDownload>> GetLastCsvFileDownloadsAsync(int userId)
+    {
+        return await context.CsvFileDownloads.Where(cfd => cfd.UserId == userId).ToListAsync();
+    }
+
+    public async Task MarkCsvFileAsDownloadedAsync(string custodianCode, int year, int month, int userId)
+    {
+        if (!await context.Users.AnyAsync(u => u.Id == userId))
+        {
+            throw new ArgumentOutOfRangeException($"No user found with ID {userId}");
+        }
+        
+        CsvFileDownload download;
+        try
+        {
+            download = await context.CsvFileDownloads
+                .SingleAsync(cfd =>
+                    cfd.CustodianCode == custodianCode &&
+                    cfd.Year == year &&
+                    cfd.Month == month &&
+                    cfd.UserId == userId
+                );
+        }
+        catch (InvalidOperationException)
+        {
+            download = new CsvFileDownload
+            {
+                CustodianCode = custodianCode,
+                Year = year,
+                Month = month,
+                UserId = userId,
+            };
+            await context.CsvFileDownloads.AddAsync(download);
+        }
+
+        download.LastDownloaded = DateTime.Now;
+        
+        await context.SaveChangesAsync();
+    }
 }
