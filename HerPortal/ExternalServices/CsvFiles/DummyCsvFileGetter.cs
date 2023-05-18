@@ -66,10 +66,6 @@ public class DummyCsvFileGetter : ICsvFileGetter
                 "Given custodian code is not valid");
         }
         
-        // Notably, we can't confirm a download, so it's possible that we mark a file as downloaded
-        //   but the user has some sort of issue and doesn't get it
-        await csvFileDownloadDataStore.MarkCsvFileAsDownloadedAsync(custodianCode, year, month, userId);
-        
         using var writeableMemoryStream = new MemoryStream();
         await using var streamWriter = new StreamWriter(writeableMemoryStream, Encoding.UTF8);
         {
@@ -84,6 +80,12 @@ public class DummyCsvFileGetter : ICsvFileGetter
                 (int)writeableMemoryStream.Length,
                 false
             );
+            
+            // Notably, we can't confirm a download, so it's possible that we mark a file as downloaded
+            //   but the user has some sort of issue and doesn't get it
+            // We put this line as late as possible in the method for this reason
+            await csvFileDownloadDataStore.MarkCsvFileAsDownloadedAsync(custodianCode, year, month, userId);
+            
             return resultStream;
         }
     }
