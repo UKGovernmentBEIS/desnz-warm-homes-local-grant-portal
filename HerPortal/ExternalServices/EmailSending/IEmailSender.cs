@@ -1,9 +1,10 @@
 ﻿
+using System.Collections.Generic;
+
 namespace HerPortal.ExternalServices.EmailSending
 {
     public interface IEmailSender
     {
-        public void SendReferenceNumberEmail(string emailAddress, string reference);
-        public void SendRequestedDocumentEmail(string emailAddress, byte[] documentContents);
+        public void SendNewReferralReminderEmail(string emailAddress);
     }
 }

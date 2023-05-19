@@ -77,6 +77,21 @@ namespace HerPortal.ExternalServices.EmailSending
             };
             var response = SendEmail(emailModel);
         }
+
+        public void SendNewReferralReminderEmail(string emailAddress)
+        {
+            var template = govUkNotifyConfig.ReferralReminderTemplate;
+            var personalisation = new Dictionary<string, dynamic>
+            {
+            };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress = emailAddress,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            var response = SendEmail(emailModel);
+        }
     }
 
     internal class GovUkNotifyEmailModel
