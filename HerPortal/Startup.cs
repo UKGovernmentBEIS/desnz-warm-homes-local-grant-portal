@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Configuration;
 using GovUkDesignSystem.ModelBinders;
+using Hangfire;
+using Hangfire.PostgreSql;
 using HerPortal.BusinessLogic.ExternalServices.S3FileReader;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -39,6 +39,8 @@ namespace HerPortal
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            ConfigureHangfire(services);
+            
             services.AddMemoryCache();
             services.AddScoped<CsvFileDownloadDataStore>();
             services.AddScoped<UserDataStore>();
@@ -79,6 +81,19 @@ namespace HerPortal
             });
 
             services.AddHttpContextAccessor();
+        }
+
+        private void ConfigureHangfire(IServiceCollection services)
+        {
+            // Add Hangfire services.
+            services.AddHangfire(config => config
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UsePostgreSqlStorage(configuration.GetConnectionString("PostgreSQLConnection")));
+
+            // Add the Hangfire processing server as IHostedService
+            services.AddHangfireServer();
         }
 
         private void ConfigureDatabaseContext(IServiceCollection services)
