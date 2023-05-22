@@ -39,6 +39,11 @@ public class DataAccessProvider : IDataAccessProvider
         await context.SaveChangesAsync();
     }
 
+    public async Task<IEnumerable<User>> GetAllActiveUsersAsync()
+    {
+        return await context.Users.Where(u => u.HasLoggedIn).ToListAsync();
+    }
+
     public async Task<List<CsvFileDownload>> GetLastCsvFileDownloadsAsync(int userId)
     {
         return await context.CsvFileDownloads.Where(cfd => cfd.UserId == userId).ToListAsync();

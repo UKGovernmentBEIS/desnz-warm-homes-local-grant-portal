@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-
-namespace HerPortal.ExternalServices.CsvFiles;
+﻿namespace HerPortal.ExternalServices.CsvFiles;
 
 public interface ICsvFileGetter
 {

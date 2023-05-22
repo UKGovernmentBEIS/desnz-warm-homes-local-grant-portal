@@ -22,6 +22,19 @@ public class RegularJobsService
 
     public async Task SendReminderEmailsAsync()
     {
-        
+        var activeUsers = await dataProvider.GetAllActiveUsersAsync();
+        foreach (var user in activeUsers)
+        {
+            var userCsvFiles = await csvFileGetter.GetByCustodianCodesAsync
+            (
+                user.LocalAuthorities.Select(la => la.CustodianCode),
+                user.Id
+            );
+            var hasUpdates = userCsvFiles.Any(cf => cf.HasUpdatedSinceLastDownload);
+            if (hasUpdates)
+            {
+                emailSender.SendNewReferralReminderEmail(user.EmailAddress);
+            }
+        }
     }
 }

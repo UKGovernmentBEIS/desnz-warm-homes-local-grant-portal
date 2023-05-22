@@ -1,8 +1,10 @@
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using HerPortal.Data;
+using HerPortal.Data.Services;
 
 namespace HerPortal
 {
@@ -26,6 +28,15 @@ namespace HerPortal
             using var scope = app.Services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<HerDbContext>();
             dbContext.Database.Migrate();
+            
+            // Run nightly tasks at 07:00 UTC daily
+            app
+                .Services
+                .GetService<IRecurringJobManager>()
+                .AddOrUpdate<RegularJobsService>(
+                    "Send reminder emails",
+                    rjs => rjs.SendReminderEmailsAsync(),
+                    "0 7 * * *");
 
             app.Run();
         }

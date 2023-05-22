@@ -43,40 +43,6 @@ namespace HerPortal.ExternalServices.EmailSending
             }
         }
 
-        public void SendReferenceNumberEmail(string emailAddress, string reference)
-        {
-            var template = govUkNotifyConfig.ApplicationReferenceNumberTemplate;
-            var personalisation = new Dictionary<string, dynamic>
-            {
-                { template.ReferencePlaceholder, reference },
-                { template.MagicLinkPlaceholder, govUkNotifyConfig.BaseUrl + "returning-user/" + reference },
-                { template.ReturningUserLinkPlaceholder, govUkNotifyConfig.BaseUrl + "new-or-returning-user" }
-            };
-            var emailModel = new GovUkNotifyEmailModel
-            {
-                EmailAddress = emailAddress,
-                TemplateId = template.Id,
-                Personalisation = personalisation
-            };
-            var response = SendEmail(emailModel);
-        }
-
-        public void SendRequestedDocumentEmail(string emailAddress, byte[] documentContents)
-        {
-            var template = govUkNotifyConfig.RequestDocumentTemplate;
-            var personalisation = new Dictionary<string, dynamic>
-            {
-                { template.DocumentContentsPlaceholder, NotificationClient.PrepareUpload(documentContents) }
-            };
-            var emailModel = new GovUkNotifyEmailModel
-            {
-                EmailAddress = emailAddress,
-                TemplateId = template.Id,
-                Personalisation = personalisation
-            };
-            var response = SendEmail(emailModel);
-        }
-
         public void SendNewReferralReminderEmail(string emailAddress)
         {
             var template = govUkNotifyConfig.ReferralReminderTemplate;

@@ -1,7 +1,4 @@
-﻿
-using System.Collections.Generic;
-
-namespace HerPortal.ExternalServices.EmailSending
+﻿namespace HerPortal.ExternalServices.EmailSending
 {
     public interface IEmailSender
     {
