@@ -18,7 +18,6 @@ using HerPortal.ExternalServices.EmailSending;
 using HerPortal.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 
 namespace HerPortal
 {
@@ -74,26 +73,12 @@ namespace HerPortal
                 options.SaveTokens = true;
             });
 
-            // TODO: Replace this with a database based cache
-            services.AddDistributedMemoryCache();
-
-            services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromMinutes(10);
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-            });
-
             services.AddHttpContextAccessor();
         }
 
         private void ConfigureDatabaseContext(IServiceCollection services)
         {
             var databaseConnectionString = configuration.GetConnectionString("PostgreSQLConnection");
-            if (!webHostEnvironment.IsDevelopment())
-            {
-                databaseConnectionString = "TODO Get Azure DB string";
-            }
             services.AddDbContext<HerDbContext>(opt =>
                 opt.UseNpgsql(databaseConnectionString));
         }
@@ -131,8 +116,6 @@ namespace HerPortal
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {
