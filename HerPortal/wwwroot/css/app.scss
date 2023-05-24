@@ -5,3 +5,72 @@
 /* Imported from Gov.UK Frontend */
 $govuk-new-link-styles: true;
 @import "govuk/all";
+
+/* Taken from DLUHC, https://github.com/communitiesuk/submit-social-housing-lettings-and-sales-data/blob/main/app/frontend/styles/_primary-navigation.scss */
+.app-primary-navigation {
+  @include govuk-font(19, $weight: bold);
+  border-bottom: 1px solid $govuk-border-colour;
+  background-color: govuk-colour("light-grey");
+  
+  .app-primary-navigation__list {
+    @include govuk-clearfix;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    width: calc(100% + #{govuk-spacing(6)});
+
+    .app-primary-navigation__item {
+      box-sizing: border-box;
+      display: block;
+      float: left;
+      line-height: 50px;
+      height: 50px;
+      padding: 0 govuk-spacing(3);
+      position: relative;
+    }
+
+    .app-primary-navigation__item--current {
+      border-bottom: $govuk-border-width-narrow solid $govuk-link-colour;
+
+      &:hover {
+        border-bottom-color: $govuk-link-hover-colour;
+      }
+
+      &:active {
+        border-bottom-color: $govuk-link-active-colour;
+      }
+
+      .app-primary-navigation__link:hover {
+        text-decoration: none;
+      }
+    }
+
+    .app-primary-navigation__item--align-right {
+      @include govuk-media-query($from: tablet) {
+        float: right;
+      }
+    }
+
+    .app-primary-navigation__link {
+      @include govuk-link-common;
+      @include govuk-link-style-no-visited-state;
+      @include govuk-link-style-no-underline;
+      @include govuk-typography-weight-bold;
+
+      // Extend the touch area of the link to the list
+      &:after {
+        bottom: 0;
+        content: "";
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+    }
+  }
+}
+
+.govuk-phase-banner + .app-primary-navigation {
+  margin-top: -1px;
+}
