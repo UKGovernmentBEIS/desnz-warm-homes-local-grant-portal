@@ -18,6 +18,8 @@ using HerPortal.ExternalServices.EmailSending;
 using HerPortal.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace HerPortal
 {
@@ -102,7 +104,21 @@ namespace HerPortal
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 // app.UseHsts();
             }
-            
+
+            // Use forwarded headers, so we know which URL to use in our auth redirects
+            // AWS ALB will automatically add `X-Forwarded-For` and `X-Forwarded-Proto`
+            var forwardedHeaderOptions = new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            };
+
+            // TODO: We know all traffic to the container is from AWS, but ideally we
+            // would still specify the IP and networks of the ALB here
+            forwardedHeaderOptions.KnownNetworks.Clear();
+            forwardedHeaderOptions.KnownProxies.Clear();
+
+            app.UseForwardedHeaders(forwardedHeaderOptions);
+
             // This solves an issue with casting DateTime objects to the database
             //   https://stackoverflow.com/questions/69961449/net6-and-datetime-problem-cannot-write-datetime-with-kind-utc-to-postgresql-ty
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
