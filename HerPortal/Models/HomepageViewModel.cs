@@ -58,7 +58,7 @@ public class HomepageViewModel
                     }
                 )
             )
-            .OrderBy(kvp => kvp.Key)
+            .OrderBy(kvp => kvp.Value.Text)
         );
         CsvFiles = csvFiles.Select(cf => new CsvFile(cf));
     }
