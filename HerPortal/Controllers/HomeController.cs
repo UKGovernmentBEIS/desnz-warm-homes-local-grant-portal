@@ -46,6 +46,12 @@ public class HomeController : Controller
         {
             await userDataStore.MarkUserAsHavingLoggedInAsync(userData.Id);
         }
-        return View("Index", homepageViewModel);
+        return View("ReferralFiles", homepageViewModel);
+    }
+
+    [HttpGet("/supporting-documents")]
+    public IActionResult SupportingDocuments()
+    {
+        return View("SupportingDocuments");
     }
 }

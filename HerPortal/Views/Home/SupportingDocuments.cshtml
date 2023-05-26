@@ -1,8 +1,25 @@
 ﻿@using GovUkDesignSystem
 @using GovUkDesignSystem.GovUkDesignSystemComponents
 @{
+    ViewBag.Title = "Home Energy Retrofit Portal BETA";
+}
+@{
     string assetsPath = "/assets/images";
 }
+
+@section BeforeMain {
+    <nav class="app-primary-navigation" aria-label="primary">
+        <ul class="app-primary-navigation__list">
+            <li class="app-primary-navigation__item">
+                <a asp-action="Index" class="app-primary-navigation__link">Referral files</a>
+            </li>
+            <li class="app-primary-navigation__item app-primary-navigation__item--current">
+                <a asp-action="SupportingDocuments" class="app-primary-navigation__link" aria-current="page">Supporting documents</a>
+            </li>
+        </ul>
+    </nav>
+}
+
 <h2 class="govuk-heading-l">Supporting documents</h2>
 <h3 class="govuk-heading-m">Home energy retrofit process</h3>
 <ul class="govuk-list">

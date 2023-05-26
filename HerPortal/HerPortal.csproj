@@ -38,9 +38,4 @@
         </None>
     </ItemGroup>
 
-    <ItemGroup>
-      <AdditionalFiles Include="Views\Home\Tabs\_ReferralFilesTab.cshtml" />
-      <AdditionalFiles Include="Views\Home\Tabs\_SupportingDocumentsTab.cshtml" />
-    </ItemGroup>
-
 </Project>

@@ -1,0 +1,45 @@
+﻿@model HerPortal.Models.HomepageViewModel
+@using GovUkDesignSystem
+@using GovUkDesignSystem.GovUkDesignSystemComponents
+@{
+    ViewBag.Title = "Home Energy Retrofit Portal BETA";
+}
+
+@section BeforeMain {
+    <nav class="app-primary-navigation" aria-label="primary">
+        <ul class="app-primary-navigation__list">
+            <li class="app-primary-navigation__item app-primary-navigation__item--current">
+                <a asp-action="Index" class="app-primary-navigation__link" aria-current="page">Referral files</a>
+            </li>
+            <li class="app-primary-navigation__item">
+                <a asp-action="SupportingDocuments" class="app-primary-navigation__link">Supporting documents</a>
+            </li>
+        </ul>
+    </nav>
+}
+
+
+@if (Model.ShouldShowBanner)
+{
+    @(await Html.GovUkNotificationBanner(new NotificationBannerViewModel
+    {
+        TitleText = "Welcome",
+        Text = "Read all contents in the \"Supporting documents\" tab first",
+    }))
+}
+
+@if (Model.ShouldShowFilters)
+{
+    <div class="govuk-grid-row">
+        <aside class="govuk-grid-column-one-third">
+            @await Html.PartialAsync("Components/_MultiRegionFilter", Model)
+        </aside>
+        <div class="govuk-grid-column-two-thirds">
+            @await Html.PartialAsync("Components/_ReferralFilesSection", Model)
+        </div>
+    </div>
+}
+else
+{
+    @await Html.PartialAsync("Components/_ReferralFilesSection", Model)
+}
