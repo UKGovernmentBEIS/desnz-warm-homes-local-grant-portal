@@ -1,4 +1,5 @@
 ﻿using System;
+using Amazon.S3.Model;
 
 namespace HerPortal.ExternalServices.CsvFiles;
 
@@ -15,8 +16,6 @@ public class CsvFileData
     //   it will always have been updated since it was last downloaded.
     public bool HasUpdatedSinceLastDownload => !LastDownloaded.HasValue || LastDownloaded.Value.CompareTo(LastUpdated) < 0;
     public bool HasApplications { get; }
-    
-    public string S3Key => $"{CustodianCode}/{Year}_{Month:D2}.csv";
 
     public CsvFileData
     (

@@ -11,11 +11,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using HerPortal.Data;
+using HerPortal.Data.ExternalServices.S3FileReader;
 using HerPortal.DataStores;
 using HerPortal.ErrorHandling;
 using HerPortal.ExternalServices.CsvFiles;
 using HerPortal.ExternalServices.EmailSending;
 using HerPortal.Services;
+using HerPublicWebsite.BusinessLogic.ExternalServices.S3FileWriter;
+using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpLogging;
@@ -41,13 +44,14 @@ namespace HerPortal
             services.AddScoped<CsvFileDownloadDataStore>();
             services.AddScoped<UserDataStore>();
             services.AddScoped<IDataAccessProvider, DataAccessProvider>();
-            services.AddScoped<ICsvFileGetter, DummyCsvFileGetter>();
+            services.AddScoped<ICsvFileGetter, CsvFileGetter>();
             services.AddSingleton<StaticAssetsVersioningService>();
             // This allows encrypted cookies to be understood across multiple web server instances
             services.AddDataProtection().PersistKeysToDbContext<HerDbContext>();
 
             ConfigureGovUkNotify(services);
             ConfigureDatabaseContext(services);
+            ConfigureS3FileReader(services);
 
             services.AddControllersWithViews(options =>
             {
@@ -90,6 +94,14 @@ namespace HerPortal
             services.AddScoped<IEmailSender, GovUkNotifyApi>();
             services.Configure<GovUkNotifyConfiguration>(
                 configuration.GetSection(GovUkNotifyConfiguration.ConfigSection));
+        }
+        
+        private void ConfigureS3FileReader(IServiceCollection services)
+        {
+            services.Configure<S3FileReaderConfiguration>(
+                configuration.GetSection(S3FileReaderConfiguration.ConfigSection));
+            services.AddScoped<IS3FileReader, S3FileReader>();
+            services.AddScoped<S3ReferralFileKeyService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
