@@ -1,9 +1,15 @@
-# Learn about building .NET container images:
-# https://github.com/dotnet/dotnet-docker/blob/main/samples/README.md
+# Node build step
+FROM node:18 as node_build
+COPY HerPortal /HerPortal
+WORKDIR /HerPortal
+RUN npm ci
+RUN npm run build
+
+# C# build step
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /source
 
-# copy csproj and restore as distinct layers
+COPY --from=node_build . .
 COPY *.sln .
 COPY nuget.config .
 COPY HerPortal/*.csproj HerPortal/
