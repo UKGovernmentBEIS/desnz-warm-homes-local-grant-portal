@@ -81,7 +81,7 @@ public class S3FileReader : IS3FileReader
                 Prefix = custodianCode + "/",
             };
             var files = await s3Client.ListObjectsV2Async(request);
-            return files.S3Objects;
+            return files.S3Objects.Where(s3O => keyService.IsValidS3Key(s3O.Key));
         }
         catch (AmazonS3Exception ex)
         { 

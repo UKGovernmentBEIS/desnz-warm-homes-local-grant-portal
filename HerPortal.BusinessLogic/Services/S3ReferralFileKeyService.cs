@@ -55,4 +55,6 @@ public class S3ReferralFileKeyService
 
         return (custodianCode, year, month);
     }
+
+    public bool IsValidS3Key(string s3Key) => s3KeyRegex.IsMatch(s3Key);
 }

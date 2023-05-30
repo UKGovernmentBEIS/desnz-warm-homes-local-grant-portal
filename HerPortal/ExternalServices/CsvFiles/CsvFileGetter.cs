@@ -56,7 +56,9 @@ public class CsvFileGetter : ICsvFileGetter
             ));
         }
 
-        return files;
+        return files
+            .OrderByDescending(f => new DateOnly(f.Year, f.Month, 1))
+            .ThenBy(f => LocalAuthorityData.LocalAuthorityNamesByCustodianCode[f.CustodianCode]);
     }
 
     public async Task<Stream> GetFileForDownloadAsync(string custodianCode, int year, int month, int userId)
