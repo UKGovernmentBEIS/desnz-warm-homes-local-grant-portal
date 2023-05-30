@@ -2,12 +2,11 @@
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
-using HerPublicWebsite.BusinessLogic.ExternalServices.S3FileWriter;
 using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace HerPortal.Data.ExternalServices.S3FileReader;
+namespace HerPortal.BusinessLogic.ExternalServices.S3FileReader;
 
 public class S3FileReader : IS3FileReader
 {

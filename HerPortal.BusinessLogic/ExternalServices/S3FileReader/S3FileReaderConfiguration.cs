@@ -1,6 +1,4 @@
-﻿using Amazon;
-
-namespace HerPublicWebsite.BusinessLogic.ExternalServices.S3FileWriter;
+﻿namespace HerPortal.BusinessLogic.ExternalServices.S3FileReader;
 
 public class S3FileReaderConfiguration
 {

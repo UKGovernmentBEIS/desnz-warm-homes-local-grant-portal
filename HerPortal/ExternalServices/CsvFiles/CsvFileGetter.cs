@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using HerPortal.BusinessLogic.Models;
-using HerPortal.Data.ExternalServices.S3FileReader;
+using HerPortal.BusinessLogic.ExternalServices.S3FileReader;
 using HerPortal.DataStores;
 using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 
