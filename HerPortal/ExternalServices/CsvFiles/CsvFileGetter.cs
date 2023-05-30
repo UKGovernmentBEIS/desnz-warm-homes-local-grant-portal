@@ -66,12 +66,14 @@ public class CsvFileGetter : ICsvFileGetter
             throw new ArgumentOutOfRangeException(nameof(custodianCode), custodianCode,
                 "Given custodian code is not valid");
         }
+
+        var fileStream = await s3FileReader.ReadFileAsync(custodianCode, year, month);
         
         // Notably, we can't confirm a download, so it's possible that we mark a file as downloaded
         //   but the user has some sort of issue and doesn't get it
         // We put this line as late as possible in the method for this reason
         await csvFileDownloadDataStore.MarkCsvFileAsDownloadedAsync(custodianCode, year, month, userId);
-        
-        return await s3FileReader.ReadFileAsync(custodianCode, year, month);
+
+        return fileStream;
     }
 }
