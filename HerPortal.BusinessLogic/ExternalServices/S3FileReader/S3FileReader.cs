@@ -12,6 +12,7 @@ public class S3FileReader : IS3FileReader
 {
     private readonly S3FileReaderConfiguration config;
     private readonly S3ReferralFileKeyService keyService;
+    private readonly AmazonS3Client s3Client;
 
     private readonly ILogger logger;
 
@@ -25,6 +26,16 @@ public class S3FileReader : IS3FileReader
         this.keyService = keyService;
 
         this.logger = logger;
+
+        try
+        {
+            s3Client = new AmazonS3Client(RegionEndpoint.GetBySystemName(config.Region));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error encountered while connecting to Amazon S3");
+            throw;
+        }
     }
     
     public async Task<Stream> ReadFileAsync(string custodianCode, int year, int month)
@@ -33,9 +44,7 @@ public class S3FileReader : IS3FileReader
 
         try
         {
-            var s3Client = new AmazonS3Client(RegionEndpoint.GetBySystemName(config.Region));
             var fileTransferUtility = new TransferUtility(s3Client);
-
             return await fileTransferUtility.OpenStreamAsync(config.BucketName, key);
         }
         catch (AmazonS3Exception ex)
@@ -66,14 +75,12 @@ public class S3FileReader : IS3FileReader
     {
         try
         {
-            var s3Client = new AmazonS3Client(RegionEndpoint.GetBySystemName(config.Region));
             var request = new ListObjectsV2Request
             {
                 BucketName = config.BucketName,
                 Prefix = custodianCode + "/",
             };
             var files = await s3Client.ListObjectsV2Async(request);
-
             return files.S3Objects;
         }
         catch (AmazonS3Exception ex)
