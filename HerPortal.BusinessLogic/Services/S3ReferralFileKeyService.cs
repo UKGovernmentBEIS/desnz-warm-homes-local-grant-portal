@@ -6,10 +6,12 @@ namespace HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 
 public class S3ReferralFileKeyService
 {
+    private readonly Regex s3KeyRegex;
     private readonly ILogger logger;
 
     public S3ReferralFileKeyService(ILogger<S3ReferralFileKeyService> logger)
     {
+        s3KeyRegex = new Regex(@"^(?<custodianCode>\d+)/(?<year>\d+)_(?<month>\d+)\.csv$");
         this.logger = logger;
     }
 
@@ -35,8 +37,6 @@ public class S3ReferralFileKeyService
 
     public (string CustodianCode, int Year, int Month) GetDataFromS3Key(string s3Key)
     {
-        var s3KeyRegex = new Regex(@"^(?<custodianCode>\d+)/(?<year>\d+)_(?<month>\d+)\.csv$");
-        
         if (!s3KeyRegex.IsMatch(s3Key))
         {
             logger.LogError("Could not extract custodian code, year, or month from S3 key \"{S3Key}\"", s3Key);
