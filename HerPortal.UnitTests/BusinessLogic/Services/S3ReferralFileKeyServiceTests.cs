@@ -8,7 +8,7 @@ using Moq;
 namespace Tests.BusinessLogic.Services;
 
 [TestFixture]
-public class S3ReferralFileKeyGeneratorTests
+public class S3ReferralFileKeyServiceTests
 {
     private Mock<ILogger<S3ReferralFileKeyService>> mockLogger;
     
