@@ -54,15 +54,17 @@
     <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">Skip to main content</a>
 
     @{
-        List<HeaderNavigationViewModel> headerNavigationLinks = new List<HeaderNavigationViewModel>
+        var headerNavigationLinks = new List<HeaderNavigationViewModel>();
+
+        if (User.Identity?.IsAuthenticated is true)
         {
-            new()
+            headerNavigationLinks.Add(new HeaderNavigationViewModel
             {
                 Text = $"({User.GetEmailAddress()}) Sign Out",
                 Href = Configuration["Authentication:Cognito:SignOutUrl"],
                 Active = true
-            }
-        };
+            });
+        }
 
         @(await Html.GovUkHeader(new HeaderViewModel
         {

@@ -125,7 +125,12 @@ namespace HerPortal
 
             app.UseStatusCodePagesWithReExecute("/error/{0}");
 
-            app.UseHttpsRedirection();
+            if (webHostEnvironment.IsDevelopment())
+            {
+                // In production we terminate TLS at the load balancer and redirect there
+                app.UseHttpsRedirection();
+            }
+
             app.UseStaticFiles();
 
             app.UseRouting();
