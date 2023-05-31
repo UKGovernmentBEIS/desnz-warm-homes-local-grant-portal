@@ -32,7 +32,7 @@ public class HomepageViewModelTests
         };
         
         // Act
-        var viewModel = new HomepageViewModel(user, new List<CsvFileData>());
+        var viewModel = new HomepageViewModel(user, new List<CsvFileData>(), true);
         
         // Assert
         viewModel.ShouldShowBanner.Should().Be(shouldShowBanner);
@@ -58,7 +58,7 @@ public class HomepageViewModelTests
         };
         
         // Act
-        var viewModel = new HomepageViewModel(user, new List<CsvFileData>());
+        var viewModel = new HomepageViewModel(user, new List<CsvFileData>(), true);
         
         // Assert
         viewModel.ShouldShowFilters.Should().Be(expected);

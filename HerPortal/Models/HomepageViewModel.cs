@@ -39,11 +39,12 @@ public class HomepageViewModel
     
     public bool ShouldShowBanner { get; }
     public bool ShouldShowFilters { get; }
+    public bool UserHasNewUpdates { get; }
     public List<string> CustodianCodes { get; }
     public Dictionary<string, LabelViewModel> LocalAuthorityCheckboxLabels { get; }
     public IEnumerable<CsvFile> CsvFiles { get; }
 
-    public HomepageViewModel(User user, IEnumerable<CsvFileData> csvFiles)
+    public HomepageViewModel(User user, IEnumerable<CsvFileData> csvFiles, bool userHasNewUpdates)
     {
         ShouldShowBanner = !user.HasLoggedIn;
         ShouldShowFilters = user.LocalAuthorities.Count >= 2;
@@ -61,5 +62,7 @@ public class HomepageViewModel
             .OrderBy(kvp => kvp.Value.Text)
         );
         CsvFiles = csvFiles.Select(cf => new CsvFile(cf));
+
+        UserHasNewUpdates = userHasNewUpdates;
     }
 }
