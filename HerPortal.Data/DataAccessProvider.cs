@@ -41,7 +41,10 @@ public class DataAccessProvider : IDataAccessProvider
 
     public async Task<IEnumerable<User>> GetAllActiveUsersAsync()
     {
-        return await context.Users.Where(u => u.HasLoggedIn).ToListAsync();
+        return await context.Users
+            .Where(u => u.HasLoggedIn)
+            .Include(u => u.LocalAuthorities)
+            .ToListAsync();
     }
 
     public async Task<List<CsvFileDownload>> GetLastCsvFileDownloadsAsync(int userId)
