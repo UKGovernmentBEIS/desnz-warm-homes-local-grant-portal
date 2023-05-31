@@ -48,6 +48,7 @@ namespace HerPortal.ExternalServices.EmailSending
             var template = govUkNotifyConfig.ReferralReminderTemplate;
             var personalisation = new Dictionary<string, dynamic>
             {
+                { template.HugUrlPlaceholder, govUkNotifyConfig.BaseUrl }
             };
             var emailModel = new GovUkNotifyEmailModel
             {

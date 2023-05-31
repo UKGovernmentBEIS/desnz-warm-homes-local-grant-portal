@@ -12,5 +12,6 @@
     public class ReferralReminderConfiguration
     {
         public string Id { get; set; }
+        public string HugUrlPlaceholder { get; set; }
     }
 }
