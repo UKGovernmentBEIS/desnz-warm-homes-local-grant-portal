@@ -52,11 +52,9 @@
                     },
                     new()
                     {
-                        Html = cf.HasApplications
-                            ? cf.HasNewUpdates
-                                ? @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--green", Text = "New" }))</text>
-                                : null
-                            : @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--grey", Text = "No applications yet" }))</text>
+                        Html = cf.HasNewUpdates
+                            ? @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--green", Text = "New" }))</text>
+                            : null
                     },
                 },
             }

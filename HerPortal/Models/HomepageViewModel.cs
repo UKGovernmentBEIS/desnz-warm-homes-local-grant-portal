@@ -18,7 +18,6 @@ public class HomepageViewModel
         public string LocalAuthorityName => LocalAuthorityData.LocalAuthorityNamesByCustodianCode[CustodianCode];
         public string LastUpdatedText { get; }
         public bool HasNewUpdates { get; }
-        public bool HasApplications { get; }
 
         public CsvFile(CsvFileData csvFileData)
         {
@@ -33,7 +32,6 @@ public class HomepageViewModel
             Month = csvFileData.Month;
             LastUpdatedText = csvFileData.LastUpdated.ToString("dd/MM/yy");
             HasNewUpdates = csvFileData.HasUpdatedSinceLastDownload;
-            HasApplications = csvFileData.HasApplications;
         }
     }
     

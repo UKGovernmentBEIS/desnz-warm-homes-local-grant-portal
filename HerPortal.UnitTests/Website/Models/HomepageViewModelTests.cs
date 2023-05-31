@@ -80,8 +80,7 @@ public class HomepageViewModelTests
             month,
             year,
             new DateTime(2023, 1, 1),
-            null,
-            true
+            null
         );
         
         // Act
@@ -108,8 +107,7 @@ public class HomepageViewModelTests
             1,
             2024,
             new DateTime(year, month, day),
-            null,
-            true
+            null
         );
         
         // Act
@@ -134,8 +132,7 @@ public class HomepageViewModelTests
             1,
             2024,
             new DateTime(2023, 1, 1),
-            null,
-            true
+            null
         );
         
         // Act
@@ -155,8 +152,7 @@ public class HomepageViewModelTests
             1,
             2024,
             new DateTime(2023, 1, 1),
-            null,
-            true
+            null
         );
         
         // Act
