@@ -1,7 +1,11 @@
 ﻿# Pre-sign-up Lambda hook
 
-This Lambda function is triggered whenever a user attempts to sign up to the service. It checks the given email
-address against a list of recognised email addresses, stored in an AWS RDS PostgreSQL database.
+This Lambda function is configured as a 'pre sign-up lambda trigger',
+and is executed whenever a user attempts to sign up to the service.
+
+It checks the given email address against the list of users stored in the portal's PostgreSQL database.
+
+## Configuration
 
 The credentials for connecting to this database are passed in with environment variables:
 
@@ -10,3 +14,16 @@ The credentials for connecting to this database are passed in with environment v
 * `PGUSER`: the username to use when connecting
 * `PGPASSWORD`: the password to use when connecting
 * `PGDATABASE`: the name of the database to connect to
+
+## Deployment
+
+As we do not expect frequent changes, the lambda code is captured in the Terraform module,
+rather than being deployed through a dedicated pipeline.
+
+This means any changes need to be co-ordinated through the platform team.
+
+## Adding users
+
+New users need to be added to the database manually and linked to at least one Local Authority.
+
+TODO: Add and document a script for adding new users
