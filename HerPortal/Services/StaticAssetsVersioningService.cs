@@ -79,7 +79,7 @@ namespace HerPortal.Services
             }
             else
             {
-                return "/" + directory + "/" + matchingFiles[0];
+                return Constants.BASE_PATH + "/" + directory + "/" + matchingFiles[0];
             }
         }
     }

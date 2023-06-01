@@ -6,7 +6,7 @@
 @using Microsoft.Extensions.Configuration
 @inject StaticAssetsVersioningService StaticAssetsVersioning
 @{
-    string assetsPath = "/assets/images";
+    string assetsPath = $"{Constants.BASE_PATH}/assets/images";
 }
 @inject IConfiguration Configuration
 <!DOCTYPE html>
@@ -71,7 +71,7 @@
             ServiceName = Constants.SERVICE_NAME,
             AssetsPath = assetsPath,
             HomepageUrl = "https://www.gov.uk",
-            ServiceUrl = "/",
+            ServiceUrl = Constants.BASE_PATH,
             Navigation = headerNavigationLinks
         }))
 
