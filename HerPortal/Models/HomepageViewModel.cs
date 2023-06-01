@@ -18,7 +18,6 @@ public class HomepageViewModel
         public string LocalAuthorityName => LocalAuthorityData.LocalAuthorityNamesByCustodianCode[CustodianCode];
         public string LastUpdatedText { get; }
         public bool HasNewUpdates { get; }
-        public bool HasApplications { get; }
 
         public CsvFile(CsvFileData csvFileData)
         {
@@ -33,17 +32,17 @@ public class HomepageViewModel
             Month = csvFileData.Month;
             LastUpdatedText = csvFileData.LastUpdated.ToString("dd/MM/yy");
             HasNewUpdates = csvFileData.HasUpdatedSinceLastDownload;
-            HasApplications = csvFileData.HasApplications;
         }
     }
     
     public bool ShouldShowBanner { get; }
     public bool ShouldShowFilters { get; }
+    public bool UserHasNewUpdates { get; }
     public List<string> CustodianCodes { get; }
     public Dictionary<string, LabelViewModel> LocalAuthorityCheckboxLabels { get; }
     public IEnumerable<CsvFile> CsvFiles { get; }
 
-    public HomepageViewModel(User user, IEnumerable<CsvFileData> csvFiles)
+    public HomepageViewModel(User user, IEnumerable<CsvFileData> csvFiles, bool userHasNewUpdates)
     {
         ShouldShowBanner = !user.HasLoggedIn;
         ShouldShowFilters = user.LocalAuthorities.Count >= 2;
@@ -61,5 +60,7 @@ public class HomepageViewModel
             .OrderBy(kvp => kvp.Value.Text)
         );
         CsvFiles = csvFiles.Select(cf => new CsvFile(cf));
+
+        UserHasNewUpdates = userHasNewUpdates;
     }
 }

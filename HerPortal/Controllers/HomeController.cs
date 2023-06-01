@@ -33,15 +33,27 @@ public class HomeController : Controller
         var userEmailAddress = HttpContext.User.GetEmailAddress();
         var userData = await userDataStore.GetUserByEmailAsync(userEmailAddress);
 
-        var ccList = userData.LocalAuthorities.Select(la => la.CustodianCode);
+        var allUserCustodianCodes = userData.LocalAuthorities.Select(la => la.CustodianCode);
+
+        var allUserCsvFiles = (await csvFileGetter
+            .GetByCustodianCodesAsync(allUserCustodianCodes, userData.Id))
+            .ToList();
+        var filteredCsvFiles = allUserCsvFiles;
+
         if (custodianCodes.Count > 0)
         {
-            ccList = ccList.Where(custodianCodes.Contains);
+            filteredCsvFiles = filteredCsvFiles
+                .Where(cf => custodianCodes.Contains(cf.CustodianCode))
+                .ToList();
         }
-
-        var csvFiles = await csvFileGetter.GetByCustodianCodesAsync(ccList, userData.Id);
         
-        var homepageViewModel = new HomepageViewModel(userData, csvFiles);
+        var homepageViewModel = new HomepageViewModel
+        (
+            userData,
+            filteredCsvFiles,
+            allUserCsvFiles.Any(cf => cf.HasUpdatedSinceLastDownload)
+        );
+        
         if (!userData.HasLoggedIn)
         {
             await userDataStore.MarkUserAsHavingLoggedInAsync(userData.Id);

@@ -18,8 +18,7 @@ public class CsvFileDataTests
             1,
             2024,
             new DateTime(2024, 1, 1),
-            null,
-            true
+            null
         );
         
         // Assert
@@ -36,8 +35,7 @@ public class CsvFileDataTests
             1,
             2024,
             new DateTime(2023, 5, 2),
-            new DateTime(2023, 5, 1),
-            true
+            new DateTime(2023, 5, 1)
         );
         
         // Assert
@@ -54,8 +52,7 @@ public class CsvFileDataTests
             1,
             2024,
             new DateTime(2023, 5, 1),
-            new DateTime(2023, 5, 2),
-            true
+            new DateTime(2023, 5, 2)
         );
         
         // Assert

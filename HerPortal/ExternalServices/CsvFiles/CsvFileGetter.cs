@@ -49,8 +49,7 @@ public class CsvFileGetter : ICsvFileGetter
                         data.Month,
                         data.Year,
                         s3O.LastModified,
-                        downloadData?.LastDownloaded,
-                        true
+                        downloadData?.LastDownloaded
                     );
                 }
             ));

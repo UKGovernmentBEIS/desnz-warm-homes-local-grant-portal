@@ -15,7 +15,6 @@ public class CsvFileData
     // When LastDownloaded is null, we assume it hasn't been downloaded, therefore
     //   it will always have been updated since it was last downloaded.
     public bool HasUpdatedSinceLastDownload => !LastDownloaded.HasValue || LastDownloaded.Value.CompareTo(LastUpdated) < 0;
-    public bool HasApplications { get; }
 
     public CsvFileData
     (
@@ -23,14 +22,12 @@ public class CsvFileData
         int month,
         int year,
         DateTime lastUpdated,
-        DateTime? lastDownloaded,
-        bool hasApplications
+        DateTime? lastDownloaded
     ) {
         CustodianCode = custodianCode;
         Month = month;
         Year = year;
         LastUpdated = lastUpdated;
         LastDownloaded = lastDownloaded;
-        HasApplications = hasApplications;
     }
 }
