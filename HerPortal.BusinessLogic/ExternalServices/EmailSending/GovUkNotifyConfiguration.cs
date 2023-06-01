@@ -5,13 +5,12 @@
         public const string ConfigSection = "GovUkNotify";
         
         public string ApiKey { get; set; }
-        public string BaseUrl { get; set; }
         public ReferralReminderConfiguration ReferralReminderTemplate { get; set; }
     }
 
     public class ReferralReminderConfiguration
     {
         public string Id { get; set; }
-        public string HugUrlPlaceholder { get; set; }
+        public string AppBaseUrlPlaceholder { get; set; }
     }
 }

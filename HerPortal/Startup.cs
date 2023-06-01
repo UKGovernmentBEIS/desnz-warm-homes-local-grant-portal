@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.HttpOverrides;
+using GlobalConfiguration = HerPortal.BusinessLogic.GlobalConfiguration;
 
 namespace HerPortal
 {
@@ -50,6 +51,8 @@ namespace HerPortal
             // This allows encrypted cookies to be understood across multiple web server instances
             services.AddDataProtection().PersistKeysToDbContext<HerDbContext>();
 
+            ConfigureGlobalConfiguration(services);
+            
             ConfigureGovUkNotify(services);
             ConfigureDatabaseContext(services);
             ConfigureS3FileReader(services);
@@ -81,6 +84,14 @@ namespace HerPortal
             });
 
             services.AddHttpContextAccessor();
+        }
+
+        private void ConfigureGlobalConfiguration(IServiceCollection services)
+        {
+            services.Configure<GlobalConfiguration>
+            (
+                configuration.GetSection(GlobalConfiguration.ConfigSection)
+            );
         }
 
         private void ConfigureHangfire(IServiceCollection services)

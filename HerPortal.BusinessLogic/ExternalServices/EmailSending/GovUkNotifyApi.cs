@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using HerPortal.BusinessLogic;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Notify.Client;
 using Notify.Exceptions;
@@ -9,13 +10,21 @@ namespace HerPortal.ExternalServices.EmailSending
     public class GovUkNotifyApi: IEmailSender
     {
         private readonly NotificationClient client;
+        private readonly GlobalConfiguration globalConfig;
         private readonly GovUkNotifyConfiguration govUkNotifyConfig;
         private readonly ILogger<GovUkNotifyApi> logger;
         
-        public GovUkNotifyApi(IOptions<GovUkNotifyConfiguration> config, ILogger<GovUkNotifyApi> logger)
+        public GovUkNotifyApi
+        (
+            IOptions<GlobalConfiguration> globalConfig,
+            IOptions<GovUkNotifyConfiguration> govUkNotifyConfig,
+            ILogger<GovUkNotifyApi> logger
+        )
         {
-            govUkNotifyConfig = config.Value;
-            client = new NotificationClient(govUkNotifyConfig.ApiKey);
+            this.globalConfig = globalConfig.Value;
+            this.govUkNotifyConfig = govUkNotifyConfig.Value;
+            
+            client = new NotificationClient(this.govUkNotifyConfig.ApiKey);
             this.logger = logger;
         }
 
@@ -48,7 +57,7 @@ namespace HerPortal.ExternalServices.EmailSending
             var template = govUkNotifyConfig.ReferralReminderTemplate;
             var personalisation = new Dictionary<string, dynamic>
             {
-                { template.HugUrlPlaceholder, govUkNotifyConfig.BaseUrl }
+                { template.AppBaseUrlPlaceholder, globalConfig.AppBaseUrl }
             };
             var emailModel = new GovUkNotifyEmailModel
             {

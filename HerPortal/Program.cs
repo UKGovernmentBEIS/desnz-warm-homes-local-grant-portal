@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using HerPortal.Data;
 using HerPortal.Data.Services;
+using Microsoft.Extensions.Options;
+using GlobalConfiguration = HerPortal.BusinessLogic.GlobalConfiguration;
 
 namespace HerPortal
 {
@@ -30,13 +32,17 @@ namespace HerPortal
             dbContext.Database.Migrate();
             
             // Run nightly tasks at 07:00 UTC daily
+            // This code to get the config is odd, but it's in the documentation:
+            //   https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-7.0#access-options-in-programcs
+            var crontab = app.Services.GetRequiredService<IOptionsMonitor<GlobalConfiguration>>()
+                .CurrentValue.ReferralReminderCrontab;
             app
                 .Services
                 .GetService<IRecurringJobManager>()
                 .AddOrUpdate<RegularJobsService>(
                     "Send reminder emails",
                     rjs => rjs.SendReminderEmailsAsync(),
-                    "0 7 * * *");
+                    crontab);
 
             app.Run();
         }
