@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using HerPortal.BusinessLogic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Notify.Client;
@@ -10,13 +10,21 @@ namespace HerPortal.ExternalServices.EmailSending
     public class GovUkNotifyApi: IEmailSender
     {
         private readonly NotificationClient client;
+        private readonly GlobalConfiguration globalConfig;
         private readonly GovUkNotifyConfiguration govUkNotifyConfig;
         private readonly ILogger<GovUkNotifyApi> logger;
         
-        public GovUkNotifyApi(IOptions<GovUkNotifyConfiguration> config, ILogger<GovUkNotifyApi> logger)
+        public GovUkNotifyApi
+        (
+            IOptions<GlobalConfiguration> globalConfig,
+            IOptions<GovUkNotifyConfiguration> govUkNotifyConfig,
+            ILogger<GovUkNotifyApi> logger
+        )
         {
-            govUkNotifyConfig = config.Value;
-            client = new NotificationClient(govUkNotifyConfig.ApiKey);
+            this.globalConfig = globalConfig.Value;
+            this.govUkNotifyConfig = govUkNotifyConfig.Value;
+            
+            client = new NotificationClient(this.govUkNotifyConfig.ApiKey);
             this.logger = logger;
         }
 
@@ -44,30 +52,12 @@ namespace HerPortal.ExternalServices.EmailSending
             }
         }
 
-        public void SendReferenceNumberEmail(string emailAddress, string reference)
+        public void SendNewReferralReminderEmail(string emailAddress)
         {
-            var template = govUkNotifyConfig.ApplicationReferenceNumberTemplate;
+            var template = govUkNotifyConfig.ReferralReminderTemplate;
             var personalisation = new Dictionary<string, dynamic>
             {
-                { template.ReferencePlaceholder, reference },
-                { template.MagicLinkPlaceholder, govUkNotifyConfig.BaseUrl + "returning-user/" + reference },
-                { template.ReturningUserLinkPlaceholder, govUkNotifyConfig.BaseUrl + "new-or-returning-user" }
-            };
-            var emailModel = new GovUkNotifyEmailModel
-            {
-                EmailAddress = emailAddress,
-                TemplateId = template.Id,
-                Personalisation = personalisation
-            };
-            var response = SendEmail(emailModel);
-        }
-
-        public void SendRequestedDocumentEmail(string emailAddress, byte[] documentContents)
-        {
-            var template = govUkNotifyConfig.RequestDocumentTemplate;
-            var personalisation = new Dictionary<string, dynamic>
-            {
-                { template.DocumentContentsPlaceholder, NotificationClient.PrepareUpload(documentContents) }
+                { template.AppBaseUrlPlaceholder, globalConfig.AppBaseUrl }
             };
             var emailModel = new GovUkNotifyEmailModel
             {
