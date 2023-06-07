@@ -73,7 +73,7 @@ namespace HerPortal
             .AddCookie()
             .AddOpenIdConnect(options =>
             {
-                options.ResponseType = configuration["Authentication:Cognito:ResponseType"];
+                options.ResponseType = "code";
                 options.MetadataAddress = configuration["Authentication:Cognito:MetadataAddress"];
                 options.ClientId = configuration["Authentication:Cognito:ClientId"];
                 options.ClientSecret = configuration["Authentication:Cognito:ClientSecret"];

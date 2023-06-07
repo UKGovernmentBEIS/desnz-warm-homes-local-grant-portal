@@ -92,15 +92,8 @@ Fill in the opened `secrets.json` file with:
         "Cognito": {
             "ClientId": "<app client id from AWS Cognito>",
             "ClientSecret": "<app client secret from AWS Cognito>",
-            "IncludeErrorDetails": true,
             "MetadataAddress": "https://cognito-idp.{your-region-id}.amazonaws.com/{your-user-pool-id}/.well-known/openid-configuration",
-            "SignOutUrl": "https://{cognito-client-base-url}/logout?client_id={client-id}&logout_uri=https://localhost:5001/sign-out",
-            "RequireHttpsMetadata": false,
-            "ResponseType": "code",
-            "SaveToken": true,
-            "TokenValidationParameters": {
-                "ValidateIssuer": true
-            }
+            "SignOutUrl": "https://{cognito-client-base-url}/logout?client_id={client-id}&logout_uri=https://localhost:5001/sign-out"
         }
     },
 
@@ -159,13 +152,23 @@ The solution is unfortunately tedious. Given branch 1 with migration A and branc
 
 ## Environments
 
-This app is deployed to BEIS Azure subscription
+This app is deployed to BEIS AWS platform
 
-### Pre-requisites
+### Configuration
 
-Before you can work with the environments you will need some things:
-- Credentials for BEIS Azure
+Non-secret configuration is stored in the corresponding `appsettings.<environment>.json` file:
+- appsettings.DEV.json
+- appsettings.UAT.json
+- appsettings.Production.json
 
-### Set up
+Secrets must be configured in the ECS tasks, corresponding to the variables in `secrets.json` above:
+- `ConnectionStrings__PostgreSQLConnection`
+- `GovUkNotify__ApiKey`
+- `Authentication__Cognito__ClientId`
+- `Authentication__Cognito__ClientSecret`
+- `Authentication__Cognito__MetadataAddress`
+- `Authentication__Cognito__SignOutUrl`
 
-TODO fill this in once we know how to create Azure environments
+The S3 configuration is also configured in ECS, as it's linked to AWS resources
+- `S3__BucketName`
+- `S3__Region`
