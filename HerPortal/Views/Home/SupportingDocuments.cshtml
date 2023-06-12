@@ -106,109 +106,89 @@ stages are 'application verification' and 'home improvements'." />
 <p class="govuk-body">Below is a table providing definitions of all data fields.</p>
 
 <h3 class="govuk-heading-m" id="hug-2-data">The Home Upgrade Grant 2 data</h3>
-@(await Html.GovUkTable(new TableGovUkViewModel
+@(await Html.GovUkSummaryList(new SummaryListViewModel
 {
-    Head = new List<TableCellViewModel>(),
-    Rows = new List<TableRowViewModel>
+    Rows = new List<SummaryListRowViewModel>
     {
         new()
         {
-            Row = new List<TableCellViewModel>
+            Key = new SummaryListRowKey
             {
-                new()
-                {
-                    Text = "Date and time applied",
-                },
-                new()
-                {
-                    Text = "The date and time the application was submitted.",
-                },
+                Text = "Date and time applied",
+            },
+            Value = new SummaryListRowValue
+            {
+                Text = "The date and time the application was submitted.",
             },
         },
         new()
         {
-            Row = new List<TableCellViewModel>
+            Key = new SummaryListRowKey
             {
-                new()
-                {
-                    Text = "Referral ID",
-                },
-                new()
-                {
-                    Text = "The referral ID will be used to track applications throughout the service."
-                           + " You must include this ID when reporting back to the Department for Energy"
-                           + " Security and Net Zero.",
-                },
+                Text = "Referral ID",
+            },
+            Value = new SummaryListRowValue
+            {
+                Text = "The referral ID will be used to track applications throughout the service."
+                       + " You must include this ID when reporting back to the Department for Energy"
+                       + " Security and Net Zero.",
             },
         },
         new()
         {
-            Row = new List<TableCellViewModel>
+            Key = new SummaryListRowKey
             {
-                new()
-                {
-                    Html = @<text>
-                               LSOAs
-                               <br/>
-                               Lower Layer Super Output Areas
-                            </text>,
-                },
-                new()
-                {
-                    Text = "If the applicant lives in an LSOA, income is not required to determine eligibility.",
-                },
+                Html = @<text>
+                           LSOAs
+                           <br/>
+                           Lower Layer Super Output Areas
+                        </text>,
+            },
+            Value = new SummaryListRowValue
+            {
+                Text = "If the applicant lives in an LSOA, income is not required to determine eligibility.",
             },
         },
         new()
         {
-            Row = new List<TableCellViewModel>
+            Key = new SummaryListRowKey
             {
-                new()
-                {
-                    Text = "EPC rating",
-                },
-                new()
-                {
-                    Html = @<text>
-                               Only EPCs less than 10 years old will be used as part of this service.
-                               If no EPC is returned this field will be blank.
-                               <br/>
-                               <br/>
-                               If the applicant has an EPC rating of A/B/C then they are likely ineligible so it's
-                               unlikely this will be contained in the referral file.
-                            </text>,
-                },
+                Text = "EPC rating",
+            },
+            Value = new SummaryListRowValue
+            {
+                Html = @<text>
+                           Only EPCs less than 10 years old will be used as part of this service.
+                           If no EPC is returned this field will be blank.
+                           <br/>
+                           <br/>
+                           If the applicant has an EPC rating of A/B/C then they are likely ineligible so it's
+                           unlikely this will be contained in the referral file.
+                        </text>,
             },
         },
         new()
         {
-            Row = new List<TableCellViewModel>
+            Key = new SummaryListRowKey
             {
-                new()
-                {
-                    Text = "Contact details",
-                },
-                new()
-                {
-                    Text = "An email address and/or phone number for the applicant will be provided.",
-                },
+                Text = "Contact details",
+            },
+            Value = new SummaryListRowValue
+            {
+                Text = "An email address and/or phone number for the applicant will be provided.",
             },
         },
         new()
         {
-            Row = new List<TableCellViewModel>
+            Key = new SummaryListRowKey
             {
-                new()
-                {
-                    Text = "Contact preferences",
-                },
-                new()
-                {
-                    Text = "To ensure access needs can be met, the applicant will give a preference for how they wish"
-                           + " to be contacted.",
-                },
+                Text = "Contact preferences",
+            },
+            Value = new SummaryListRowValue
+            {
+                Text = "To ensure access needs can be met, the applicant will give a preference for how they wish"
+                       + " to be contacted.",
             },
         },
     },
-    FirstCellIsHeader = true,
 }))
