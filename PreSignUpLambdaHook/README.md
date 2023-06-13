@@ -35,20 +35,10 @@ Access to the database is via AWS Systems Manager (SSM) in the relevant AWS envi
 
 ### Adding a single user
 
-To add a single user, the following commands may be used:
+The script `SQL/add_users.sql` contains SQL for inserting users and granting them permission to access the data of specific local authorities. First, replace `<user email address>` with the email address of the user you wish to add, then replace `<local authority custodian code>` with the custodian code of the local authority they should be given access to, and run the file. This can be difficult to do against an AWS database, so you may have to execute the lines manually through `psql` as described above.
 
-- Add the user record: `INSERT INTO "Users" ("EmailAddress", "HasLoggedIn") VALUES ('<email address>', FALSE);`
-- Adding permissions for a user to access a specific LA is slightly more complex:
-```sql
-INSERT INTO "LocalAuthorityUser" ("LocalAuthoritiesId", "UsersId")
-SELECT "LocalAuthorities"."Id", "Users"."Id"
-FROM "LocalAuthorities" CROSS JOIN "Users"
-WHERE "Users"."EmailAddress" = '<email address>'
-AND "LocalAuthorities"."CustodianCode" = '<custodian code>';
-```
-
-Note that each user needs access to at least one LA, otherwise they will see an error after logging in.
+Note that each user needs access to at least one local authority, otherwise they will see an error after logging in.
 
 ### Adding multiple users
 
-TODO: Write a template script for inserting multiple users
+To add multiple users and give them permissions at the same time, use the commented-out lines in the above SQL script. Un-comment these lines, and duplicate them as many times as is needed to add all new users and permissions.
