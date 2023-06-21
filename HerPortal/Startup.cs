@@ -16,6 +16,7 @@ using HerPortal.DataStores;
 using HerPortal.ErrorHandling;
 using HerPortal.ExternalServices.CsvFiles;
 using HerPortal.ExternalServices.EmailSending;
+using HerPortal.Middleware;
 using HerPortal.Services;
 using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -173,6 +174,8 @@ namespace HerPortal
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseMiddleware<SecurityHeadersMiddleware>();
 
             app.UseAuthentication();
             app.UseAuthorization();
