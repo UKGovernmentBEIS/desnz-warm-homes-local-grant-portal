@@ -30,7 +30,7 @@ namespace HerPortal
     {
         private readonly IConfiguration configuration;
         private readonly IWebHostEnvironment webHostEnvironment;
-        
+
         public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             this.configuration = configuration;
@@ -41,7 +41,7 @@ namespace HerPortal
         public void ConfigureServices(IServiceCollection services)
         {
             ConfigureHangfire(services);
-            
+
             services.AddMemoryCache();
             services.AddScoped<CsvFileDownloadDataStore>();
             services.AddScoped<UserDataStore>();
@@ -52,7 +52,7 @@ namespace HerPortal
             services.AddDataProtection().PersistKeysToDbContext<HerDbContext>();
 
             ConfigureGlobalConfiguration(services);
-            
+
             ConfigureGovUkNotify(services);
             ConfigureDatabaseContext(services);
             ConfigureS3FileReader(services);
@@ -87,7 +87,7 @@ namespace HerPortal
             {
                 // Recommendation for MaxAge is at least one year, and a maximum of 2 years
                 // If Preload is enabled, IncludeSubdomains should be set to true, and MaxAge should be set to 2 years
-                options.MaxAge = TimeSpan.FromSeconds(31536000);
+                options.MaxAge = TimeSpan.FromDays(365);
             });
 
             services.AddHttpContextAccessor();
@@ -127,7 +127,7 @@ namespace HerPortal
             services.Configure<GovUkNotifyConfiguration>(
                 configuration.GetSection(GovUkNotifyConfiguration.ConfigSection));
         }
-        
+
         private void ConfigureS3FileReader(IServiceCollection services)
         {
             services.Configure<S3FileReaderConfiguration>(
