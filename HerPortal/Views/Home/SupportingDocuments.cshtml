@@ -146,7 +146,9 @@ stages are 'application verification' and 'home improvements'." />
             },
             Value = new SummaryListRowValue
             {
-                Text = "If the applicant lives in an LSOA, income is not required to determine eligibility.",
+                Text = "If the applicant lives in an LSOA, income verification is not required to determine"
+                       + " eligibility. The data field is titled “Eligible postcode” and will contain either “yes” or"
+                       + " “no”",
             },
         },
         new()
@@ -158,12 +160,16 @@ stages are 'application verification' and 'home improvements'." />
             Value = new SummaryListRowValue
             {
                 Html = @<text>
-                           Only EPCs less than 10 years old will be used as part of this service.
-                           If no EPC is returned this field will be blank.
+                           Expired EPCs: Only EPCs less than 10 years old will be used as part of this service.
+                           The data field will contain “Expired” and include the last known rating.
                            <br/>
                            <br/>
-                           If the applicant has an EPC rating of A/B/C then they are likely ineligible so it's
-                           unlikely this will be contained in the referral file.
+                           No EPC: If no EPC is found this data field will contain “Unknown”.
+                           <br/>
+                           <br/>
+                           High EPC: If the applicant has an EPC rating of A / B/ C they are asked to confirm this is
+                           correct. If the user says it is incorrect, they will be referred to you for further checks.
+                           If the High EPC is confirmed as correct the user will be ineligible and will not be referred.
                         </text>,
             },
         },
@@ -176,18 +182,6 @@ stages are 'application verification' and 'home improvements'." />
             Value = new SummaryListRowValue
             {
                 Text = "An email address and/or phone number for the applicant will be provided.",
-            },
-        },
-        new()
-        {
-            Key = new SummaryListRowKey
-            {
-                Text = "Contact preferences",
-            },
-            Value = new SummaryListRowValue
-            {
-                Text = "To ensure access needs can be met, the applicant will give a preference for how they wish"
-                       + " to be contacted.",
             },
         },
     },
