@@ -93,7 +93,7 @@ Fill in the opened `secrets.json` file with:
             "ClientId": "<app client id from AWS Cognito>",
             "ClientSecret": "<app client secret from AWS Cognito>",
             "MetadataAddress": "https://cognito-idp.{your-region-id}.amazonaws.com/{your-user-pool-id}/.well-known/openid-configuration",
-            "SignOutUrl": "https://{cognito-client-base-url}/logout?client_id={client-id}&logout_uri=https://localhost:5001/portal/sign-out"
+            "SignOutUrl": "{cognito-domain}/logout?client_id={client-id}&logout_uri=https://localhost:5001/portal/sign-out"
         }
     },
 
