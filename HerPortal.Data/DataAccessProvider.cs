@@ -47,9 +47,12 @@ public class DataAccessProvider : IDataAccessProvider
             .ToListAsync();
     }
 
-    public async Task<List<CsvFileDownload>> GetLastCsvFileDownloadsAsync(int userId)
+    public async Task<List<TrackedCsvFile>> GetCsvFilesDownloadedByUserAsync(int userId)
     {
-        return await context.CsvFileDownloads.Where(cfd => cfd.UserId == userId).ToListAsync();
+        return await context.TrackedCsvFiles
+            .Where(tcf => tcf.Downloads.Any(d => d.UserId == userId))
+            .Include(tcf => tcf.Downloads)
+            .ToListAsync();
     }
 
     public async Task MarkCsvFileAsDownloadedAsync(string custodianCode, int year, int month, int userId)
@@ -59,30 +62,34 @@ public class DataAccessProvider : IDataAccessProvider
             throw new ArgumentOutOfRangeException($"No user found with ID {userId}");
         }
         
-        CsvFileDownload download;
+        TrackedCsvFile file;
         try
         {
-            download = await context.CsvFileDownloads
+            file = await context.TrackedCsvFiles
+                .Include(tcf => tcf.Downloads)
                 .SingleAsync(cfd =>
                     cfd.CustodianCode == custodianCode &&
                     cfd.Year == year &&
-                    cfd.Month == month &&
-                    cfd.UserId == userId
+                    cfd.Month == month
                 );
         }
         catch (InvalidOperationException)
         {
-            download = new CsvFileDownload
+            file = new TrackedCsvFile
             {
                 CustodianCode = custodianCode,
                 Year = year,
                 Month = month,
-                UserId = userId,
+                Downloads = new List<CsvFileDownload>(),
             };
-            await context.CsvFileDownloads.AddAsync(download);
+            await context.TrackedCsvFiles.AddAsync(file);
         }
 
-        download.LastDownloaded = DateTime.Now;
+        file.Downloads.Add(new CsvFileDownload
+        {
+            Timestamp = DateTime.Now,
+            UserId = userId,
+        });
         
         await context.SaveChangesAsync();
     }

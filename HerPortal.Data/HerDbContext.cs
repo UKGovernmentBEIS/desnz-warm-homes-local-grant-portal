@@ -8,8 +8,7 @@ namespace HerPortal.Data;
 public class HerDbContext : DbContext, IDataProtectionKeyContext
 {
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
-    
-    public DbSet<CsvFileDownload> CsvFileDownloads { get; set; }
+    public DbSet<TrackedCsvFile> TrackedCsvFiles { get; set; }
     public DbSet<LocalAuthority> LocalAuthorities { get; set; }
     public DbSet<User> Users { get; set; }
 
@@ -33,10 +32,16 @@ public class HerDbContext : DbContext, IDataProtectionKeyContext
             .Entity<CsvFileDownload>()
             .HasKey(cf => new
             {
-                cf.CustodianCode,
-                cf.Year,
-                cf.Month,
+                cf.CsvFileId,
                 cf.UserId,
+                cf.Timestamp,
+            });
+        
+        modelBuilder
+            .Entity<TrackedCsvFile>()
+            .HasKey(tcf => new
+            {
+                tcf.Id
             });
         
         AddAllRowVersioning(modelBuilder);

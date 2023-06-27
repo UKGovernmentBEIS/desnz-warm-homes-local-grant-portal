@@ -24,19 +24,13 @@ namespace HerPortal.Data.Migrations
 
             modelBuilder.Entity("HerPortal.BusinessLogic.Models.CsvFileDownload", b =>
                 {
-                    b.Property<string>("CustodianCode")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Month")
+                    b.Property<int>("CsvFileId")
                         .HasColumnType("integer");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("LastDownloaded")
+                    b.Property<DateTime>("Timestamp")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<uint>("xmin")
@@ -44,11 +38,11 @@ namespace HerPortal.Data.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("xid");
 
-                    b.HasKey("CustodianCode", "Year", "Month", "UserId");
+                    b.HasKey("CsvFileId", "UserId", "Timestamp");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CsvFileDownloads");
+                    b.ToTable("CsvFileDownload");
                 });
 
             modelBuilder.Entity("HerPortal.BusinessLogic.Models.LocalAuthority", b =>
@@ -73,6 +67,28 @@ namespace HerPortal.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("LocalAuthorities");
+                });
+
+            modelBuilder.Entity("HerPortal.BusinessLogic.Models.TrackedCsvFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CustodianCode")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TrackedCsvFiles");
                 });
 
             modelBuilder.Entity("HerPortal.BusinessLogic.Models.User", b =>
@@ -138,11 +154,19 @@ namespace HerPortal.Data.Migrations
 
             modelBuilder.Entity("HerPortal.BusinessLogic.Models.CsvFileDownload", b =>
                 {
+                    b.HasOne("HerPortal.BusinessLogic.Models.TrackedCsvFile", "CsvFile")
+                        .WithMany("Downloads")
+                        .HasForeignKey("CsvFileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("HerPortal.BusinessLogic.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CsvFile");
 
                     b.Navigation("User");
                 });
@@ -160,6 +184,11 @@ namespace HerPortal.Data.Migrations
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("HerPortal.BusinessLogic.Models.TrackedCsvFile", b =>
+                {
+                    b.Navigation("Downloads");
                 });
 #pragma warning restore 612, 618
         }
