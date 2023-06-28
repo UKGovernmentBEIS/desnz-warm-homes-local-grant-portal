@@ -17,9 +17,9 @@ public class CsvFileDownloadDataStore
         this.logger = logger;
     }
 
-    public async Task<List<TrackedCsvFile>> GetCsvFilesDownloadedByUserAsync(int userId)
+    public async Task<List<CsvFileDownload>> GetLastCsvFileDownloadsAsync(int userId)
     {
-        return await dataAccessProvider.GetCsvFilesDownloadedByUserAsync(userId);
+        return await dataAccessProvider.GetLastCsvFileDownloadsAsync(userId);
     }
     
     public async Task MarkCsvFileAsDownloadedAsync(string custodianCode, int year, int month, int userId)

@@ -47,49 +47,57 @@ public class DataAccessProvider : IDataAccessProvider
             .ToListAsync();
     }
 
-    public async Task<List<TrackedCsvFile>> GetCsvFilesDownloadedByUserAsync(int userId)
+    public async Task<List<CsvFileDownload>> GetLastCsvFileDownloadsAsync(int userId)
     {
-        return await context.TrackedCsvFiles
-            .Where(tcf => tcf.Downloads.Any(d => d.UserId == userId))
-            .Include(tcf => tcf.Downloads)
-            .ToListAsync();
+        return await context.CsvFileDownloads.Where(cfd => cfd.UserId == userId).ToListAsync();
     }
 
     public async Task MarkCsvFileAsDownloadedAsync(string custodianCode, int year, int month, int userId)
     {
-        if (!await context.Users.AnyAsync(u => u.Id == userId))
-        {
-            throw new ArgumentOutOfRangeException($"No user found with ID {userId}");
-        }
-        
-        TrackedCsvFile file;
+        User user;
         try
         {
-            file = await context.TrackedCsvFiles
-                .Include(tcf => tcf.Downloads)
+            user = await context.Users.SingleAsync(u => u.Id == userId);
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new ArgumentOutOfRangeException($"No user found with ID {userId}", ex);
+        }
+        
+        CsvFileDownload download;
+        try
+        {
+            download = await context.CsvFileDownloads
                 .SingleAsync(cfd =>
                     cfd.CustodianCode == custodianCode &&
                     cfd.Year == year &&
-                    cfd.Month == month
+                    cfd.Month == month &&
+                    cfd.UserId == userId
                 );
         }
         catch (InvalidOperationException)
         {
-            file = new TrackedCsvFile
+            download = new CsvFileDownload
             {
                 CustodianCode = custodianCode,
                 Year = year,
                 Month = month,
-                Downloads = new List<CsvFileDownload>(),
+                UserId = userId,
             };
-            await context.TrackedCsvFiles.AddAsync(file);
+            await context.CsvFileDownloads.AddAsync(download);
         }
 
-        file.Downloads.Add(new CsvFileDownload
+        download.LastDownloaded = DateTime.Now;
+
+        var auditDownload = new AuditDownload
         {
+            CustodianCode = custodianCode,
+            Year = year,
+            Month = month,
+            UserEmail = user.EmailAddress,
             Timestamp = DateTime.Now,
-            UserId = userId,
-        });
+        };
+        await context.AuditDownloads.AddAsync(auditDownload);
         
         await context.SaveChangesAsync();
     }

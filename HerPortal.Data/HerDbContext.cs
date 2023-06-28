@@ -8,7 +8,8 @@ namespace HerPortal.Data;
 public class HerDbContext : DbContext, IDataProtectionKeyContext
 {
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
-    public DbSet<TrackedCsvFile> TrackedCsvFiles { get; set; }
+    public DbSet<AuditDownload> AuditDownloads { get; set; }
+    public DbSet<CsvFileDownload> CsvFileDownloads { get; set; }
     public DbSet<LocalAuthority> LocalAuthorities { get; set; }
     public DbSet<User> Users { get; set; }
 
@@ -27,22 +28,37 @@ public class HerDbContext : DbContext, IDataProtectionKeyContext
             .Entity<LocalAuthority>()
             .HasIndex(la => la.CustodianCode)
             .IsUnique();
+
+        modelBuilder
+            .Entity<AuditDownload>()
+            .HasKey(cf => new
+            {
+                cf.CustodianCode,
+                cf.Year,
+                cf.Month,
+                cf.UserEmail,
+                cf.Timestamp,
+            });
+        
+        modelBuilder
+            .Entity<AuditDownload>()
+            .Property(cf => cf.Timestamp)
+            .HasColumnType("timestamp without time zone");
         
         modelBuilder
             .Entity<CsvFileDownload>()
             .HasKey(cf => new
             {
-                cf.CsvFileId,
+                cf.CustodianCode,
+                cf.Year,
+                cf.Month,
                 cf.UserId,
-                cf.Timestamp,
             });
         
         modelBuilder
-            .Entity<TrackedCsvFile>()
-            .HasKey(tcf => new
-            {
-                tcf.Id
-            });
+            .Entity<CsvFileDownload>()
+            .Property(cf => cf.LastDownloaded)
+            .HasColumnType("timestamp without time zone");
         
         AddAllRowVersioning(modelBuilder);
     }

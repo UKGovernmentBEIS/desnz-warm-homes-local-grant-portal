@@ -12,39 +12,67 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HerPortal.Data.Migrations
 {
     [DbContext(typeof(HerDbContext))]
-    [Migration("20230627154142_TrackAllCsvFileDownloads")]
-    partial class TrackAllCsvFileDownloads
+    [Migration("20230628150548_AddTableToTrackAllCsvFileDownloads")]
+    partial class AddTableToTrackAllCsvFileDownloads
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.4")
+                .HasAnnotation("ProductVersion", "6.0.16")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("HerPortal.BusinessLogic.Models.AuditDownload", b =>
+                {
+                    b.Property<string>("CustodianCode")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserEmail")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("CustodianCode", "Year", "Month", "UserEmail", "Timestamp");
+
+                    b.ToTable("AuditDownloads");
+                });
+
             modelBuilder.Entity("HerPortal.BusinessLogic.Models.CsvFileDownload", b =>
                 {
-                    b.Property<int>("CsvFileId")
+                    b.Property<string>("CustodianCode")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Month")
                         .HasColumnType("integer");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime?>("LastDownloaded")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("xmin")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("xid");
 
-                    b.HasKey("CsvFileId", "UserId", "Timestamp");
+                    b.HasKey("CustodianCode", "Year", "Month", "UserId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CsvFileDownload");
+                    b.ToTable("CsvFileDownloads");
                 });
 
             modelBuilder.Entity("HerPortal.BusinessLogic.Models.LocalAuthority", b =>
@@ -69,28 +97,6 @@ namespace HerPortal.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("LocalAuthorities");
-                });
-
-            modelBuilder.Entity("HerPortal.BusinessLogic.Models.TrackedCsvFile", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CustodianCode")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Month")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TrackedCsvFiles");
                 });
 
             modelBuilder.Entity("HerPortal.BusinessLogic.Models.User", b =>
@@ -156,19 +162,11 @@ namespace HerPortal.Data.Migrations
 
             modelBuilder.Entity("HerPortal.BusinessLogic.Models.CsvFileDownload", b =>
                 {
-                    b.HasOne("HerPortal.BusinessLogic.Models.TrackedCsvFile", "CsvFile")
-                        .WithMany("Downloads")
-                        .HasForeignKey("CsvFileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("HerPortal.BusinessLogic.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("CsvFile");
 
                     b.Navigation("User");
                 });
@@ -186,11 +184,6 @@ namespace HerPortal.Data.Migrations
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("HerPortal.BusinessLogic.Models.TrackedCsvFile", b =>
-                {
-                    b.Navigation("Downloads");
                 });
 #pragma warning restore 612, 618
         }

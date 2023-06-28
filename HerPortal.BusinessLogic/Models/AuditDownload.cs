@@ -1,11 +1,10 @@
 ﻿namespace HerPortal.BusinessLogic.Models;
 
-public class CsvFileDownload
+public class AuditDownload
 {
     public string CustodianCode { get; set; }
     public int Year { get; set; }
     public int Month { get; set; }
-    public int UserId { get; set; }
-    public User User { get; set; }
-    public DateTime? LastDownloaded { get; set; }
+    public string UserEmail { get; set; }
+    public DateTime Timestamp { get; set; }
 }

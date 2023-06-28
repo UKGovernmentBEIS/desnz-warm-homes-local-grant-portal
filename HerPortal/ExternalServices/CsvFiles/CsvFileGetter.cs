@@ -29,7 +29,7 @@ public class CsvFileGetter : ICsvFileGetter
     
     public async Task<IEnumerable<CsvFileData>> GetByCustodianCodesAsync(IEnumerable<string> custodianCodes, int userId)
     {
-        var userDownloadedFiles = await csvFileDownloadDataStore.GetCsvFilesDownloadedByUserAsync(userId);
+        var downloads = await csvFileDownloadDataStore.GetLastCsvFileDownloadsAsync(userId);
         var files = new List<CsvFileData>();
 
         foreach (var custodianCode in custodianCodes)
@@ -38,10 +38,10 @@ public class CsvFileGetter : ICsvFileGetter
             files.AddRange(s3Objects.Select(s3O =>
                 {
                     var data = keyService.GetDataFromS3Key(s3O.Key);
-                    var downloadData = userDownloadedFiles.SingleOrDefault(tcf =>
-                        tcf.CustodianCode == data.CustodianCode
-                        && tcf.Year == data.Year
-                        && tcf.Month == data.Month
+                    var downloadData = downloads.SingleOrDefault(d =>
+                        d.CustodianCode == data.CustodianCode
+                        && d.Year == data.Year
+                        && d.Month == data.Month
                     );
                     return new CsvFileData
                     (
