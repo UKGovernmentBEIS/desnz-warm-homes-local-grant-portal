@@ -3,12 +3,10 @@
 @model HerPortal.Models.HomepageViewModel
 
 <h2 class="govuk-heading-l">Referral Files</h2>
-<p class="govuk-body">For the Home Upgrade Grant 2.</p>
-<p class="govuk-body">Select the "Month/Year" to download the referral file.</p>
 
 @if (Model.UserHasNewUpdates)
 {
-    <p class="govuk-body govuk-!-font-weight-bold">Changes have been made that you haven’t yet downloaded.</p>
+    <p class="govuk-body govuk-!-font-weight-bold">Changes have been made that you have not yet downloaded.</p>
 }
 
 @if (Model.CsvFiles.Any())

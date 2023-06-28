@@ -2,6 +2,7 @@
 @using GovUkDesignSystem.GovUkDesignSystemComponents
 @using HerPortal.Controllers
 @using HerPortal.Helpers
+@using HerPortal.Middleware
 @using HerPortal.Services
 @using Microsoft.Extensions.Configuration
 @inject StaticAssetsVersioningService StaticAssetsVersioning
@@ -10,10 +11,6 @@
 }
 @inject IConfiguration Configuration
 <!DOCTYPE html>
-
-<!-- Build number: @(BuildNumberHelper.GetBuildNumber()) -->
-<!-- Server name: @(Environment.MachineName) -->
-
 <html lang="en" class="govuk-template app-html-class">
 <head>
     <meta charset="utf-8"/>
@@ -40,14 +37,14 @@
     <![endif]-->
     
     <!--[if lt IE 9]>
-        <script src="@(StaticAssetsVersioning.GetHtml5ShivJsFilename())"></script>
+        <script nonce="@Context.GetScriptNonce()" src="@(StaticAssetsVersioning.GetHtml5ShivJsFilename())"></script>
     <![endif]-->
     
     <meta property="og:image" content="@(assetsPath)/govuk-opengraph-image.png">
 </head>
 
 <body class="govuk-template__body app-body-class">
-    <script>
+    <script nonce="@Context.GetScriptNonce()">
         document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
     </script>
 
@@ -113,7 +110,7 @@
         }
     })
 
-    <script src="@(StaticAssetsVersioning.GetAppJsFilename())"></script>
-    <script>window.GOVUKFrontend.initAll()</script>
+    <script nonce="@Context.GetScriptNonce()" src="@(StaticAssetsVersioning.GetAppJsFilename())"></script>
+    <script nonce="@Context.GetScriptNonce()">window.GOVUKFrontend.initAll()</script>
 </body>
 </html>
