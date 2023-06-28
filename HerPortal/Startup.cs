@@ -16,10 +16,12 @@ using HerPortal.DataStores;
 using HerPortal.ErrorHandling;
 using HerPortal.ExternalServices.CsvFiles;
 using HerPortal.ExternalServices.EmailSending;
+using HerPortal.Middleware;
 using HerPortal.Services;
 using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.HttpOverrides;
 using GlobalConfiguration = HerPortal.BusinessLogic.GlobalConfiguration;
@@ -30,7 +32,7 @@ namespace HerPortal
     {
         private readonly IConfiguration configuration;
         private readonly IWebHostEnvironment webHostEnvironment;
-        
+
         public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             this.configuration = configuration;
@@ -41,7 +43,7 @@ namespace HerPortal
         public void ConfigureServices(IServiceCollection services)
         {
             ConfigureHangfire(services);
-            
+
             services.AddMemoryCache();
             services.AddScoped<CsvFileDownloadDataStore>();
             services.AddScoped<UserDataStore>();
@@ -52,7 +54,7 @@ namespace HerPortal
             services.AddDataProtection().PersistKeysToDbContext<HerDbContext>();
 
             ConfigureGlobalConfiguration(services);
-            
+
             ConfigureGovUkNotify(services);
             ConfigureDatabaseContext(services);
             ConfigureS3FileReader(services);
@@ -70,7 +72,11 @@ namespace HerPortal
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
-            .AddCookie()
+            .AddCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            })
             .AddOpenIdConnect(options =>
             {
                 options.ResponseType = "code";
@@ -81,6 +87,17 @@ namespace HerPortal
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
                 options.SaveTokens = true;
+                options.NonceCookie.HttpOnly = true;
+                options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.CorrelationCookie.HttpOnly = true;
+                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+            });
+
+            services.AddHsts(options =>
+            {
+                // Recommendation for MaxAge is at least one year, and a maximum of 2 years
+                // If Preload is enabled, IncludeSubdomains should be set to true, and MaxAge should be set to 2 years
+                options.MaxAge = TimeSpan.FromDays(365);
             });
 
             services.AddHttpContextAccessor();
@@ -120,7 +137,7 @@ namespace HerPortal
             services.Configure<GovUkNotifyConfiguration>(
                 configuration.GetSection(GovUkNotifyConfiguration.ConfigSection));
         }
-        
+
         private void ConfigureS3FileReader(IServiceCollection services)
         {
             services.Configure<S3FileReaderConfiguration>(
@@ -141,7 +158,7 @@ namespace HerPortal
                     ExceptionHandlingPath = "/error"
                 });
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                // app.UseHsts();
+                app.UseHsts();
             }
 
             // Use forwarded headers, so we know which URL to use in our auth redirects
@@ -173,6 +190,8 @@ namespace HerPortal
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseMiddleware<SecurityHeadersMiddleware>();
 
             app.UseAuthentication();
             app.UseAuthorization();

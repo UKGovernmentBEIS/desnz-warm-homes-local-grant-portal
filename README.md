@@ -93,7 +93,7 @@ Fill in the opened `secrets.json` file with:
             "ClientId": "<app client id from AWS Cognito>",
             "ClientSecret": "<app client secret from AWS Cognito>",
             "MetadataAddress": "https://cognito-idp.{your-region-id}.amazonaws.com/{your-user-pool-id}/.well-known/openid-configuration",
-            "SignOutUrl": "https://{cognito-client-base-url}/logout?client_id={client-id}&logout_uri=https://localhost:5001/sign-out"
+            "SignOutUrl": "https://{cognito-client-base-url}/logout?client_id={client-id}&logout_uri=https://localhost:5001/portal/sign-out"
         }
     },
 
@@ -108,11 +108,21 @@ You can also add secrets with `dotnet user-secrets`, just pipe the JSON you want
 cat secrets.json | dotnet user-secrets set
 ```
 
+### AWS Credentials
+
+In Rider:
+- Install the "AWS Toolkit" plugin
+- Open the credentials file in a text editor (this is usually `C:\\Users\<your username>\.aws\credentials`, 
+  or find the AWS tab in the bottom right of Rider, click "All local credentials" > "Edit AWS credential file(s)")
+- Log into AWS on a browser, and obtain the AWS profile to paste into the file (this varies between accounts)
+- Save the file, and go back to Rider: you should see a toast in the bottom right indicating that the AWS profile has been reloaded (if not, select the profile using the tab in the bottom toolbar)
+
 ### Running Locally
 
 - In Visual Studio / Rider build the solution
 - In `HerPortal` run `npm run watch`
 - In Visual Studio / Rider run the `HerPortal` project
+- In a browser, visit https://localhost:5001/portal (the `/portal` is important!)
 
 ## Database
 
