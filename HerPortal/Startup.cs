@@ -21,6 +21,7 @@ using HerPortal.Services;
 using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.HttpOverrides;
 using GlobalConfiguration = HerPortal.BusinessLogic.GlobalConfiguration;
@@ -71,7 +72,11 @@ namespace HerPortal
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
-            .AddCookie()
+            .AddCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            })
             .AddOpenIdConnect(options =>
             {
                 options.ResponseType = "code";
@@ -82,6 +87,10 @@ namespace HerPortal
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
                 options.SaveTokens = true;
+                options.NonceCookie.HttpOnly = true;
+                options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.CorrelationCookie.HttpOnly = true;
+                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
             });
 
             services.AddHsts(options =>
