@@ -24,22 +24,28 @@ namespace HerPortal.Data.Migrations
 
             modelBuilder.Entity("HerPortal.BusinessLogic.Models.AuditDownload", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
                     b.Property<string>("CustodianCode")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UserEmail")
                         .HasColumnType("text");
 
                     b.Property<int>("Year")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Month")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UserEmail")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("CustodianCode", "Year", "Month", "UserEmail", "Timestamp");
+                    b.HasKey("Id");
 
                     b.ToTable("AuditDownloads");
                 });

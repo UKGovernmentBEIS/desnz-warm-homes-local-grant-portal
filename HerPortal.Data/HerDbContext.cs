@@ -31,14 +31,13 @@ public class HerDbContext : DbContext, IDataProtectionKeyContext
 
         modelBuilder
             .Entity<AuditDownload>()
-            .HasKey(cf => new
-            {
-                cf.CustodianCode,
-                cf.Year,
-                cf.Month,
-                cf.UserEmail,
-                cf.Timestamp,
-            });
+            .Property<int>("Id")
+            .HasColumnType("integer")
+            .ValueGeneratedOnAdd();
+
+        modelBuilder
+            .Entity<AuditDownload>()
+            .HasKey("Id");
         
         modelBuilder
             .Entity<AuditDownload>()
