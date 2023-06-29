@@ -43,6 +43,16 @@ public class HerDbContext : DbContext, IDataProtectionKeyContext
             .Entity<AuditDownload>()
             .Property(cf => cf.Timestamp)
             .HasColumnType("timestamp without time zone");
+
+        modelBuilder
+            .Entity<AuditDownload>()
+            .Property(cf => cf.UserEmail)
+            .IsRequired();
+        
+        modelBuilder
+            .Entity<AuditDownload>()
+            .Property(cf => cf.CustodianCode)
+            .IsRequired();
         
         modelBuilder
             .Entity<CsvFileDownload>()

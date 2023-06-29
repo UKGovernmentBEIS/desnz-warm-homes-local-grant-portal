@@ -31,6 +31,7 @@ namespace HerPortal.Data.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CustodianCode")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Month")
@@ -40,6 +41,7 @@ namespace HerPortal.Data.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UserEmail")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Year")
