@@ -8,7 +8,7 @@ namespace HerPortal.Data;
 public class HerDbContext : DbContext, IDataProtectionKeyContext
 {
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
-    
+    public DbSet<AuditDownload> AuditDownloads { get; set; }
     public DbSet<CsvFileDownload> CsvFileDownloads { get; set; }
     public DbSet<LocalAuthority> LocalAuthorities { get; set; }
     public DbSet<User> Users { get; set; }
@@ -28,6 +28,31 @@ public class HerDbContext : DbContext, IDataProtectionKeyContext
             .Entity<LocalAuthority>()
             .HasIndex(la => la.CustodianCode)
             .IsUnique();
+
+        modelBuilder
+            .Entity<AuditDownload>()
+            .Property<int>("Id")
+            .HasColumnType("integer")
+            .ValueGeneratedOnAdd();
+
+        modelBuilder
+            .Entity<AuditDownload>()
+            .HasKey("Id");
+        
+        modelBuilder
+            .Entity<AuditDownload>()
+            .Property(cf => cf.Timestamp)
+            .HasColumnType("timestamp without time zone");
+
+        modelBuilder
+            .Entity<AuditDownload>()
+            .Property(cf => cf.UserEmail)
+            .IsRequired();
+        
+        modelBuilder
+            .Entity<AuditDownload>()
+            .Property(cf => cf.CustodianCode)
+            .IsRequired();
         
         modelBuilder
             .Entity<CsvFileDownload>()
@@ -38,6 +63,11 @@ public class HerDbContext : DbContext, IDataProtectionKeyContext
                 cf.Month,
                 cf.UserId,
             });
+        
+        modelBuilder
+            .Entity<CsvFileDownload>()
+            .Property(cf => cf.LastDownloaded)
+            .HasColumnType("timestamp without time zone");
         
         AddAllRowVersioning(modelBuilder);
     }
