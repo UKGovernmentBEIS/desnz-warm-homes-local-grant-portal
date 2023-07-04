@@ -54,9 +54,14 @@ public class DataAccessProvider : IDataAccessProvider
 
     public async Task MarkCsvFileAsDownloadedAsync(string custodianCode, int year, int month, int userId)
     {
-        if (!await context.Users.AnyAsync(u => u.Id == userId))
+        User user;
+        try
         {
-            throw new ArgumentOutOfRangeException($"No user found with ID {userId}");
+            user = await context.Users.SingleAsync(u => u.Id == userId);
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new ArgumentOutOfRangeException($"No user found with ID {userId}", ex);
         }
         
         CsvFileDownload download;
@@ -83,6 +88,16 @@ public class DataAccessProvider : IDataAccessProvider
         }
 
         download.LastDownloaded = DateTime.Now;
+
+        var auditDownload = new AuditDownload
+        {
+            CustodianCode = custodianCode,
+            Year = year,
+            Month = month,
+            UserEmail = user.EmailAddress,
+            Timestamp = DateTime.Now,
+        };
+        await context.AuditDownloads.AddAsync(auditDownload);
         
         await context.SaveChangesAsync();
     }

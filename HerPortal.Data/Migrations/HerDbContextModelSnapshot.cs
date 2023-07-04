@@ -17,10 +17,40 @@ namespace HerPortal.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.4")
+                .HasAnnotation("ProductVersion", "6.0.16")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("HerPortal.BusinessLogic.Models.AuditDownload", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CustodianCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AuditDownloads");
+                });
 
             modelBuilder.Entity("HerPortal.BusinessLogic.Models.CsvFileDownload", b =>
                 {
@@ -37,7 +67,7 @@ namespace HerPortal.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("LastDownloaded")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("xmin")
                         .IsConcurrencyToken()
