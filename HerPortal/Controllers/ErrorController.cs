@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HerPortal.Controllers;
@@ -8,6 +9,7 @@ public class ErrorController: Controller
 {
     [HttpGet]
     [HttpPost]
+    [AllowAnonymous]
     public IActionResult HandleException()
     {
         return View("ServiceIssue");
