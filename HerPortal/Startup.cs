@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GovUkDesignSystem.ModelBinders;
 using Hangfire;
 using Hangfire.PostgreSql;
@@ -91,6 +92,26 @@ namespace HerPortal
                 options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
                 options.CorrelationCookie.HttpOnly = true;
                 options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+
+                // We see relatively frequent errors where the user doesn't have a valid correlation cookie.
+                // This may be for a number of reasons:
+                // - The cookie expires after 15 minutes
+                // - Landing on the login screen without first hitting the app (therefore missing the cookie)
+                // - Some other unknown cause, e.g. the browser handling SameSite cookie settings incorrectly
+                //
+                // If we detect a correlation error, we redirect to the homepage where the user will be
+                // re-authenticated with a fresh correlation cookie. This introduces a small risk of an
+                // infinite redirect loop upon misconfiguration, but we expect this to be rare.
+                options.Events.OnRemoteFailure = context =>
+                {
+                    if (context.Failure?.Message.Contains("Correlation failed") is true)
+                    {
+                        context.Response.Redirect(Constants.BASE_PATH);
+                        context.HandleResponse();
+                    }
+
+                    return Task.CompletedTask;
+                };
             });
 
             services.AddHsts(options =>
