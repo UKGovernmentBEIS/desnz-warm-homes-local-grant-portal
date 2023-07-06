@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HerPortal.Controllers;
@@ -6,9 +7,9 @@ namespace HerPortal.Controllers;
 [Route("sign-out")]
 public class SignOutController : Controller
 {
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        HttpContext.SignOutAsync();
+        await HttpContext.SignOutAsync();
 
         return RedirectToAction("Index", "Home");
     }
