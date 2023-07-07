@@ -1,4 +1,4 @@
-﻿using HerPortal.ExternalServices.CsvFiles;
+﻿using HerPortal.BusinessLogic.ExternalServices.CsvFiles;
 using HerPortal.ExternalServices.EmailSending;
 using Microsoft.Extensions.Logging;
 
