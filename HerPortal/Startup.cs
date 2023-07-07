@@ -23,8 +23,8 @@ using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using GlobalConfiguration = HerPortal.BusinessLogic.GlobalConfiguration;
 
 namespace HerPortal
@@ -75,19 +75,26 @@ namespace HerPortal
             })
             .AddCookie(options =>
             {
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
+                options.SlidingExpiration = true;
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Lax;
             })
             .AddOpenIdConnect(options =>
             {
-                options.ResponseType = "code";
+                options.NonceCookie.SameSite = SameSiteMode.Lax;
+                options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+                
+                options.ResponseType = OpenIdConnectResponseType.Code;
                 options.MetadataAddress = configuration["Authentication:Cognito:MetadataAddress"];
                 options.ClientId = configuration["Authentication:Cognito:ClientId"];
                 options.ClientSecret = configuration["Authentication:Cognito:ClientSecret"];
                 options.Scope.Add("email");
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
-                options.SaveTokens = true;
+                options.SaveTokens = true; // Save tokens issued to encrypted cookies
+                options.UseTokenLifetime = false; // Don't override the cookie lifetime set above
                 options.NonceCookie.HttpOnly = true;
                 options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
                 options.CorrelationCookie.HttpOnly = true;
