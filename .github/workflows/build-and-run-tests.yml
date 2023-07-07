@@ -11,6 +11,7 @@ on:
       - develop
       - staging
       - main
+      - tidy-up
 
 jobs:
   build-and-run-tests:
