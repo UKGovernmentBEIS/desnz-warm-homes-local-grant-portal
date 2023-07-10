@@ -46,7 +46,8 @@ jobs:
         indicators: true
         output: console
         # Threshold is low as this is a small project and a lot of the code is boilerplate or doesn't make sense to test
-        thresholds: '45 80'
+        # Business logic coverage should be kept at/above 80%
+        thresholds: '50 80'
       # Use always() to always run this step to publish coverage results when there are test failures
       if: ${{ always() }}
         
