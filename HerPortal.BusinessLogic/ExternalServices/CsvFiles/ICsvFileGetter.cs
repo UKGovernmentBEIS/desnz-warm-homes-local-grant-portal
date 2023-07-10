@@ -1,4 +1,4 @@
-﻿namespace HerPortal.ExternalServices.CsvFiles;
+﻿namespace HerPortal.BusinessLogic.ExternalServices.CsvFiles;
 
 public interface ICsvFileGetter
 {

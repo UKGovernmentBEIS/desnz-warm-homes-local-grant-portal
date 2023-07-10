@@ -38,6 +38,27 @@ public class S3ReferralFileKeyServiceTests
         result.Should().Be(expectedS3Key);
     }
     
+    [TestCase("521000", 2023, 1)] // Bad custodian code
+    [TestCase("5210", 999, 1)] // Low year
+    [TestCase("5210", 10000, 1)] // High year
+    [TestCase("5210", 2023, 0)] // Low month
+    [TestCase("5210", 2023, 13)] // High month
+    public void S3ReferralFileKeyService_WhenGivenInvalidData_ThrowsArgumentException
+    (
+        string custodianCode,
+        int year,
+        int month
+    ) {
+        // Arrange
+        var underTest = new S3ReferralFileKeyService(mockLogger.Object);
+        
+        // Act
+        var act = () => underTest.GetS3KeyFromData(custodianCode, year, month);
+        
+        // Assert
+        act.Should().Throw<ArgumentException>();
+    }
+    
     [TestCase("5210/2023_01.csv", "5210", 2023, 1)]
     [TestCase("505/2024_05.csv", "505", 2024, 5)]
     [TestCase("4215/2020_12.csv", "4215", 2020, 12)]
