@@ -1,11 +1,10 @@
-﻿using HerPortal.BusinessLogic;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Notify.Client;
 using Notify.Exceptions;
 using Notify.Models.Responses;
 
-namespace HerPortal.ExternalServices.EmailSending
+namespace HerPortal.BusinessLogic.ExternalServices.EmailSending
 {
     public class GovUkNotifyApi: IEmailSender
     {

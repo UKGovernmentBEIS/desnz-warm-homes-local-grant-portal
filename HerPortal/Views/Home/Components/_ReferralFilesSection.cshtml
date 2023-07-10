@@ -2,7 +2,7 @@
 @using GovUkDesignSystem.GovUkDesignSystemComponents
 @model HerPortal.Models.HomepageViewModel
 
-<h2 class="govuk-heading-l">Referral Files</h2>
+<h1 class="govuk-heading-l">Referral Files</h1>
 
 @if (Model.UserHasNewUpdates)
 {
@@ -11,54 +11,56 @@
 
 @if (Model.CsvFiles.Any())
 {
-    @(await Html.GovUkTable(new TableGovUkViewModel
-    {
-        Head = new List<TableCellViewModel>
+    <div class="horizontally-scrollable">
+        @(await Html.GovUkTable(new TableGovUkViewModel
         {
-            new()
+            Head = new List<TableCellViewModel>
             {
-                Text = "Month/Year",
-            },
-            new()
-            {
-                Text = "Region/LA",
-            },
-            new()
-            {
-                Text = "Last updated",
-            },
-            new()
-            {
-                Text = "Updates",
-            },
-        },
-        Rows = Model.CsvFiles.Select(cf => new TableRowViewModel
-            {
-                Row = new List<TableCellViewModel>
+                new()
                 {
-                    new()
-                    {
-                        Html = @<a class="govuk-link" asp-controller="CsvFile" asp-action="GetCsvFile" asp-route-custodianCode="@cf.CustodianCode" asp-route-year="@cf.Year" asp-route-month="@cf.Month" download>@cf.MonthAndYearText</a>
-                    },
-                    new()
-                    {
-                        Text = cf.LocalAuthorityName,
-                    },
-                    new()
-                    {
-                        Text = cf.LastUpdatedText,
-                    },
-                    new()
-                    {
-                        Html = cf.HasNewUpdates
-                            ? @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--green", Text = "New" }))</text>
-                            : null
-                    },
+                    Text = "Month/Year",
                 },
-            }
-        ).ToList(),
-        FirstCellIsHeader = false,
-    }))
+                new()
+                {
+                    Text = "Region/LA",
+                },
+                new()
+                {
+                    Text = "Last updated",
+                },
+                new()
+                {
+                    Text = "Updates",
+                },
+            },
+            Rows = Model.CsvFiles.Select(cf => new TableRowViewModel
+                {
+                    Row = new List<TableCellViewModel>
+                    {
+                        new()
+                        {
+                            Html = @<a class="govuk-link" asp-controller="CsvFile" asp-action="GetCsvFile" asp-route-custodianCode="@cf.CustodianCode" asp-route-year="@cf.Year" asp-route-month="@cf.Month" download>@cf.MonthAndYearText</a>
+                        },
+                        new()
+                        {
+                            Text = cf.LocalAuthorityName,
+                        },
+                        new()
+                        {
+                            Text = cf.LastUpdatedText,
+                        },
+                        new()
+                        {
+                            Html = cf.HasNewUpdates
+                                ? @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--green", Text = "New" }))</text>
+                                : null
+                        },
+                    },
+                }
+            ).ToList(),
+            FirstCellIsHeader = false,
+        }))
+    </div>
 }
 else
 {

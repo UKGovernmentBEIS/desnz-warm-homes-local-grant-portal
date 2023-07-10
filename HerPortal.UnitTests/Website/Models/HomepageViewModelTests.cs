@@ -6,7 +6,7 @@ using HerPortal.BusinessLogic.Models;
 using HerPortal.ExternalServices.CsvFiles;
 using HerPortal.Models;
 using NUnit.Framework;
-using CsvFileData = HerPortal.ExternalServices.CsvFiles.CsvFileData;
+using CsvFileData = HerPortal.BusinessLogic.ExternalServices.CsvFiles.CsvFileData;
 using Tests.Helpers;
 
 namespace Tests.Website.Models;

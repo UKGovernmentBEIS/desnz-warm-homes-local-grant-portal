@@ -1,7 +1,4 @@
-﻿using System;
-using Amazon.S3.Model;
-
-namespace HerPortal.ExternalServices.CsvFiles;
+﻿namespace HerPortal.BusinessLogic.ExternalServices.CsvFiles;
 
 public class CsvFileData
 {

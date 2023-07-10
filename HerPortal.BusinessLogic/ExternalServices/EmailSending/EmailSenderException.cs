@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HerPortal.ExternalServices.EmailSending;
+﻿namespace HerPortal.BusinessLogic.ExternalServices.EmailSending;
 
 public class EmailSenderException : Exception
 {

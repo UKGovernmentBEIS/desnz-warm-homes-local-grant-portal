@@ -1,10 +1,10 @@
 using Hangfire;
+using HerPortal.BusinessLogic.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using HerPortal.Data;
-using HerPortal.Data.Services;
 using Microsoft.Extensions.Options;
 using GlobalConfiguration = HerPortal.BusinessLogic.GlobalConfiguration;
 
