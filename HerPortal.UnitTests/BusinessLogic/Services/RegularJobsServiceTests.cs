@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HerPortal.BusinessLogic.ExternalServices.CsvFiles;
+using HerPortal.BusinessLogic.ExternalServices.EmailSending;
 using HerPortal.BusinessLogic.Models;
 using HerPortal.BusinessLogic.Services;
 using HerPortal.Data;
-using HerPortal.ExternalServices.EmailSending;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Moq;
