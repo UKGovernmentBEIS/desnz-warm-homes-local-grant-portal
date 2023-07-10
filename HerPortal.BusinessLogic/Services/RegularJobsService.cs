@@ -1,6 +1,6 @@
 ﻿using HerPortal.BusinessLogic.ExternalServices.CsvFiles;
+using HerPortal.BusinessLogic.ExternalServices.EmailSending;
 using HerPortal.Data;
-using HerPortal.ExternalServices.EmailSending;
 using Microsoft.Extensions.Logging;
 
 namespace HerPortal.BusinessLogic.Services;
