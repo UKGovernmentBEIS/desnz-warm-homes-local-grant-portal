@@ -37,7 +37,7 @@ public class S3ReferralFileKeyService
 
     public (string CustodianCode, int Year, int Month) GetDataFromS3Key(string s3Key)
     {
-        if (!s3KeyRegex.IsMatch(s3Key))
+        if (!IsValidS3Key(s3Key))
         {
             logger.LogError("Could not extract custodian code, year, or month from S3 key \"{S3Key}\"", s3Key);
             throw new ArgumentOutOfRangeException
