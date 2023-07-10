@@ -34,5 +34,11 @@ public class UserBuilder
         user.HasLoggedIn = hasLoggedIn;
         return this;
     }
+
+    public UserBuilder WithEmail(string email)
+    {
+        user.EmailAddress = email;
+        return this;
+    }
 }
 
