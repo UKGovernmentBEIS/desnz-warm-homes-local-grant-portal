@@ -1,6 +1,6 @@
 ﻿namespace HerPortal.BusinessLogic.ExternalServices.S3FileReader;
 
-public class S3FileReaderConfiguration
+public class S3Configuration
 {
     public const string ConfigSection = "S3";
 
