@@ -3,6 +3,8 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -20,7 +22,8 @@ public class S3FileReader : IS3FileReader
     (
         IOptions<S3FileReaderConfiguration> options,
         S3ReferralFileKeyService keyService,
-        ILogger<S3FileReader> logger
+        ILogger<S3FileReader> logger,
+        IWebHostEnvironment environment
     ) {
         this.config = options.Value;
         this.keyService = keyService;
@@ -29,7 +32,21 @@ public class S3FileReader : IS3FileReader
 
         try
         {
-            s3Client = new AmazonS3Client(RegionEndpoint.GetBySystemName(config.Region));
+            if (environment.IsEnvironment("Development"))
+            {
+                // For local development connect to a local instance of Minio
+                var clientConfig = new AmazonS3Config
+                {
+                    AuthenticationRegion = config.Region,
+                    ServiceURL = config.LocalDevOnly_ServiceUrl,
+                    ForcePathStyle = true,
+                };
+                s3Client = new AmazonS3Client(config.LocalDevOnly_AccessKey, config.LocalDevOnly_SecretKey, clientConfig);
+            }
+            else
+            {
+                s3Client = new AmazonS3Client(RegionEndpoint.GetBySystemName(config.Region));
+            }
         }
         catch (Exception ex)
         {
