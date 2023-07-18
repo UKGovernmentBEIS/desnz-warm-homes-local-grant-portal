@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using Amazon;
+using Amazon.S3;
 using GovUkDesignSystem.ModelBinders;
 using Hangfire;
 using Hangfire.PostgreSql;
@@ -59,6 +61,7 @@ namespace HerPortal
 
             ConfigureGovUkNotify(services);
             ConfigureDatabaseContext(services);
+            ConfigureS3Client(services);
             ConfigureS3FileReader(services);
 
             services.AddControllersWithViews(options =>
@@ -166,11 +169,36 @@ namespace HerPortal
             services.Configure<GovUkNotifyConfiguration>(
                 configuration.GetSection(GovUkNotifyConfiguration.ConfigSection));
         }
+        
+        private void ConfigureS3Client(IServiceCollection services)
+        {
+            var s3Config = new S3Configuration();
+            configuration.GetSection(S3Configuration.ConfigSection).Bind(s3Config);
+            
+            if (webHostEnvironment.IsDevelopment())
+            {
+                services.AddScoped(_ =>
+                {
+                    // For local development connect to a local instance of Minio
+                    var clientConfig = new AmazonS3Config
+                    {
+                        AuthenticationRegion = s3Config.Region,
+                        ServiceURL = s3Config.LocalDevOnly_ServiceUrl,
+                        ForcePathStyle = true,
+                    };
+                    return new AmazonS3Client(s3Config.LocalDevOnly_AccessKey, s3Config.LocalDevOnly_SecretKey, clientConfig);
+                });
+            }
+            else
+            {
+                services.AddScoped(_ => new AmazonS3Client(RegionEndpoint.GetBySystemName(s3Config.Region)));
+            }
+        }
 
         private void ConfigureS3FileReader(IServiceCollection services)
         {
-            services.Configure<S3FileReaderConfiguration>(
-                configuration.GetSection(S3FileReaderConfiguration.ConfigSection));
+            services.Configure<S3Configuration>(
+                configuration.GetSection(S3Configuration.ConfigSection));
             services.AddScoped<IS3FileReader, S3FileReader>();
             services.AddScoped<S3ReferralFileKeyService>();
         }
