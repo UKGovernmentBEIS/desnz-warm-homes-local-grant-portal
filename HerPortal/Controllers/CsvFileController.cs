@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using HerPortal.BusinessLogic.ExternalServices.CsvFiles;
 using HerPortal.DataStores;
-using HerPortal.ExternalServices.CsvFiles;
 using HerPortal.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

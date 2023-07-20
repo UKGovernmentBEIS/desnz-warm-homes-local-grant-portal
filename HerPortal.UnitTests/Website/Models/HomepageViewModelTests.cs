@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using HerPortal.BusinessLogic.Models;
-using HerPortal.ExternalServices.CsvFiles;
 using HerPortal.Models;
 using NUnit.Framework;
 using CsvFileData = HerPortal.BusinessLogic.ExternalServices.CsvFiles.CsvFileData;

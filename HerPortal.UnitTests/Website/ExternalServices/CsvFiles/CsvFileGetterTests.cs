@@ -8,8 +8,6 @@ using HerPortal.BusinessLogic.ExternalServices.CsvFiles;
 using HerPortal.BusinessLogic.ExternalServices.S3FileReader;
 using HerPortal.BusinessLogic.Models;
 using HerPortal.Data;
-using HerPortal.DataStores;
-using HerPortal.ExternalServices.CsvFiles;
 using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -19,7 +17,6 @@ namespace Tests.Website.ExternalServices.CsvFiles;
 
 public class CsvFileGetterTests
 {
-    private Mock<ILogger<CsvFileDownloadDataStore>> mockCsvLogger;
     private Mock<ILogger<S3ReferralFileKeyService>> mockS3Logger;
     private Mock<IDataAccessProvider> mockDataAccessProvider;
     private Mock<IS3FileReader> mockFileReader;
@@ -30,14 +27,12 @@ public class CsvFileGetterTests
     [SetUp]
     public void Setup()
     {
-        mockCsvLogger = new Mock<ILogger<CsvFileDownloadDataStore>>();
         mockDataAccessProvider = new Mock<IDataAccessProvider>();
         mockS3Logger = new Mock<ILogger<S3ReferralFileKeyService>>();
         mockFileReader = new Mock<IS3FileReader>();
-        var csvFileDownloadDataStore = new CsvFileDownloadDataStore(mockDataAccessProvider.Object, mockCsvLogger.Object);
         var s3ReferralFileKeyService = new S3ReferralFileKeyService(mockS3Logger.Object);
 
-        underTest = new CsvFileGetter(csvFileDownloadDataStore, s3ReferralFileKeyService, mockFileReader.Object);
+        underTest = new CsvFileGetter(mockDataAccessProvider.Object, s3ReferralFileKeyService, mockFileReader.Object);
     }
 
     [Test]

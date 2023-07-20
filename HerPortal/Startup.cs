@@ -19,7 +19,6 @@ using Microsoft.Extensions.Hosting;
 using HerPortal.Data;
 using HerPortal.DataStores;
 using HerPortal.ErrorHandling;
-using HerPortal.ExternalServices.CsvFiles;
 using HerPortal.Middleware;
 using HerPortal.Services;
 using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
@@ -49,7 +48,6 @@ namespace HerPortal
             ConfigureHangfire(services);
 
             services.AddMemoryCache();
-            services.AddScoped<CsvFileDownloadDataStore>();
             services.AddScoped<UserDataStore>();
             services.AddScoped<IDataAccessProvider, DataAccessProvider>();
             services.AddScoped<ICsvFileGetter, CsvFileGetter>();
