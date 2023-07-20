@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using HerPortal.BusinessLogic.ExternalServices.CsvFiles;
+using HerPortal.BusinessLogic.Services.CsvFileService;
 using HerPortal.DataStores;
 using HerPortal.Helpers;
 using HerPortal.Models;
@@ -13,17 +13,17 @@ namespace HerPortal.Controllers;
 public class HomeController : Controller
 {
     private readonly UserDataStore userDataStore;
-    private readonly ICsvFileGetter csvFileGetter;
+    private readonly ICsvFileService csvFileService;
     private readonly ILogger<HomeController> logger;
 
     public HomeController
     (
         UserDataStore userDataStore,
-        ICsvFileGetter csvFileGetter,
+        ICsvFileService csvFileService,
         ILogger<HomeController> logger
     ) {
         this.userDataStore = userDataStore;
-        this.csvFileGetter = csvFileGetter;
+        this.csvFileService = csvFileService;
         this.logger = logger;
     }
     
@@ -35,7 +35,7 @@ public class HomeController : Controller
 
         var allUserCustodianCodes = userData.LocalAuthorities.Select(la => la.CustodianCode);
 
-        var allUserCsvFiles = (await csvFileGetter
+        var allUserCsvFiles = (await csvFileService
             .GetByCustodianCodesAsync(allUserCustodianCodes, userData.Id))
             .ToList();
         var filteredCsvFiles = allUserCsvFiles;

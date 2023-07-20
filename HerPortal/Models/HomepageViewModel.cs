@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GovUkDesignSystem.GovUkDesignSystemComponents;
 using HerPortal.BusinessLogic.Models;
-using CsvFileData = HerPortal.BusinessLogic.ExternalServices.CsvFiles.CsvFileData;
+using HerPortal.BusinessLogic.Services.CsvFileService;
 
 namespace HerPortal.Models;
 

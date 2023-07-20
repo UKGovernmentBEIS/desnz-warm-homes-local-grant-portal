@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using HerPortal.BusinessLogic.ExternalServices.CsvFiles;
 using HerPortal.BusinessLogic.Models;
+using HerPortal.BusinessLogic.Services.CsvFileService;
 using HerPortal.Controllers;
 using HerPortal.Data;
 using HerPortal.DataStores;
@@ -24,7 +24,7 @@ public class HomeFileControllerTests
     private Mock<ILogger<HomeController>> mockHomeLogger;
     private HomeController underTest;
     private Mock<IDataAccessProvider> mockDataAccessProvider;
-    private Mock<ICsvFileGetter> mockCsvFileGetter;
+    private Mock<ICsvFileService> mockCsvFileService;
 
     private const string EmailAddress = "test@example.com";
 
@@ -34,10 +34,10 @@ public class HomeFileControllerTests
         mockUserDataLogger = new Mock<ILogger<UserDataStore>>();
         mockDataAccessProvider = new Mock<IDataAccessProvider>();
         mockHomeLogger = new Mock<ILogger<HomeController>>();
-        mockCsvFileGetter = new Mock<ICsvFileGetter>();
+        mockCsvFileService = new Mock<ICsvFileService>();
         var userDataStore = new UserDataStore(mockDataAccessProvider.Object, mockUserDataLogger.Object);
 
-        underTest = new HomeController(userDataStore, mockCsvFileGetter.Object, mockHomeLogger.Object);
+        underTest = new HomeController(userDataStore, mockCsvFileService.Object, mockHomeLogger.Object);
         underTest.ControllerContext.HttpContext = new HttpContextBuilder(EmailAddress).Build();
     }
 
@@ -71,7 +71,7 @@ public class HomeFileControllerTests
         mockDataAccessProvider
             .Setup(dap => dap.GetUserByEmailAsync(EmailAddress))
             .ReturnsAsync(user);
-        mockCsvFileGetter
+        mockCsvFileService
             .Setup(cfg => cfg.GetByCustodianCodesAsync(new string[] { "114", "910" }, user.Id))
             .ReturnsAsync(files);
         
@@ -112,7 +112,7 @@ public class HomeFileControllerTests
         mockDataAccessProvider
             .Setup(dap => dap.GetUserByEmailAsync(EmailAddress))
             .ReturnsAsync(user);
-        mockCsvFileGetter
+        mockCsvFileService
             .Setup(cfg => cfg.GetByCustodianCodesAsync(new [] { "114", "910" }, user.Id))
             .ReturnsAsync(files);
         
@@ -146,7 +146,7 @@ public class HomeFileControllerTests
         mockDataAccessProvider
             .Setup(dap => dap.GetUserByEmailAsync(EmailAddress))
             .ReturnsAsync(user);
-        mockCsvFileGetter
+        mockCsvFileService
             .Setup(cfg => cfg.GetByCustodianCodesAsync(new string[] { "114" }, 13))
             .ReturnsAsync(files);
         

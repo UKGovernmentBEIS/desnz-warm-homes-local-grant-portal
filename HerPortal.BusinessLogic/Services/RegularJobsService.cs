@@ -1,5 +1,5 @@
-﻿using HerPortal.BusinessLogic.ExternalServices.CsvFiles;
-using HerPortal.BusinessLogic.ExternalServices.EmailSending;
+﻿using HerPortal.BusinessLogic.ExternalServices.EmailSending;
+using HerPortal.BusinessLogic.Services.CsvFileService;
 using HerPortal.Data;
 using Microsoft.Extensions.Logging;
 
@@ -9,7 +9,7 @@ public class RegularJobsService
 {
     private readonly IDataAccessProvider dataProvider;
     private readonly IEmailSender emailSender;
-    private readonly ICsvFileGetter csvFileGetter;
+    private readonly ICsvFileService csvFileService;
 
     private readonly ILogger logger;
 
@@ -17,12 +17,12 @@ public class RegularJobsService
     (
         IDataAccessProvider dataProvider,
         IEmailSender emailSender,
-        ICsvFileGetter csvFileGetter,
+        ICsvFileService csvFileService,
         ILogger<RegularJobsService> logger
     ) {
         this.dataProvider = dataProvider;
         this.emailSender = emailSender;
-        this.csvFileGetter = csvFileGetter;
+        this.csvFileService = csvFileService;
 
         this.logger = logger;
     }
@@ -34,11 +34,11 @@ public class RegularJobsService
         var activeUsers = await dataProvider.GetAllActiveUsersAsync();
         foreach (var user in activeUsers)
         {
-            IEnumerable<CsvFileData> userCsvFiles;
+            IEnumerable<CsvFileService.CsvFileData> userCsvFiles;
 
             try
             {
-                userCsvFiles = await csvFileGetter.GetByCustodianCodesAsync
+                userCsvFiles = await csvFileService.GetByCustodianCodesAsync
                 (
                     user.LocalAuthorities.Select(la => la.CustodianCode),
                     user.Id

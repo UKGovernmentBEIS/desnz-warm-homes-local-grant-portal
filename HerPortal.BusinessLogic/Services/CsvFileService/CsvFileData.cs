@@ -1,4 +1,4 @@
-﻿namespace HerPortal.BusinessLogic.ExternalServices.CsvFiles;
+namespace HerPortal.BusinessLogic.Services.CsvFileService;
 
 public class CsvFileData
 {

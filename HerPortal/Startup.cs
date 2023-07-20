@@ -5,9 +5,10 @@ using Amazon.S3;
 using GovUkDesignSystem.ModelBinders;
 using Hangfire;
 using Hangfire.PostgreSql;
-using HerPortal.BusinessLogic.ExternalServices.CsvFiles;
 using HerPortal.BusinessLogic.ExternalServices.EmailSending;
 using HerPortal.BusinessLogic.ExternalServices.S3FileReader;
+using HerPortal.BusinessLogic.Services;
+using HerPortal.BusinessLogic.Services.CsvFileService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -50,7 +51,7 @@ namespace HerPortal
             services.AddMemoryCache();
             services.AddScoped<UserDataStore>();
             services.AddScoped<IDataAccessProvider, DataAccessProvider>();
-            services.AddScoped<ICsvFileGetter, CsvFileGetter>();
+            services.AddScoped<ICsvFileService, CsvFileService>();
             services.AddSingleton<StaticAssetsVersioningService>();
             // This allows encrypted cookies to be understood across multiple web server instances
             services.AddDataProtection().PersistKeysToDbContext<HerDbContext>();
