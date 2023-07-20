@@ -1,4 +1,5 @@
-﻿using HerPortal.BusinessLogic.Models;
+﻿using HerPortal.BusinessLogic;
+using HerPortal.BusinessLogic.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HerPortal.Data;
