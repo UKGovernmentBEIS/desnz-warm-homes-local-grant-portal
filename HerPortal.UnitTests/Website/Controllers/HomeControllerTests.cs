@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using HerPortal.BusinessLogic.Models;
+using HerPortal.BusinessLogic.Services;
 using HerPortal.BusinessLogic.Services.CsvFileService;
 using HerPortal.Controllers;
 using HerPortal.Data;
-using HerPortal.DataStores;
 using HerPortal.Models;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -30,7 +30,7 @@ public class HomeFileControllerTests
     {
         mockDataAccessProvider = new Mock<IDataAccessProvider>();
         mockCsvFileService = new Mock<ICsvFileService>();
-        var userDataStore = new UserDataStore(mockDataAccessProvider.Object);
+        var userDataStore = new UserService(mockDataAccessProvider.Object);
 
         underTest = new HomeController(userDataStore, mockCsvFileService.Object);
         underTest.ControllerContext.HttpContext = new HttpContextBuilder(EmailAddress).Build();

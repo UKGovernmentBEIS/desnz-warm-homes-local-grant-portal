@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HerPortal.BusinessLogic.Services;
 using HerPortal.BusinessLogic.Services.CsvFileService;
-using HerPortal.DataStores;
 using HerPortal.Helpers;
 using HerPortal.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -11,15 +11,15 @@ namespace HerPortal.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly UserDataStore userDataStore;
+    private readonly UserService userService;
     private readonly ICsvFileService csvFileService;
 
     public HomeController
     (
-        UserDataStore userDataStore,
+        UserService userService,
         ICsvFileService csvFileService
     ) {
-        this.userDataStore = userDataStore;
+        this.userService = userService;
         this.csvFileService = csvFileService;
     }
     
@@ -27,7 +27,7 @@ public class HomeController : Controller
     public async Task<IActionResult> Index([FromQuery] List<string> custodianCodes)
     {
         var userEmailAddress = HttpContext.User.GetEmailAddress();
-        var userData = await userDataStore.GetUserByEmailAsync(userEmailAddress);
+        var userData = await userService.GetUserByEmailAsync(userEmailAddress);
 
         var allUserCustodianCodes = userData.LocalAuthorities.Select(la => la.CustodianCode);
 
@@ -52,7 +52,7 @@ public class HomeController : Controller
         
         if (!userData.HasLoggedIn)
         {
-            await userDataStore.MarkUserAsHavingLoggedInAsync(userData.Id);
+            await userService.MarkUserAsHavingLoggedInAsync(userData.Id);
         }
         return View("ReferralFiles", homepageViewModel);
     }

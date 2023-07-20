@@ -1,14 +1,13 @@
-﻿using System.Threading.Tasks;
-using HerPortal.BusinessLogic.Models;
+﻿using HerPortal.BusinessLogic.Models;
 using HerPortal.Data;
 
-namespace HerPortal.DataStores;
+namespace HerPortal.BusinessLogic.Services;
 
-public class UserDataStore
+public class UserService
 {
     private readonly IDataAccessProvider dataAccessProvider;
 
-    public UserDataStore(IDataAccessProvider dataAccessProvider)
+    public UserService(IDataAccessProvider dataAccessProvider)
     {
         this.dataAccessProvider = dataAccessProvider;
     }

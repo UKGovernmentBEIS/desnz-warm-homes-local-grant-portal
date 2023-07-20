@@ -18,7 +18,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using HerPortal.Data;
-using HerPortal.DataStores;
 using HerPortal.ErrorHandling;
 using HerPortal.Middleware;
 using HerPortal.Services;
@@ -49,7 +48,7 @@ namespace HerPortal
             ConfigureHangfire(services);
 
             services.AddMemoryCache();
-            services.AddScoped<UserDataStore>();
+            services.AddScoped<UserService>();
             services.AddScoped<IDataAccessProvider, DataAccessProvider>();
             services.AddScoped<ICsvFileService, CsvFileService>();
             services.AddSingleton<StaticAssetsVersioningService>();
