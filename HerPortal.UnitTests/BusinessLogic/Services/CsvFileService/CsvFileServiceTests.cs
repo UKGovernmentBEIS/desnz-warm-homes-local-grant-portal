@@ -67,7 +67,7 @@ public class CsvFileServiceTests
     {
         // Arrange
         mockDataAccessProvider
-            .Setup(dap => dap.GetLastCsvFileDownloadsAsync(UserId))
+            .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(UserId))
             .ReturnsAsync(new List<CsvFileDownload>());
         
         var s3Objects114 = new List<S3Object>
@@ -103,7 +103,7 @@ public class CsvFileServiceTests
     {
         // Arrange
         mockDataAccessProvider
-            .Setup(dap => dap.GetLastCsvFileDownloadsAsync(UserId))
+            .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(UserId))
             .ReturnsAsync(new List<CsvFileDownload>
             {
                 new CsvFileDownload()

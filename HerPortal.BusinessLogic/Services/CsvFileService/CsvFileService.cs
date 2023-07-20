@@ -25,7 +25,7 @@ public class CsvFileService : ICsvFileService
     
     public async Task<IEnumerable<CsvFileData>> GetByCustodianCodesAsync(IEnumerable<string> custodianCodes, int userId)
     {
-        var downloads = await dataAccessProvider.GetLastCsvFileDownloadsAsync(userId);
+        var downloads = await dataAccessProvider.GetCsvFileDownloadDataForUserAsync(userId);
         var files = new List<CsvFileData>();
 
         foreach (var custodianCode in custodianCodes)
