@@ -10,7 +10,6 @@ using HerPortal.Data;
 using HerPortal.DataStores;
 using HerPortal.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Tests.Builders;
@@ -20,8 +19,6 @@ namespace Tests.Website.Controllers;
 [TestFixture]
 public class HomeFileControllerTests
 {
-    private Mock<ILogger<UserDataStore>> mockUserDataLogger;
-    private Mock<ILogger<HomeController>> mockHomeLogger;
     private HomeController underTest;
     private Mock<IDataAccessProvider> mockDataAccessProvider;
     private Mock<ICsvFileService> mockCsvFileService;
@@ -31,13 +28,11 @@ public class HomeFileControllerTests
     [SetUp]
     public void Setup()
     {
-        mockUserDataLogger = new Mock<ILogger<UserDataStore>>();
         mockDataAccessProvider = new Mock<IDataAccessProvider>();
-        mockHomeLogger = new Mock<ILogger<HomeController>>();
         mockCsvFileService = new Mock<ICsvFileService>();
-        var userDataStore = new UserDataStore(mockDataAccessProvider.Object, mockUserDataLogger.Object);
+        var userDataStore = new UserDataStore(mockDataAccessProvider.Object);
 
-        underTest = new HomeController(userDataStore, mockCsvFileService.Object, mockHomeLogger.Object);
+        underTest = new HomeController(userDataStore, mockCsvFileService.Object);
         underTest.ControllerContext.HttpContext = new HttpContextBuilder(EmailAddress).Build();
     }
 

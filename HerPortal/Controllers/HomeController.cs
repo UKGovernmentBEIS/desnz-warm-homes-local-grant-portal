@@ -6,7 +6,6 @@ using HerPortal.DataStores;
 using HerPortal.Helpers;
 using HerPortal.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace HerPortal.Controllers;
 
@@ -14,17 +13,14 @@ public class HomeController : Controller
 {
     private readonly UserDataStore userDataStore;
     private readonly ICsvFileService csvFileService;
-    private readonly ILogger<HomeController> logger;
 
     public HomeController
     (
         UserDataStore userDataStore,
-        ICsvFileService csvFileService,
-        ILogger<HomeController> logger
+        ICsvFileService csvFileService
     ) {
         this.userDataStore = userDataStore;
         this.csvFileService = csvFileService;
-        this.logger = logger;
     }
     
     [HttpGet("/")]
