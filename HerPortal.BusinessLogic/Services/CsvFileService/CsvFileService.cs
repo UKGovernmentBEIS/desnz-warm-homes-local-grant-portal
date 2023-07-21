@@ -1,39 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using HerPortal.BusinessLogic.ExternalServices.CsvFiles;
-using HerPortal.BusinessLogic.Models;
+using System.Security;
 using HerPortal.BusinessLogic.ExternalServices.S3FileReader;
-using HerPortal.DataStores;
+using HerPortal.BusinessLogic.Models;
 using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 
-namespace HerPortal.ExternalServices.CsvFiles;
+namespace HerPortal.BusinessLogic.Services.CsvFileService;
 
-public class CsvFileGetter : ICsvFileGetter
+public class CsvFileService : ICsvFileService
 {
-    private readonly CsvFileDownloadDataStore csvFileDownloadDataStore;
+    private readonly IDataAccessProvider dataAccessProvider;
     private readonly S3ReferralFileKeyService keyService;
     private readonly IS3FileReader s3FileReader;
 
-    public CsvFileGetter
+    public CsvFileService
     (
-        CsvFileDownloadDataStore csvFileDownloadDataStore,
+        IDataAccessProvider dataAccessProvider,
         S3ReferralFileKeyService keyService,
         IS3FileReader s3FileReader
     ) {
-        this.csvFileDownloadDataStore = csvFileDownloadDataStore;
+        this.dataAccessProvider = dataAccessProvider;
         this.keyService = keyService;
         this.s3FileReader = s3FileReader;
     }
-    
-    public async Task<IEnumerable<CsvFileData>> GetByCustodianCodesAsync(IEnumerable<string> custodianCodes, int userId)
+
+    public async Task<IEnumerable<CsvFileData>> GetFileDataForUserAsync(string userEmailAddress)
     {
-        var downloads = await csvFileDownloadDataStore.GetLastCsvFileDownloadsAsync(userId);
+        // Make sure that we only return file data for files that the user currently has access to
+        var user = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
+        var currentCustodianCodes = user.LocalAuthorities.Select(la => la.CustodianCode);
+        
+        var downloads = await dataAccessProvider.GetCsvFileDownloadDataForUserAsync(user.Id);
         var files = new List<CsvFileData>();
 
-        foreach (var custodianCode in custodianCodes)
+        foreach (var custodianCode in currentCustodianCodes)
         {
             var s3Objects = await s3FileReader.GetS3ObjectsByCustodianCodeAsync(custodianCode);
             files.AddRange(s3Objects.Select(s3O =>
@@ -60,9 +58,18 @@ public class CsvFileGetter : ICsvFileGetter
             .OrderByDescending(f => new DateOnly(f.Year, f.Month, 1))
             .ThenBy(f => LocalAuthorityData.LocalAuthorityNamesByCustodianCode[f.CustodianCode]);
     }
-
-    public async Task<Stream> GetFileForDownloadAsync(string custodianCode, int year, int month, int userId)
+    
+    public async Task<Stream> GetFileForDownloadAsync(string custodianCode, int year, int month, string userEmailAddress)
     {
+        // Important! First ensure the logged-in user is allowed to access this data
+        var userData = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
+        if (!userData.LocalAuthorities.Any(la => la.CustodianCode == custodianCode))
+        {
+            // We don't want to log the User's email address for GDPR reasons, but the ID is fine.
+            throw new SecurityException(
+                $"User {userData.Id} is not permitted to access file for custodian code: {custodianCode} year: {year} month: {month}.");
+        }
+        
         if (!LocalAuthorityData.LocalAuthorityNamesByCustodianCode.ContainsKey(custodianCode))
         {
             throw new ArgumentOutOfRangeException(nameof(custodianCode), custodianCode,
@@ -74,7 +81,7 @@ public class CsvFileGetter : ICsvFileGetter
         // Notably, we can't confirm a download, so it's possible that we mark a file as downloaded
         //   but the user has some sort of issue and doesn't get it
         // We put this line as late as possible in the method for this reason
-        await csvFileDownloadDataStore.MarkCsvFileAsDownloadedAsync(custodianCode, year, month, userId);
+        await dataAccessProvider.MarkCsvFileAsDownloadedAsync(custodianCode, year, month, userData.Id);
 
         return fileStream;
     }

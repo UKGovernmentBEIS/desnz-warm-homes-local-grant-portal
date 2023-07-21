@@ -1,44 +1,35 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using HerPortal.BusinessLogic.ExternalServices.CsvFiles;
-using HerPortal.DataStores;
-using HerPortal.ExternalServices.CsvFiles;
+using HerPortal.BusinessLogic.Services;
+using HerPortal.BusinessLogic.Services.CsvFileService;
 using HerPortal.Helpers;
 using HerPortal.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace HerPortal.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly UserDataStore userDataStore;
-    private readonly ICsvFileGetter csvFileGetter;
-    private readonly ILogger<HomeController> logger;
+    private readonly UserService userService;
+    private readonly ICsvFileService csvFileService;
 
     public HomeController
     (
-        UserDataStore userDataStore,
-        ICsvFileGetter csvFileGetter,
-        ILogger<HomeController> logger
+        UserService userService,
+        ICsvFileService csvFileService
     ) {
-        this.userDataStore = userDataStore;
-        this.csvFileGetter = csvFileGetter;
-        this.logger = logger;
+        this.userService = userService;
+        this.csvFileService = csvFileService;
     }
     
     [HttpGet("/")]
     public async Task<IActionResult> Index([FromQuery] List<string> custodianCodes)
     {
         var userEmailAddress = HttpContext.User.GetEmailAddress();
-        var userData = await userDataStore.GetUserByEmailAsync(userEmailAddress);
+        var userData = await userService.GetUserByEmailAsync(userEmailAddress);
 
-        var allUserCustodianCodes = userData.LocalAuthorities.Select(la => la.CustodianCode);
-
-        var allUserCsvFiles = (await csvFileGetter
-            .GetByCustodianCodesAsync(allUserCustodianCodes, userData.Id))
-            .ToList();
+        var allUserCsvFiles = (await csvFileService.GetFileDataForUserAsync(userEmailAddress)).ToList();
         var filteredCsvFiles = allUserCsvFiles;
 
         if (custodianCodes.Count > 0)
@@ -57,7 +48,7 @@ public class HomeController : Controller
         
         if (!userData.HasLoggedIn)
         {
-            await userDataStore.MarkUserAsHavingLoggedInAsync(userData.Id);
+            await userService.MarkUserAsHavingLoggedInAsync(userData.Id);
         }
         return View("ReferralFiles", homepageViewModel);
     }
