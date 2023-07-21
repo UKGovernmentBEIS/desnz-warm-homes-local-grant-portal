@@ -182,6 +182,233 @@ public class CsvFileServiceTests
         result.Should().BeEquivalentTo(expectedResult);
     }
     
+    [Test]
+    public async Task GetPaginatedFileDataForUserAsync_WhenCalledWithOutFilters_ReturnsAllFiles()
+    {
+        // Arrange
+        var user = GetUserWithLas("114", "910");
+        
+        mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        
+        mockDataAccessProvider
+            .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
+            .ReturnsAsync(new List<CsvFileDownload>
+            {
+                new()
+                {
+                    CustodianCode = "114",
+                    LastDownloaded = new DateTime(2023, 02, 06),
+                    Month = 2,
+                    Year = 2023,
+                    UserId = user.Id
+                },
+                new()
+                {
+                    CustodianCode = "910",
+                    LastDownloaded = new DateTime(2023, 02, 06),
+                    Month = 2,
+                    Year = 2023,
+                    UserId = user.Id
+                }
+            });
+        
+        var s3Objects114 = new List<S3Object>
+        {
+            new() { Key = "114/2023_02.csv", LastModified = new DateTime(2023, 02, 04) },
+        };
+        var s3Objects910 = new List<S3Object>
+        {
+            new() { Key = "910/2023_02.csv", LastModified = new DateTime(2023, 02, 04) },
+        };
+
+        mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("114")).ReturnsAsync(s3Objects114);
+        mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("910")).ReturnsAsync(s3Objects910);
+
+        // Act
+        var result = (await underTest.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string>(), 1, 20));
+        
+        // Assert
+        var expectedResult = new List<CsvFileData>()
+        {
+            new ("114", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+            new ("910", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+        };
+        result.FileData.Should().BeEquivalentTo(expectedResult);
+    }
+    
+    [Test]
+    public async Task GetPaginatedFileDataForUserAsync_WhenCalledWithFilters_FiltersFiles()
+    {
+        // Arrange
+        var user = GetUserWithLas("114", "910");
+        
+        mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        
+        mockDataAccessProvider
+            .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
+            .ReturnsAsync(new List<CsvFileDownload>
+            {
+                new()
+                {
+                    CustodianCode = "114",
+                    LastDownloaded = new DateTime(2023, 02, 06),
+                    Month = 2,
+                    Year = 2023,
+                    UserId = user.Id
+                },
+                new()
+                {
+                    CustodianCode = "910",
+                    LastDownloaded = new DateTime(2023, 02, 06),
+                    Month = 2,
+                    Year = 2023,
+                    UserId = user.Id
+                }
+            });
+        
+        var s3Objects114 = new List<S3Object>
+        {
+            new() { Key = "114/2023_02.csv", LastModified = new DateTime(2023, 02, 04) },
+        };
+        var s3Objects910 = new List<S3Object>
+        {
+            new() { Key = "910/2023_02.csv", LastModified = new DateTime(2023, 02, 04) },
+        };
+
+        mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("114")).ReturnsAsync(s3Objects114);
+        mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("910")).ReturnsAsync(s3Objects910);
+
+        // Act
+        var result = (await underTest.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string> { "114" }, 1, 20));
+        
+        // Assert
+        var expectedResult = new List<CsvFileData>()
+        {
+            new ("114", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+        };
+        result.FileData.Should().BeEquivalentTo(expectedResult);
+    }
+    
+    [Test]
+    public async Task GetPaginatedFileDataForUserAsync_WhenCalledWithForPage2_ReturnsFilesForPage2()
+    {
+        // Arrange
+        var user = GetUserWithLas("114");
+        
+        mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        
+        mockDataAccessProvider
+            .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
+            .ReturnsAsync(new List<CsvFileDownload>
+            {
+                new()
+                {
+                    CustodianCode = "114",
+                    LastDownloaded = new DateTime(2023, 02, 06),
+                    Month = 2,
+                    Year = 2023,
+                    UserId = user.Id
+                },
+                new()
+                {
+                    CustodianCode = "114",
+                    LastDownloaded = new DateTime(2023, 03, 06),
+                    Month = 3,
+                    Year = 2023,
+                    UserId = user.Id
+                }
+            });
+        
+        var s3Objects114 = new List<S3Object>
+        {
+            new() { Key = "114/2023_02.csv", LastModified = new DateTime(2023, 02, 04) },
+            new() { Key = "114/2023_03.csv", LastModified = new DateTime(2023, 03, 04) },
+        };
+
+        mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("114")).ReturnsAsync(s3Objects114);
+
+        // Act
+        var result = (await underTest.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string>(), 2, 1));
+        
+        // Assert
+        var expectedResult = new List<CsvFileData>()
+        {
+            new ("114", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+        };
+        result.FileData.Should().BeEquivalentTo(expectedResult);
+    }
+    
+    [Test]
+    public async Task GetPaginatedFileDataForUserAsync_WhenCalledForUserWithUndownloadedFiles_ReturnsUserHasUndownloadedFilesAsTrue()
+    {
+        // Arrange
+        var user = GetUserWithLas("114");
+        
+        mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        
+        mockDataAccessProvider
+            .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
+            .ReturnsAsync(new List<CsvFileDownload>
+            {
+                new()
+                {
+                    CustodianCode = "114",
+                    LastDownloaded = new DateTime(2023, 02, 06),
+                    Month = 2,
+                    Year = 2023,
+                    UserId = user.Id
+                }
+            });
+        
+        var s3Objects114 = new List<S3Object>
+        {
+            new() { Key = "114/2023_02.csv", LastModified = new DateTime(2023, 02, 08) },
+        };
+
+        mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("114")).ReturnsAsync(s3Objects114);
+
+        // Act
+        var result = (await underTest.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string>(), 2, 1));
+        
+        // Assert
+        result.UserHasUndownloadedFiles.Should().BeTrue();
+    }
+    
+    [Test]
+    public async Task GetPaginatedFileDataForUserAsync_WhenCalledForUserWithoutUndownloadedFiles_ReturnsUserHasUndownloadedFilesAsFalse()
+    {
+        // Arrange
+        var user = GetUserWithLas("114");
+        
+        mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        
+        mockDataAccessProvider
+            .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
+            .ReturnsAsync(new List<CsvFileDownload>
+            {
+                new()
+                {
+                    CustodianCode = "114",
+                    LastDownloaded = new DateTime(2023, 02, 06),
+                    Month = 2,
+                    Year = 2023,
+                    UserId = user.Id
+                }
+            });
+        
+        var s3Objects114 = new List<S3Object>
+        {
+            new() { Key = "114/2023_02.csv", LastModified = new DateTime(2023, 02, 04) },
+        };
+
+        mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("114")).ReturnsAsync(s3Objects114);
+
+        // Act
+        var result = (await underTest.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string>(), 2, 1));
+        
+        // Assert
+        result.UserHasUndownloadedFiles.Should().BeFalse();
+    }
     
     private User GetUserWithLas(params string[] las)
     {
