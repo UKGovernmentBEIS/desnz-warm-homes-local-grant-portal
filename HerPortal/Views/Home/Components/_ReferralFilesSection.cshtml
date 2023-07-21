@@ -56,11 +56,15 @@
                                 : null
                         },
                     },
-                }
-            ).ToList(),
+                }).ToList(),
             FirstCellIsHeader = false,
         }))
     </div>
+
+    if (Model.PaginationDetails is not null)
+    {
+        @await Html.GovUkPagination(Model.PaginationDetails)
+    }
 }
 else
 {

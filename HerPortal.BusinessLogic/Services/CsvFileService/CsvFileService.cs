@@ -58,7 +58,31 @@ public class CsvFileService : ICsvFileService
             .OrderByDescending(f => new DateOnly(f.Year, f.Month, 1))
             .ThenBy(f => LocalAuthorityData.LocalAuthorityNamesByCustodianCode[f.CustodianCode]);
     }
-    
+
+    // Page number starts at 1
+    public async Task<PaginatedFileData> GetPaginatedFileDataForUserAsync(
+        string userEmailAddress,
+        List<string> custodianCodes,
+        int pageNumber,
+        int pageSize)
+    {
+        var allFileData = (await GetFileDataForUserAsync(userEmailAddress)).ToList();
+        var filteredFileData = allFileData
+            .Where(cfd => custodianCodes.Count == 0 || custodianCodes.Contains(cfd.CustodianCode))
+            .ToList();
+
+        var maxPage = filteredFileData.Count / pageSize + (filteredFileData.Count % pageSize == 0 ? 0 : 1);
+        var currentPage = Math.Min(pageNumber, maxPage);
+
+        return new PaginatedFileData
+        {
+            FileData = filteredFileData.Skip((currentPage - 1) * pageSize).Take(pageSize),
+            CurrentPage = currentPage,
+            MaximumPage = maxPage,
+            UserHasUndownloadedFiles = allFileData.Any(cf => cf.HasUpdatedSinceLastDownload)
+        };
+    }
+
     public async Task<Stream> GetFileForDownloadAsync(string custodianCode, int year, int month, string userEmailAddress)
     {
         // Important! First ensure the logged-in user is allowed to access this data
