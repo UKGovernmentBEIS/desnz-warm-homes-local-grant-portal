@@ -63,9 +63,11 @@ public class CsvFileService : ICsvFileService
     {
         // Important! First ensure the logged-in user is allowed to access this data
         var userData = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
-        if (userData.LocalAuthorities.All(la => la.CustodianCode != custodianCode))
+        if (!userData.LocalAuthorities.Any(la => la.CustodianCode == custodianCode))
         {
-            throw new SecurityException("The supplied user is not permitted to access this file.");
+            // We don't want to log the User's email address for GDPR reasons, but the ID is fine.
+            throw new SecurityException(
+                $"User {userData.Id} is not permitted to access file for custodian code: {custodianCode} year: {year} month: {month}.");
         }
         
         if (!LocalAuthorityData.LocalAuthorityNamesByCustodianCode.ContainsKey(custodianCode))

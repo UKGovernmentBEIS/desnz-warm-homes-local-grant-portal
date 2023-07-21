@@ -32,8 +32,10 @@ public class CsvFileController : Controller
         {
             file = await csvFileService.GetFileForDownloadAsync(custodianCode, year, month, HttpContext.User.GetEmailAddress());
         }
-        catch (SecurityException)
+        catch (SecurityException ex)
         {
+            // If this is happening, someone is trying to get around the access controls or there's a bug
+            logger.LogWarning(ex.Message);
             return Unauthorized("The logged-in user is not permitted to access this resource.");
         }
         catch (ArgumentOutOfRangeException)
