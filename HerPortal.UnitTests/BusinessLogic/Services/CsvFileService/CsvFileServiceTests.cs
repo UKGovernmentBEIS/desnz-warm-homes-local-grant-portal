@@ -24,8 +24,6 @@ public class CsvFileServiceTests
     private Mock<IS3FileReader> mockFileReader;
     private HerPortal.BusinessLogic.Services.CsvFileService.CsvFileService underTest;
     
-    private const int UserId = 13;
-
     [SetUp]
     public void Setup()
     {
@@ -36,25 +34,15 @@ public class CsvFileServiceTests
 
         underTest = new HerPortal.BusinessLogic.Services.CsvFileService.CsvFileService(mockDataAccessProvider.Object, s3ReferralFileKeyService, mockFileReader.Object);
     }
-    
+
     [Test]
     public void GetCsvFile_WhenCalledForUnauthorisedCustodianCode_ThrowsSecurityException()
     {
         // Arrange
-        const string emailAddress = "test@example.com";
-        var user = new UserBuilder(emailAddress)
-            .WithLocalAuthorities(new List<LocalAuthority>
-            {
-                new()
-                {
-                    Id = 1,
-                    CustodianCode = "114"
-                }
-            })
-            .Build();
+        var user = GetUserWithLas("114");
         
         mockDataAccessProvider
-            .Setup(dap => dap.GetUserByEmailAsync(emailAddress))
+            .Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress))
             .ReturnsAsync(user);
         
         // Act and Assert
@@ -62,11 +50,15 @@ public class CsvFileServiceTests
     }
 
     [Test]
-    public async Task GetByCustodianCodesAsync_WhenCalledWithNeverDownloadedFiles_ReturnsFileData()
+    public async Task GetFileDataForUserAsync_WhenCalledWithNeverDownloadedFiles_ReturnsFileData()
     {
         // Arrange
+        var user = GetUserWithLas("114", "910");
+        
+        mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        
         mockDataAccessProvider
-            .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(UserId))
+            .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
             .ReturnsAsync(new List<CsvFileDownload>());
         
         var s3Objects114 = new List<S3Object>
@@ -84,7 +76,7 @@ public class CsvFileServiceTests
         mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("910")).ReturnsAsync(s3Objects910);
 
         // Act
-        var result = (await underTest.GetByCustodianCodesAsync(new[] { "114", "910" }, UserId)).ToList();
+        var result = (await underTest.GetFileDataForUserAsync(user.EmailAddress)).ToList();
         
         // Assert
         var expectedResult = new List<CsvFileData>()
@@ -96,22 +88,26 @@ public class CsvFileServiceTests
         };
         result.Should().BeEquivalentTo(expectedResult);
     }
-    
+
     [Test]
-    public async Task GetByCustodianCodesAsync_WhenCalledWithDownloadedFile_ReturnsFileData()
+    public async Task GetFileDataForUserAsync_WhenCalledWithDownloadedFile_ReturnsFileData()
     {
         // Arrange
+        var user = GetUserWithLas("114");
+        
+        mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        
         mockDataAccessProvider
-            .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(UserId))
+            .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
             .ReturnsAsync(new List<CsvFileDownload>
             {
-                new CsvFileDownload()
+                new()
                 {
                     CustodianCode = "114",
                     LastDownloaded = new DateTime(2023, 02, 06),
                     Month = 2,
                     Year = 2023,
-                    UserId = UserId
+                    UserId = user.Id
                 }
             });
         
@@ -122,15 +118,79 @@ public class CsvFileServiceTests
 
         mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("114")).ReturnsAsync(s3Objects114);
 
-        var expectedResult = new List<CsvFileData>()
-        {
-            new CsvFileData("114", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
-        };
-
         // Act
-        var result = (await underTest.GetByCustodianCodesAsync(new[] { "114" }, UserId)).ToList();
+        var result = (await underTest.GetFileDataForUserAsync(user.EmailAddress)).ToList();
         
         // Assert
+        var expectedResult = new List<CsvFileData>()
+        {
+            new ("114", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+        };
         result.Should().BeEquivalentTo(expectedResult);
+    }
+    
+    [Test]
+    public async Task GetFileDataForUserAsync_WhenCalledWithInaccessibleFiles_ReturnsOnlyAccessibleFileData()
+    {
+        // Arrange
+        var user = GetUserWithLas("114");
+        
+        mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        
+        mockDataAccessProvider
+            .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
+            .ReturnsAsync(new List<CsvFileDownload>
+            {
+                new()
+                {
+                    CustodianCode = "114",
+                    LastDownloaded = new DateTime(2023, 02, 06),
+                    Month = 2,
+                    Year = 2023,
+                    UserId = user.Id
+                },
+                new()
+                {
+                    CustodianCode = "910",
+                    LastDownloaded = new DateTime(2023, 02, 06),
+                    Month = 2,
+                    Year = 2023,
+                    UserId = user.Id
+                }
+            });
+        
+        var s3Objects114 = new List<S3Object>
+        {
+            new() { Key = "114/2023_02.csv", LastModified = new DateTime(2023, 02, 04) },
+        };
+        var s3Objects910 = new List<S3Object>
+        {
+            new() { Key = "910/2023_02.csv", LastModified = new DateTime(2023, 02, 04) },
+        };
+
+        mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("114")).ReturnsAsync(s3Objects114);
+        mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("910")).ReturnsAsync(s3Objects910);
+
+        // Act
+        var result = (await underTest.GetFileDataForUserAsync(user.EmailAddress)).ToList();
+        
+        // Assert
+        var expectedResult = new List<CsvFileData>()
+        {
+            new ("114", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+        };
+        result.Should().BeEquivalentTo(expectedResult);
+    }
+    
+    
+    private User GetUserWithLas(params string[] las)
+    {
+        return new UserBuilder("test@example.com")
+            .WithLocalAuthorities(
+                las.Select(la => new LocalAuthority()
+                {
+                    CustodianCode = la
+                }).ToList())
+            .Build();
     }
 }

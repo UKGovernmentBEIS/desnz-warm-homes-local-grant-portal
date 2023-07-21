@@ -29,11 +29,7 @@ public class HomeController : Controller
         var userEmailAddress = HttpContext.User.GetEmailAddress();
         var userData = await userService.GetUserByEmailAsync(userEmailAddress);
 
-        var allUserCustodianCodes = userData.LocalAuthorities.Select(la => la.CustodianCode);
-
-        var allUserCsvFiles = (await csvFileService
-            .GetByCustodianCodesAsync(allUserCustodianCodes, userData.Id))
-            .ToList();
+        var allUserCsvFiles = (await csvFileService.GetFileDataForUserAsync(userEmailAddress)).ToList();
         var filteredCsvFiles = allUserCsvFiles;
 
         if (custodianCodes.Count > 0)

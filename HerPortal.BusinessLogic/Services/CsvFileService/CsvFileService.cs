@@ -21,13 +21,17 @@ public class CsvFileService : ICsvFileService
         this.keyService = keyService;
         this.s3FileReader = s3FileReader;
     }
-    
-    public async Task<IEnumerable<CsvFileData>> GetByCustodianCodesAsync(IEnumerable<string> custodianCodes, int userId)
+
+    public async Task<IEnumerable<CsvFileData>> GetFileDataForUserAsync(string userEmailAddress)
     {
-        var downloads = await dataAccessProvider.GetCsvFileDownloadDataForUserAsync(userId);
+        // Make sure that we only return file data for files that the user currently has access to
+        var user = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
+        var currentCustodianCodes = user.LocalAuthorities.Select(la => la.CustodianCode);
+        
+        var downloads = await dataAccessProvider.GetCsvFileDownloadDataForUserAsync(user.Id);
         var files = new List<CsvFileData>();
 
-        foreach (var custodianCode in custodianCodes)
+        foreach (var custodianCode in currentCustodianCodes)
         {
             var s3Objects = await s3FileReader.GetS3ObjectsByCustodianCodeAsync(custodianCode);
             files.AddRange(s3Objects.Select(s3O =>

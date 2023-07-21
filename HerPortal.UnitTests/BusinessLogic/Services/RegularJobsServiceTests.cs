@@ -75,7 +75,7 @@ public class RegularJobsServiceTests
                 .Build()
         };
         mockDataAccessProvider.Setup(dap => dap.GetAllActiveUsersAsync()).ReturnsAsync(users);
-        mockCsvFileService.Setup(cfg => cfg.GetByCustodianCodesAsync(new[] { "114" }, users[0].Id )).ReturnsAsync(files);
+        mockCsvFileService.Setup(cfg => cfg.GetFileDataForUserAsync(users[0].EmailAddress)).ReturnsAsync(files);
         
         // Act
         await underTest.SendReminderEmailsAsync();
@@ -123,8 +123,8 @@ public class RegularJobsServiceTests
                 .Build()
         };
         mockDataAccessProvider.Setup(dap => dap.GetAllActiveUsersAsync()).ReturnsAsync(users);
-        mockCsvFileService.Setup(cfg => cfg.GetByCustodianCodesAsync(new[] { "114" }, users[0].Id )).ReturnsAsync(user1Files);
-        mockCsvFileService.Setup(cfg => cfg.GetByCustodianCodesAsync(new[] { "910" }, users[1].Id )).ReturnsAsync(user2Files);
+        mockCsvFileService.Setup(cfg => cfg.GetFileDataForUserAsync(users[0].EmailAddress)).ReturnsAsync(user1Files);
+        mockCsvFileService.Setup(cfg => cfg.GetFileDataForUserAsync(users[1].EmailAddress)).ReturnsAsync(user2Files);
         
         // Act
         await underTest.SendReminderEmailsAsync();
@@ -173,16 +173,16 @@ public class RegularJobsServiceTests
                 .Build()
         };
         mockDataAccessProvider.Setup(dap => dap.GetAllActiveUsersAsync()).ReturnsAsync(users);
-        mockCsvFileService.Setup(cfg => cfg.GetByCustodianCodesAsync(new[] { "114" }, users[0].Id )).ReturnsAsync(user1Files);
-        mockCsvFileService.Setup(cfg => cfg.GetByCustodianCodesAsync(new[] { "910" }, users[1].Id )).ReturnsAsync(user2Files);
-        mockEmailSender.Setup(es => es.SendNewReferralReminderEmail("user1@example.com")).Throws(new EmailSenderException(EmailSenderExceptionType.Other));
+        mockCsvFileService.Setup(cfg => cfg.GetFileDataForUserAsync(users[0].EmailAddress)).ReturnsAsync(user1Files);
+        mockCsvFileService.Setup(cfg => cfg.GetFileDataForUserAsync(users[1].EmailAddress)).ReturnsAsync(user2Files);
+        mockEmailSender.Setup(es => es.SendNewReferralReminderEmail(users[0].EmailAddress)).Throws(new EmailSenderException(EmailSenderExceptionType.Other));
         
         // Act
         await underTest.SendReminderEmailsAsync();
         
         // Assert
-        mockEmailSender.Verify(es => es.SendNewReferralReminderEmail("user1@example.com"));
-        mockEmailSender.Verify(es => es.SendNewReferralReminderEmail("user2@example.com"));
+        mockEmailSender.Verify(es => es.SendNewReferralReminderEmail(users[0].EmailAddress));
+        mockEmailSender.Verify(es => es.SendNewReferralReminderEmail(users[1].EmailAddress));
         mockEmailSender.VerifyNoOtherCalls();
     }
 }

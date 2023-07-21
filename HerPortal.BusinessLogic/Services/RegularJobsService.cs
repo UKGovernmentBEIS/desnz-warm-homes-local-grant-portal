@@ -33,15 +33,11 @@ public class RegularJobsService
         var activeUsers = await dataProvider.GetAllActiveUsersAsync();
         foreach (var user in activeUsers)
         {
-            IEnumerable<CsvFileService.CsvFileData> userCsvFiles;
+            IEnumerable<CsvFileData> userCsvFiles;
 
             try
             {
-                userCsvFiles = await csvFileService.GetByCustodianCodesAsync
-                (
-                    user.LocalAuthorities.Select(la => la.CustodianCode),
-                    user.Id
-                );
+                userCsvFiles = await csvFileService.GetFileDataForUserAsync(user.EmailAddress);
             }
             catch (Exception ex)
             {

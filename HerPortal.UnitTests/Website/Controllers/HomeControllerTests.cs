@@ -67,7 +67,7 @@ public class HomeFileControllerTests
             .Setup(dap => dap.GetUserByEmailAsync(EmailAddress))
             .ReturnsAsync(user);
         mockCsvFileService
-            .Setup(cfg => cfg.GetByCustodianCodesAsync(new string[] { "114", "910" }, user.Id))
+            .Setup(cfg => cfg.GetFileDataForUserAsync(user.EmailAddress))
             .ReturnsAsync(files);
         
         // Act
@@ -108,7 +108,7 @@ public class HomeFileControllerTests
             .Setup(dap => dap.GetUserByEmailAsync(EmailAddress))
             .ReturnsAsync(user);
         mockCsvFileService
-            .Setup(cfg => cfg.GetByCustodianCodesAsync(new [] { "114", "910" }, user.Id))
+            .Setup(cfg => cfg.GetFileDataForUserAsync(user.EmailAddress))
             .ReturnsAsync(files);
         
         // Act
@@ -142,7 +142,7 @@ public class HomeFileControllerTests
             .Setup(dap => dap.GetUserByEmailAsync(EmailAddress))
             .ReturnsAsync(user);
         mockCsvFileService
-            .Setup(cfg => cfg.GetByCustodianCodesAsync(new string[] { "114" }, 13))
+            .Setup(cfg => cfg.GetFileDataForUserAsync(user.EmailAddress))
             .ReturnsAsync(files);
         
         // Act
