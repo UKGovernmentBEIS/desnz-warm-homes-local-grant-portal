@@ -71,7 +71,7 @@ public class CsvFileService : ICsvFileService
             .Where(cfd => custodianCodes.Count == 0 || custodianCodes.Contains(cfd.CustodianCode))
             .ToList();
 
-        var maxPage = filteredFileData.Count / pageSize + (filteredFileData.Count % pageSize == 0 ? 0 : 1);
+        var maxPage = ((filteredFileData.Count - 1) / pageSize) + 1;
         var currentPage = Math.Min(pageNumber, maxPage);
 
         return new PaginatedFileData
