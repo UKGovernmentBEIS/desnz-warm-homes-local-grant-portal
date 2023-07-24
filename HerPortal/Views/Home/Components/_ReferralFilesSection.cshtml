@@ -61,10 +61,7 @@
         }))
     </div>
 
-    if (Model.PaginationDetails is not null)
-    {
-        @await Html.GovUkPagination(Model.PaginationDetails)
-    }
+    @await Html.GovUkSimplePagination(Model.CurrentPage, Model.PageUrls)
 }
 else
 {

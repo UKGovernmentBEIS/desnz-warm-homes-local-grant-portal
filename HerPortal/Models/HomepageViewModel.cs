@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Amazon.Runtime.Internal.Endpoints.StandardLibrary;
 using GovUkDesignSystem.GovUkDesignSystemComponents;
 using HerPortal.BusinessLogic.Models;
 using HerPortal.BusinessLogic.Services.CsvFileService;
@@ -42,7 +41,8 @@ public class HomepageViewModel
     public List<string> CustodianCodes { get; }
     public Dictionary<string, LabelViewModel> LocalAuthorityCheckboxLabels { get; }
     public IEnumerable<CsvFile> CsvFiles { get; }
-    public PaginationViewModel PaginationDetails { get; } 
+    public int CurrentPage { get; }
+    public string[] PageUrls { get; }
 
     public HomepageViewModel(User user, PaginatedFileData paginatedFileData, Func<int, string> pageLinkGenerator)
     {
@@ -65,83 +65,7 @@ public class HomepageViewModel
 
         UserHasNewUpdates = paginatedFileData.UserHasUndownloadedFiles;
 
-        PaginationDetails = GetPaginationDetails(paginatedFileData, pageLinkGenerator);
-    }
-
-    private PaginationViewModel GetPaginationDetails(PaginatedFileData paginatedFileData, Func<int,string> pageLinkGenerator)
-    {
-        if (paginatedFileData.MaximumPage <= 1)
-        {
-            return null;
-        }
-        
-        var paginationLinks = new List<PaginationItemViewModel>
-        {
-            new ()
-            {
-                Number = "1",
-                Current = paginatedFileData.CurrentPage == 1,
-                Href = pageLinkGenerator(1)
-            }
-        };
-
-        for (var pageNumber = 2; pageNumber < paginatedFileData.MaximumPage; pageNumber++)
-        {
-            if (pageNumber < paginatedFileData.CurrentPage - 2
-                || pageNumber > paginatedFileData.CurrentPage + 2)
-            {
-                continue;
-            }
-
-            if (pageNumber == paginatedFileData.CurrentPage - 2
-                || pageNumber == paginatedFileData.CurrentPage + 2)
-            {
-                paginationLinks.Add(new PaginationItemViewModel()
-                {
-                    Ellipsis = true
-                });
-            }
-
-            if (pageNumber > paginatedFileData.CurrentPage - 2
-                && pageNumber < paginatedFileData.CurrentPage + 2)
-            {
-                paginationLinks.Add(new PaginationItemViewModel()
-                {
-                    Number = pageNumber.ToString(),
-                    Current = paginatedFileData.CurrentPage == pageNumber,
-                    Href = pageLinkGenerator(pageNumber)
-                });
-            }
-        }
-
-        paginationLinks.Add(new PaginationItemViewModel()
-        {
-            Number = paginatedFileData.MaximumPage.ToString(),
-            Current = paginatedFileData.CurrentPage == paginatedFileData.MaximumPage,
-            Href = pageLinkGenerator(paginatedFileData.MaximumPage)
-        });
-        
-        var paginationDetails = new PaginationViewModel()
-        {
-            Items = paginationLinks
-        };
-        
-        if (paginatedFileData.CurrentPage > 1)
-        {
-            paginationDetails.Previous = new PaginationLinkViewModel()
-            {
-                Href = pageLinkGenerator(paginatedFileData.CurrentPage - 1)
-            };
-        }
-    
-        if (paginatedFileData.CurrentPage < paginatedFileData.MaximumPage)
-        {
-            paginationDetails.Next = new PaginationLinkViewModel()
-            {
-                Href = pageLinkGenerator(paginatedFileData.CurrentPage + 1)
-            };
-        }
-
-        return paginationDetails;
+        CurrentPage = paginatedFileData.CurrentPage;
+        PageUrls = Enumerable.Range(1, paginatedFileData.MaximumPage).Select(pageLinkGenerator).ToArray();
     }
 }
