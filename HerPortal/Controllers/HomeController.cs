@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using HerPortal.BusinessLogic.Services;
 using HerPortal.BusinessLogic.Services.CsvFileService;
 using HerPortal.Helpers;
 using HerPortal.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 
 namespace HerPortal.Controllers;
 
@@ -13,6 +13,7 @@ public class HomeController : Controller
 {
     private readonly UserService userService;
     private readonly ICsvFileService csvFileService;
+    private const int PageSize = 20;
 
     public HomeController
     (
@@ -24,28 +25,22 @@ public class HomeController : Controller
     }
     
     [HttpGet("/")]
-    public async Task<IActionResult> Index([FromQuery] List<string> custodianCodes)
+    public async Task<IActionResult> Index([FromQuery] List<string> custodianCodes, int page = 1)
     {
         var userEmailAddress = HttpContext.User.GetEmailAddress();
         var userData = await userService.GetUserByEmailAsync(userEmailAddress);
 
-        var allUserCsvFiles = (await csvFileService.GetFileDataForUserAsync(userEmailAddress)).ToList();
-        var filteredCsvFiles = allUserCsvFiles;
+        var csvFilePage = await csvFileService.GetPaginatedFileDataForUserAsync(userEmailAddress, custodianCodes, page, PageSize);
 
-        if (custodianCodes.Count > 0)
-        {
-            filteredCsvFiles = filteredCsvFiles
-                .Where(cf => custodianCodes.Contains(cf.CustodianCode))
-                .ToList();
-        }
-        
+        string GetPageLink(int pageNumber) => Url.Action(nameof(Index), "Home", new RouteValueDictionary() { { "custodianCodes", custodianCodes }, { "page", pageNumber } });
+
         var homepageViewModel = new HomepageViewModel
         (
             userData,
-            filteredCsvFiles,
-            allUserCsvFiles.Any(cf => cf.HasUpdatedSinceLastDownload)
+            csvFilePage,
+            GetPageLink
         );
-        
+
         if (!userData.HasLoggedIn)
         {
             await userService.MarkUserAsHavingLoggedInAsync(userData.Id);

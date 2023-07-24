@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
 using HerPortal.BusinessLogic;
 using HerPortal.BusinessLogic.Models;
 using HerPortal.BusinessLogic.Services;
 using HerPortal.BusinessLogic.Services.CsvFileService;
 using HerPortal.Controllers;
-using HerPortal.Models;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using Tests.Builders;
@@ -37,94 +33,17 @@ public class HomeFileControllerTests
     }
 
     [Test]
-    public async Task Index_WhenCalledWithoutFilter_ShowsAllFiles()
-    {
-        // Arrange
-        var files = new List<CsvFileData>()
-        {
-            new("114", 1, 2023, new DateTime(2023, 1, 31), null),
-            new("114", 2, 2023, new DateTime(2023, 2, 3), null),
-            new("910", 1, 2023, new DateTime(2023, 1, 31), null),
-        };
-
-        var user = new UserBuilder(EmailAddress)
-            .WithLocalAuthorities(new List<LocalAuthority>
-            {
-                new()
-                {
-                    Id = 1,
-                    CustodianCode = "114"
-                },
-                new()
-                {
-                    Id = 2,
-                    CustodianCode = "910"
-                }
-            })
-            .Build();
-
-        mockDataAccessProvider
-            .Setup(dap => dap.GetUserByEmailAsync(EmailAddress))
-            .ReturnsAsync(user);
-        mockCsvFileService
-            .Setup(cfg => cfg.GetFileDataForUserAsync(user.EmailAddress))
-            .ReturnsAsync(files);
-        
-        // Act
-        var result = await underTest.Index(new List<string>());
-        
-        // Assert
-        result.As<ViewResult>().Model.As<HomepageViewModel>().CsvFiles.Count().Should().Be(3);
-    }
-    
-    
-    [Test]
-    public async Task Index_WhenCalledWithFilter_RemovesFilteredFiles()
-    {
-        // Arrange
-        var files = new List<CsvFileData>()
-        {
-            new("114", 1, 2023, new DateTime(2023, 1, 31), null),
-            new("114", 2, 2023, new DateTime(2023, 2, 3), null),
-            new("910", 1, 2023, new DateTime(2023, 1, 31), null),
-        };
-        var user = new UserBuilder(EmailAddress)
-            .WithLocalAuthorities(new List<LocalAuthority>
-            {
-                new()
-                {
-                    Id = 1,
-                    CustodianCode = "114"
-                },
-                new()
-                {
-                    Id = 2,
-                    CustodianCode = "910"
-                }
-            })
-            .Build();
-
-        mockDataAccessProvider
-            .Setup(dap => dap.GetUserByEmailAsync(EmailAddress))
-            .ReturnsAsync(user);
-        mockCsvFileService
-            .Setup(cfg => cfg.GetFileDataForUserAsync(user.EmailAddress))
-            .ReturnsAsync(files);
-        
-        // Act
-        var result = await underTest.Index(new List<string> { "114" });
-        
-        // Assert
-        result.As<ViewResult>().Model.As<HomepageViewModel>().CsvFiles.Count().Should().Be(2);
-    }
-    
-    [Test]
     public async Task Index_WhenUserViewsForTheFirstTime_SetsLoggedInFlag()
     {
         // Arrange
-        var files = new List<CsvFileData>()
+        var fileData = new PaginatedFileData
         {
-            new("114", 1, 2023, new DateTime(2023, 1, 31), null)
+            CurrentPage = 1,
+            MaximumPage = 1,
+            FileData = new List<CsvFileData>()
+            {
+                new("114", 1, 2023, new DateTime(2023, 1, 31), null)
+            }
         };
         var user = new UserBuilder(EmailAddress)
             .WithHasLoggedIn(false)
@@ -142,8 +61,8 @@ public class HomeFileControllerTests
             .Setup(dap => dap.GetUserByEmailAsync(EmailAddress))
             .ReturnsAsync(user);
         mockCsvFileService
-            .Setup(cfg => cfg.GetFileDataForUserAsync(user.EmailAddress))
-            .ReturnsAsync(files);
+            .Setup(cfg => cfg.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string> { "114"}, 1, 20))
+            .ReturnsAsync(fileData);
         
         // Act
         var result = await underTest.Index(new List<string> { "114" });
