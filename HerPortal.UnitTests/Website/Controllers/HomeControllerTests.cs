@@ -6,6 +6,7 @@ using HerPortal.BusinessLogic.Models;
 using HerPortal.BusinessLogic.Services;
 using HerPortal.BusinessLogic.Services.CsvFileService;
 using HerPortal.Controllers;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using Tests.Builders;
@@ -30,6 +31,7 @@ public class HomeFileControllerTests
 
         underTest = new HomeController(userDataStore, mockCsvFileService.Object);
         underTest.ControllerContext.HttpContext = new HttpContextBuilder(EmailAddress).Build();
+        underTest.Url = new Mock<IUrlHelper>().Object;
     }
 
     [Test]
