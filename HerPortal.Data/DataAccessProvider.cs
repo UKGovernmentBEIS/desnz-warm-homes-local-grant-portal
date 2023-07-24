@@ -1,4 +1,5 @@
-﻿using HerPortal.BusinessLogic.Models;
+﻿using HerPortal.BusinessLogic;
+using HerPortal.BusinessLogic.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HerPortal.Data;
@@ -47,7 +48,7 @@ public class DataAccessProvider : IDataAccessProvider
             .ToListAsync();
     }
 
-    public async Task<List<CsvFileDownload>> GetLastCsvFileDownloadsAsync(int userId)
+    public async Task<List<CsvFileDownload>> GetCsvFileDownloadDataForUserAsync(int userId)
     {
         return await context.CsvFileDownloads.Where(cfd => cfd.UserId == userId).ToListAsync();
     }

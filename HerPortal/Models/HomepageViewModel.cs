@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GovUkDesignSystem.GovUkDesignSystemComponents;
 using HerPortal.BusinessLogic.Models;
-using CsvFileData = HerPortal.BusinessLogic.ExternalServices.CsvFiles.CsvFileData;
+using HerPortal.BusinessLogic.Services.CsvFileService;
 
 namespace HerPortal.Models;
 
@@ -41,8 +41,10 @@ public class HomepageViewModel
     public List<string> CustodianCodes { get; }
     public Dictionary<string, LabelViewModel> LocalAuthorityCheckboxLabels { get; }
     public IEnumerable<CsvFile> CsvFiles { get; }
+    public int CurrentPage { get; }
+    public string[] PageUrls { get; }
 
-    public HomepageViewModel(User user, IEnumerable<CsvFileData> csvFiles, bool userHasNewUpdates)
+    public HomepageViewModel(User user, PaginatedFileData paginatedFileData, Func<int, string> pageLinkGenerator)
     {
         ShouldShowBanner = !user.HasLoggedIn;
         ShouldShowFilters = user.LocalAuthorities.Count >= 2;
@@ -59,8 +61,11 @@ public class HomepageViewModel
             )
             .OrderBy(kvp => kvp.Value.Text)
         );
-        CsvFiles = csvFiles.Select(cf => new CsvFile(cf));
+        CsvFiles = paginatedFileData.FileData.Select(cf => new CsvFile(cf));
 
-        UserHasNewUpdates = userHasNewUpdates;
+        UserHasNewUpdates = paginatedFileData.UserHasUndownloadedFiles;
+
+        CurrentPage = paginatedFileData.CurrentPage;
+        PageUrls = Enumerable.Range(1, paginatedFileData.MaximumPage).Select(pageLinkGenerator).ToArray();
     }
 }

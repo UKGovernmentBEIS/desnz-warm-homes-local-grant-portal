@@ -1,9 +1,9 @@
 ﻿using System;
 using FluentAssertions;
-using HerPortal.BusinessLogic.ExternalServices.CsvFiles;
+using HerPortal.BusinessLogic.Services.CsvFileService;
 using NUnit.Framework;
 
-namespace Tests.BusinessLogic.ExternalServices.CsvFiles;
+namespace Tests.BusinessLogic.Services.CsvFileService;
 
 [TestFixture]
 public class CsvFileDataTests

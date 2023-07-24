@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
+using System.Security;
 using System.Threading.Tasks;
-using HerPortal.BusinessLogic.ExternalServices.CsvFiles;
-using HerPortal.DataStores;
-using HerPortal.ExternalServices.CsvFiles;
+using HerPortal.BusinessLogic.Services.CsvFileService;
 using HerPortal.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,36 +12,31 @@ namespace HerPortal.Controllers;
 [Route("/download")]
 public class CsvFileController : Controller
 {
-    private readonly UserDataStore userDataStore;
-    private readonly ICsvFileGetter csvFileGetter;
+    private readonly ICsvFileService csvFileService;
     private readonly ILogger<CsvFileController> logger;
 
     public CsvFileController
     (
-        UserDataStore userDataStore,
-        ICsvFileGetter csvFileGetter,
+        ICsvFileService csvFileService,
         ILogger<CsvFileController> logger
     ) {
-        this.userDataStore = userDataStore;
-        this.csvFileGetter = csvFileGetter;
+        this.csvFileService = csvFileService;
         this.logger = logger;
     }
     
     [HttpGet("{custodianCode}/{year:int}/{month:int}")]
     public async Task<IActionResult> GetCsvFile(string custodianCode, int year, int month)
     {
-        // Important! First ensure the logged-in user is allowed to access this data
-        var userEmailAddress = HttpContext.User.GetEmailAddress();
-        var userData = await userDataStore.GetUserByEmailAsync(userEmailAddress);
-        if (!userData.LocalAuthorities.Any(la => la.CustodianCode == custodianCode))
-        {
-            return Unauthorized("The logged-in user is not permitted to access this resource.");
-        }
-
         Stream file;
         try
         {
-            file = await csvFileGetter.GetFileForDownloadAsync(custodianCode, year, month, userData.Id);
+            file = await csvFileService.GetFileForDownloadAsync(custodianCode, year, month, HttpContext.User.GetEmailAddress());
+        }
+        catch (SecurityException ex)
+        {
+            // If this is happening, someone is trying to get around the access controls or there's a bug
+            logger.LogWarning(ex.Message);
+            return Unauthorized("The logged-in user is not permitted to access this resource.");
         }
         catch (ArgumentOutOfRangeException)
         {

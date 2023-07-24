@@ -1,11 +1,15 @@
 using System;
 using System.Threading.Tasks;
+using Amazon;
+using Amazon.S3;
 using GovUkDesignSystem.ModelBinders;
 using Hangfire;
 using Hangfire.PostgreSql;
-using HerPortal.BusinessLogic.ExternalServices.CsvFiles;
+using HerPortal.BusinessLogic;
 using HerPortal.BusinessLogic.ExternalServices.EmailSending;
 using HerPortal.BusinessLogic.ExternalServices.S3FileReader;
+using HerPortal.BusinessLogic.Services;
+using HerPortal.BusinessLogic.Services.CsvFileService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -15,9 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using HerPortal.Data;
-using HerPortal.DataStores;
 using HerPortal.ErrorHandling;
-using HerPortal.ExternalServices.CsvFiles;
 using HerPortal.Middleware;
 using HerPortal.Services;
 using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
@@ -47,10 +49,9 @@ namespace HerPortal
             ConfigureHangfire(services);
 
             services.AddMemoryCache();
-            services.AddScoped<CsvFileDownloadDataStore>();
-            services.AddScoped<UserDataStore>();
+            services.AddScoped<UserService>();
             services.AddScoped<IDataAccessProvider, DataAccessProvider>();
-            services.AddScoped<ICsvFileGetter, CsvFileGetter>();
+            services.AddScoped<ICsvFileService, CsvFileService>();
             services.AddSingleton<StaticAssetsVersioningService>();
             // This allows encrypted cookies to be understood across multiple web server instances
             services.AddDataProtection().PersistKeysToDbContext<HerDbContext>();
@@ -59,6 +60,7 @@ namespace HerPortal
 
             ConfigureGovUkNotify(services);
             ConfigureDatabaseContext(services);
+            ConfigureS3Client(services);
             ConfigureS3FileReader(services);
 
             services.AddControllersWithViews(options =>
@@ -166,11 +168,36 @@ namespace HerPortal
             services.Configure<GovUkNotifyConfiguration>(
                 configuration.GetSection(GovUkNotifyConfiguration.ConfigSection));
         }
+        
+        private void ConfigureS3Client(IServiceCollection services)
+        {
+            var s3Config = new S3Configuration();
+            configuration.GetSection(S3Configuration.ConfigSection).Bind(s3Config);
+            
+            if (webHostEnvironment.IsDevelopment())
+            {
+                services.AddScoped(_ =>
+                {
+                    // For local development connect to a local instance of Minio
+                    var clientConfig = new AmazonS3Config
+                    {
+                        AuthenticationRegion = s3Config.Region,
+                        ServiceURL = s3Config.LocalDevOnly_ServiceUrl,
+                        ForcePathStyle = true,
+                    };
+                    return new AmazonS3Client(s3Config.LocalDevOnly_AccessKey, s3Config.LocalDevOnly_SecretKey, clientConfig);
+                });
+            }
+            else
+            {
+                services.AddScoped(_ => new AmazonS3Client(RegionEndpoint.GetBySystemName(s3Config.Region)));
+            }
+        }
 
         private void ConfigureS3FileReader(IServiceCollection services)
         {
-            services.Configure<S3FileReaderConfiguration>(
-                configuration.GetSection(S3FileReaderConfiguration.ConfigSection));
+            services.Configure<S3Configuration>(
+                configuration.GetSection(S3Configuration.ConfigSection));
             services.AddScoped<IS3FileReader, S3FileReader>();
             services.AddScoped<S3ReferralFileKeyService>();
         }

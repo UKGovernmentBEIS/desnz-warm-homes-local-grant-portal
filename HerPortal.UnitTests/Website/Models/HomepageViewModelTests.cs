@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using HerPortal.BusinessLogic.Models;
-using HerPortal.ExternalServices.CsvFiles;
+using HerPortal.BusinessLogic.Services.CsvFileService;
 using HerPortal.Models;
 using NUnit.Framework;
-using CsvFileData = HerPortal.BusinessLogic.ExternalServices.CsvFiles.CsvFileData;
 using Tests.Helpers;
 
 namespace Tests.Website.Models;
@@ -16,7 +15,12 @@ public class HomepageViewModelTests
 {
     private const string ValidCustodianCode = "505";
     private const string InvalidCustodianCode = "a";
-    
+
+    private string GetDummyLink(int pageNumber)
+    {
+        return $"link-{pageNumber}";
+    }
+
     [TestCase(true, false)]
     [TestCase(false, true)]
     public void HomepageViewModel_OnlyWhenCreatedForUserThatHasntLoggedInBefore_ShouldShowBanner
@@ -32,7 +36,7 @@ public class HomepageViewModelTests
         };
         
         // Act
-        var viewModel = new HomepageViewModel(user, new List<CsvFileData>(), true);
+        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyLink);
         
         // Assert
         viewModel.ShouldShowBanner.Should().Be(shouldShowBanner);
@@ -58,7 +62,7 @@ public class HomepageViewModelTests
         };
         
         // Act
-        var viewModel = new HomepageViewModel(user, new List<CsvFileData>(), true);
+        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyLink);
         
         // Assert
         viewModel.ShouldShowFilters.Should().Be(expected);

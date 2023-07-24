@@ -1,19 +1,14 @@
-﻿using System.Threading.Tasks;
-using HerPortal.BusinessLogic.Models;
-using HerPortal.Data;
-using Microsoft.Extensions.Logging;
+﻿using HerPortal.BusinessLogic.Models;
 
-namespace HerPortal.DataStores;
+namespace HerPortal.BusinessLogic.Services;
 
-public class UserDataStore
+public class UserService
 {
     private readonly IDataAccessProvider dataAccessProvider;
-    private readonly ILogger<UserDataStore> logger;
 
-    public UserDataStore(IDataAccessProvider dataAccessProvider, ILogger<UserDataStore> logger)
+    public UserService(IDataAccessProvider dataAccessProvider)
     {
         this.dataAccessProvider = dataAccessProvider;
-        this.logger = logger;
     }
 
     public async Task<User> GetUserByEmailAsync(string emailAddress)

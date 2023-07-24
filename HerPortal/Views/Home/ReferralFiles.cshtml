@@ -2,7 +2,14 @@
 @using GovUkDesignSystem
 @using GovUkDesignSystem.GovUkDesignSystemComponents
 @{
-    ViewBag.Title = "Referral files - Home Energy Retrofit Portal BETA";
+    if (Model.PageUrls.Length > 1)
+    {
+        ViewBag.Title = $"Referral files - Page {Model.CurrentPage} of {Model.PageUrls.Length} - Home Energy Retrofit Portal BETA";
+    }
+    else
+    {
+        ViewBag.Title = "Referral files - Home Energy Retrofit Portal BETA";    
+    }
 }
 
 @section BeforeMain {
