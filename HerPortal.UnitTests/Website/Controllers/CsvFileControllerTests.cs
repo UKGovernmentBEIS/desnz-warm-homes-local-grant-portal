@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Security;
 using System.Threading.Tasks;
 using FluentAssertions;
-using HerPortal.BusinessLogic.ExternalServices.CsvFiles;
-using HerPortal.BusinessLogic.Models;
+using HerPortal.BusinessLogic.Services.CsvFileService;
 using HerPortal.Controllers;
-using HerPortal.Data;
-using HerPortal.DataStores;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -17,24 +15,19 @@ namespace Tests.Website.Controllers;
 [TestFixture]
 public class CsvFileControllerTests
 {
-    private Mock<ILogger<UserDataStore>> mockUserDataLogger;
     private Mock<ILogger<CsvFileController>> mockCsvLogger;
     private CsvFileController underTest;
-    private Mock<IDataAccessProvider> mockDataAccessProvider;
-    private Mock<ICsvFileGetter> mockCsvFileGetter;
+    private Mock<ICsvFileService> mockCsvFileService;
     
     private const string EmailAddress = "test@example.com";
 
     [SetUp]
     public void Setup()
     {
-        mockUserDataLogger = new Mock<ILogger<UserDataStore>>();
-        mockDataAccessProvider = new Mock<IDataAccessProvider>();
         mockCsvLogger = new Mock<ILogger<CsvFileController>>();
-        mockCsvFileGetter = new Mock<ICsvFileGetter>();
-        var userDataStore = new UserDataStore(mockDataAccessProvider.Object, mockUserDataLogger.Object);
+        mockCsvFileService = new Mock<ICsvFileService>();
 
-        underTest = new CsvFileController(userDataStore, mockCsvFileGetter.Object, mockCsvLogger.Object);
+        underTest = new CsvFileController(mockCsvFileService.Object, mockCsvLogger.Object);
         underTest.ControllerContext.HttpContext = new HttpContextBuilder(EmailAddress).Build();
     }
 
@@ -42,25 +35,29 @@ public class CsvFileControllerTests
     public async Task GetCsvFile_WhenCalledForUnauthorisedCustodianCode_ReturnsUnauthorised()
     {
         // Arrange
-        var user = new UserBuilder(EmailAddress)
-            .WithLocalAuthorities(new List<LocalAuthority>
-            {
-                new()
-                {
-                    Id = 1,
-                    CustodianCode = "114"
-                }
-            })
-            .Build();
-        
-        mockDataAccessProvider
-            .Setup(dap => dap.GetUserByEmailAsync(EmailAddress))
-            .ReturnsAsync(user);
+        mockCsvFileService
+            .Setup(cfs => cfs.GetFileForDownloadAsync("115", 2023, 11, EmailAddress))
+            .ThrowsAsync(new SecurityException());
         
         // Act
         var result = await underTest.GetCsvFile("115", 2023, 11);
         
         // Assert
         result.Should().BeOfType<UnauthorizedObjectResult>();
+    }
+    
+    [Test]
+    public async Task GetCsvFile_WhenCalledForMissingFile_ReturnsNotFound()
+    {
+        // Arrange
+        mockCsvFileService
+            .Setup(cfs => cfs.GetFileForDownloadAsync("115", 2023, 11, EmailAddress))
+            .ThrowsAsync(new ArgumentOutOfRangeException());
+        
+        // Act
+        var result = await underTest.GetCsvFile("115", 2023, 11);
+        
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
     }
 }

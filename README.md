@@ -54,8 +54,23 @@ For critical bug fixes on production
 - Install EF Core CLI tools (https://docs.microsoft.com/en-us/ef/core/cli/dotnet)
 - Node v14+ (https://nodejs.org/en/)
 - If you're using Rider then you will need to install the ".net core user secrets" plugin
+- Download and configure Minio for Windows (https://min.io/download#/windows) (see below)
 
 In HerPortal run `npm install`
+
+#### Minio
+
+The portal site lists files hosted in an S3 bucket. For local development we need a fake S3 bucket to connect to.
+To use [Minio](https://min.io/) to provide a local S3 bucket follow these steps:
+1. [Download minio](https://min.io/download#/windows)
+2. Put the executable somewhere on your machine (e.g. c:\Program Files\Minio)
+3. Decide on a folder for Minio to store its data in (e.g. c:\data\minio)
+4. In a PowerShell window go to the folder that you put Minio in
+5. Run `.\minio.exe server <path to data folder> --console-address :9090`
+6. The first time that you do this:
+    1. Visit http://localhost:9090
+    2. Login (default is minioadmin/minioadmin)
+    3. Create a new bucket called `desnz-her-portal-referrals`
 
 ### GovUkDesignSystem
 
@@ -74,6 +89,16 @@ If you need to make changes to the GovUkDesignSystem (e.g. to add a new componen
 - Create a PR from your branch back to `master`
 - Get the PR reviewed and merged
 - From time to time create a PR to merge the `master` branch back to the Cabinet Office repository (https://github.com/cabinetoffice/govuk-design-system-dotnet)
+
+#### GOV.UK Frontend
+
+The GovUkDesignSystem project relies on the GOV.UK Frontend NPM package which contains images, fonts, styling, and JavaScript. When updating
+the GovUkDesignSystem you may also need to update the GOV.UK Frontend NPM package. To do this:
+
+- Update the version number of the GOV.UK Frontend package in package.json
+- Run `npm install`
+- Run `npm run update-govuk-assets`
+- Run `npm run build`
 
 ### APIs
 
@@ -108,17 +133,9 @@ You can also add secrets with `dotnet user-secrets`, just pipe the JSON you want
 cat secrets.json | dotnet user-secrets set
 ```
 
-### AWS Credentials
-
-In Rider:
-- Install the "AWS Toolkit" plugin
-- Open the credentials file in a text editor (this is usually `C:\\Users\<your username>\.aws\credentials`, 
-  or find the AWS tab in the bottom right of Rider, click "All local credentials" > "Edit AWS credential file(s)")
-- Log into AWS on a browser, and obtain the AWS profile to paste into the file (this varies between accounts)
-- Save the file, and go back to Rider: you should see a toast in the bottom right indicating that the AWS profile has been reloaded (if not, select the profile using the tab in the bottom toolbar)
-
 ### Running Locally
 
+- In your Minio folder run Minio `.\minio.exe server <path to data folder> --console-address :9090`
 - In Visual Studio / Rider build the solution
 - In `HerPortal` run `npm run watch`
 - In Visual Studio / Rider run the `HerPortal` project
