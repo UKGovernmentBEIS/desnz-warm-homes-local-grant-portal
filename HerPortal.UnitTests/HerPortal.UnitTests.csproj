@@ -17,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\HerPortal.ManagementShell\HerPortal.ManagementShell.csproj" />
       <ProjectReference Include="..\HerPortal\HerPortal.csproj" />
     </ItemGroup>
 
