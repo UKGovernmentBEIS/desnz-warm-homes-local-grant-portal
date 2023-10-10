@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using HerPortal.BusinessLogic.Models;
 using HerPortal.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace HerPortal.ManagementShell;
 
+[ExcludeFromCodeCoverage]
 public class DatabaseOperation : IDatabaseOperation
 {
     private readonly HerDbContext dbContext;
