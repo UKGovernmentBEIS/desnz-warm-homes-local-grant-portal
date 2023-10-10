@@ -21,39 +21,44 @@ public class AdminActionTests
         underTest = new AdminAction(mockDatabaseOperation.Object, mockOutputProvider.Object);
     }
 
-    // [Test]
-    // public void FindsExistingUserCaseInsensitively_IfInDatabase()
-    // {
-    //     // Arrange
-    //     var users = new List<User>
-    //     {
-    //         new UserBuilder("existinguser@email.com").Build(),
-    //         new UserBuilder("existinguser2@email.com").Build()
-    //     };
-    //     const string userEmailAddress = "ExistingUser@email.com";
-    //     mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthorities()).Returns(users);
+    [Test]
+    public void FindsExistingUserCaseInsensitively_IfInDatabase()
+    {
+        // Arrange
+        var users = new List<User>
+        {
+            new UserBuilder("existinguser@email.com").Build(),
+            new UserBuilder("existinguser2@email.com").Build()
+        };
+        const string userEmailAddress = "ExistingUser@email.com";
+        mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthorities()).Returns(users);
 
-    //     // Act
-    //     var returnedUser = underTest.GetOrCreateUser(userEmailAddress);
+        // Act
+        var returnedUser = underTest.GetUser(userEmailAddress);
 
-    //     // Assert
-    //     Assert.AreEqual(users[0].EmailAddress, returnedUser!.EmailAddress);
-    // }
+        // Assert
+        Assert.AreEqual(users[0].EmailAddress, returnedUser!.EmailAddress);
+    }
 
-    // [Test]
-    // public void ReturnsConfirmedCustodianCodes()
-    // {
-    //     // Arrange
-    //     var custodianCodes = new[] { "9052", "2525" };
-    //     const string userEmailAddress = "ExistingUser@email.com";
-    //     SetupConfirmCustodianCodes(custodianCodes, userEmailAddress);
+    [Test]
+    public void ConfirmsCustodianCodesWhenUpdating()
+    {
+        // Arrange
+        const string userEmailAddress = "existinguser@email.com";
+        var users = new List<User>
+        {
+            new UserBuilder("existinguser@email.com").Build(),
+        };
+        mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthorities()).Returns(users);
+        var custodianCodes = new[] { "9052", "2525" };
+        SetupConfirmCustodianCodes(custodianCodes, userEmailAddress);
 
-    //     // Act
-    //     var userConfirmation = underTest.ConfirmCustodianCodes(userEmailAddress, custodianCodes,);
+        // Act
+        underTest.CreateOrUpdateUser(userEmailAddress, custodianCodes);
 
-    //     // Assert
-    //     Assert.True(userConfirmation);
-    // }
+        // Assert
+        mockOutputProvider.Verify(mock => mock.Confirm(It.IsAny<string>()), Times.Once());
+    }
 
     [Test]
     public void CreatesANewUser_WhenEmailNotInDatabase()
@@ -65,6 +70,37 @@ public class AdminActionTests
     public void RollsBackTransaction_IfUserCreationFails()
     {
 
+    }
+
+    [Test]
+    public void RemovesLasFromUser()
+    {
+        // Arrange
+        var laToRemove = new LocalAuthority
+        {
+            CustodianCode = "9052",
+            Id = 123
+        };
+
+        var laToKeep = new LocalAuthority
+        {
+            CustodianCode = "456",
+            Id = 456
+        };
+
+        var userEmailAddress = "existinguser@email.com";
+        var user = new UserBuilder(userEmailAddress).WithLocalAuthorities(new List<LocalAuthority> { laToRemove, laToKeep }).Build();
+        var users = new List<User> { user };
+        mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthorities()).Returns(users);
+
+        var custodianCodes = new[] { laToRemove.CustodianCode };
+        SetupConfirmCustodianCodes(custodianCodes, userEmailAddress);
+
+        // Act
+        underTest.RemoveLas(user, custodianCodes);
+
+        // Assert
+        mockDatabaseOperation.Verify(mock => mock.RemoveLasFromUser(user, new List<LocalAuthority> { laToRemove }), Times.Once());
     }
 
     private void SetupConfirmCustodianCodes(IEnumerable<string> custodianCodes, string userEmailAddress)

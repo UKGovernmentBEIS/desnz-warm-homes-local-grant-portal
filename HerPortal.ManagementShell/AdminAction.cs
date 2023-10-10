@@ -79,7 +79,7 @@ public class AdminAction
         }
     }
 
-    public Enum GetUserStatus(User? userOrNull)
+    private Enum GetUserStatus(User? userOrNull)
     {
         return userOrNull == null ? UserStatus.New : UserStatus.Active;
     }
