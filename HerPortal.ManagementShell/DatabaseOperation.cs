@@ -2,7 +2,7 @@ using HerPortal.BusinessLogic.Models;
 using HerPortal.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace HerPortal.ManagementShell; 
+namespace HerPortal.ManagementShell;
 
 public class DatabaseOperation : IDatabaseOperation
 {
@@ -22,49 +22,44 @@ public class DatabaseOperation : IDatabaseOperation
             .ToList();
     }
 
-    public void RemoveUserOrLogError(User? user)
+    public List<LocalAuthority> GetLas(string[] custodianCodes)
+    {
+        return custodianCodes
+            .Select(code => dbContext.LocalAuthorities
+                .Single(la => la.CustodianCode == code))
+            .ToList();
+    }
+
+    public void RemoveUserOrLogError(User user)
     {
         using var dbContextTransaction = dbContext.Database.BeginTransaction();
         try
         {
-            switch (user)
+            // removing a user also deletes all associated rows in the LocalAuthorityUser table
+            dbContext.Users.Remove(user);
+            dbContext.SaveChanges();
+            var deletionConfirmation = outputProvider.Confirm(
+                $"Attention! This will delete user {user.EmailAddress} and all associated rows from the database. Are you sure you want to commit this transaction? (y/n)");
+
+            if (deletionConfirmation)
             {
-                // removing a user also deletes all associated rows in the LocalAuthorityUser table
-                case null:
-                    outputProvider.Output("User not found");
-                    break;
-                default:
-                {
-                    {
-                        dbContext.Users.Remove(user);
-                        dbContext.SaveChanges();
-                        var deletionConfirmation = outputProvider.Confirm(
-                            $"Attention! This will delete user {user.EmailAddress} and all associated rows from the database. Are you sure you want to commit this transaction? (y/n)");
-
-                        if (deletionConfirmation)
-                        {
-                            dbContextTransaction.Commit();
-                            outputProvider.Output($"Operation successful. User {user.EmailAddress} was deleted");
-                        }
-                        else
-                        {
-                            dbContextTransaction.Rollback();
-                            outputProvider.Output("Rollback complete");
-                        }
-                    }
-
-                    break;
-                }
+                dbContextTransaction.Commit();
+                outputProvider.Output($"Operation successful. User {user.EmailAddress} was deleted");
+            }
+            else
+            {
+                dbContextTransaction.Rollback();
+                outputProvider.Output("Rollback complete");
             }
         }
         catch (Exception e)
         {
-            outputProvider.Output($"Rollback following error in transaction: {e.InnerException?.Message}");
             dbContextTransaction.Rollback();
+            outputProvider.Output($"Rollback following error in transaction: {e.InnerException?.Message}");
         }
     }
 
-    public void CreateUserOrLogError(string userEmailAddress, string[]? custodianCodes)
+    public void CreateUserOrLogError(string userEmailAddress, List<LocalAuthority> localAuthorities)
     {
         using var dbContextTransaction = dbContext.Database.BeginTransaction();
         try
@@ -73,10 +68,7 @@ public class DatabaseOperation : IDatabaseOperation
             {
                 EmailAddress = userEmailAddress,
                 HasLoggedIn = false,
-                LocalAuthorities = custodianCodes!
-                    .Select(code => dbContext.LocalAuthorities
-                        .Single(la => la.CustodianCode == code))
-                    .ToList()
+                LocalAuthorities = localAuthorities
             };
             dbContext.Add(newLaUser);
             dbContext.SaveChanges();
@@ -90,15 +82,8 @@ public class DatabaseOperation : IDatabaseOperation
         }
     }
 
-    public void RemoveLasFromUser(string[]? custodianCodes, User? user)
+    public void RemoveLasFromUser(User user, List<LocalAuthority> lasToRemove)
     {
-        var lasToRemove = user?.LocalAuthorities.Where(la => custodianCodes!.Contains(la.CustodianCode)).ToList();
-
-        if (custodianCodes != null && lasToRemove != null && lasToRemove.Count < custodianCodes.Length)
-        {
-            outputProvider.Output("Number of LAs to remove is less than the number of custodian codes submitted. Please check custodian codes");
-        }
-        
         using var dbContextTransaction = dbContext.Database.BeginTransaction();
         try
         {
@@ -119,17 +104,15 @@ public class DatabaseOperation : IDatabaseOperation
         }
     }
 
-    public void AddLasToUser(string[]? custodianCodes, User? user)
+    public void AddLasToUser(User user, List<LocalAuthority> localAuthorities)
     {
-        if (custodianCodes == null) return;
         using var dbContextTransaction = dbContext.Database.BeginTransaction();
         try
         {
-            foreach (var code in custodianCodes)
+            foreach (var la in localAuthorities)
             {
                 try
                 {
-                    var la = dbContext.LocalAuthorities.SingleOrDefault(la => la.CustodianCode == code);
                     user?.LocalAuthorities.Add(la);
                 }
                 catch (Exception e)

@@ -4,6 +4,12 @@ namespace HerPortal.ManagementShell;
 
 public class AdminAction
 {
+    public enum UserStatus
+    {
+        New,
+        Active
+    }
+
     private readonly IDatabaseOperation dbOperation;
     private readonly IOutputProvider outputProvider;
     private readonly Dictionary<string, string> custodianCodeToLaDict = LocalAuthorityData.LocalAuthorityNamesByCustodianCode;
@@ -26,11 +32,15 @@ public class AdminAction
             ));
     }
 
-    public bool ConfirmCustodianCodes(string[] codes, string userEmailAddress)
+    private bool ConfirmCustodianCodes(string userEmailAddress, string[] codes)
     {
-        outputProvider.Output("ATTENTION! POTENTIAL DATA BREACH! Make sure below user should have the permissions you are about to grant");
         outputProvider.Output(
-            $"You are changing permissions for user {userEmailAddress} for the following local authorities: ");
+            $"You are changing permissions for user {userEmailAddress} for the following local authorities:");
+
+        if (codes.Length < 1)
+        {
+            outputProvider.Output("(No LAs specified)");
+        }
 
         foreach (var code in codes)
 
@@ -42,7 +52,7 @@ public class AdminAction
             }
             catch (Exception e)
             {
-                Console.WriteLine($"{e.Message} Process terminated");
+                outputProvider.Output($"{e.Message} Process terminated");
                 return false;
             }
         }
@@ -56,14 +66,14 @@ public class AdminAction
         return hasUserConfirmed;
     }
 
-    public void DisplayUserStatus(Enum status)
+    private void DisplayUserStatus(Enum status)
     {
         switch (status)
         {
-            case Program.UserStatus.New:
+            case UserStatus.New:
                 outputProvider.Output("User not found in database. A new user will be created");
                 break;
-            case Program.UserStatus.Active:
+            case UserStatus.Active:
                 outputProvider.Output("User found in database. LAs will be added to their account");
                 break;
         }
@@ -71,25 +81,106 @@ public class AdminAction
 
     public Enum GetUserStatus(User? userOrNull)
     {
-        return userOrNull == null ? Program.UserStatus.New : Program.UserStatus.Active;
+        return userOrNull == null ? UserStatus.New : UserStatus.Active;
     }
 
-    public void TryCreateUser(string userEmailAddress, string[]? custodianCodes)
+    private void TryCreateUser(string userEmailAddress, string[]? custodianCodes)
     {
-        dbOperation.CreateUserOrLogError(userEmailAddress, custodianCodes);
+        var lasToAdd = dbOperation.GetLas(custodianCodes ?? Array.Empty<string>());
+        dbOperation.CreateUserOrLogError(userEmailAddress, lasToAdd);
     }
 
     public void TryRemoveUser(User? user)
     {
+        if (user == null)
+        {
+            outputProvider.Output("User not found");
+            return;
+        }
+
         dbOperation.RemoveUserOrLogError(user);
     }
-    public void AddLas(string[]? custodianCodes, User? user)
+    private void AddLas(User? user, string[]? custodianCodes)
     {
-        dbOperation.AddLasToUser(custodianCodes, user);
+        if (user == null)
+        {
+            outputProvider.Output("User not found");
+            return;
+        }
+
+        if (custodianCodes == null || custodianCodes.Length < 1)
+        {
+            outputProvider.Output("Please specify custodian codes to add to user");
+            return;
+        }
+
+        var lasToAdd = dbOperation.GetLas(custodianCodes);
+        dbOperation.AddLasToUser(user, lasToAdd);
     }
 
-    public void RemoveLas(string[]? custodianCodes, User? user)
+    public void RemoveLas(User? user, string[]? custodianCodes)
     {
-        dbOperation.RemoveLasFromUser(custodianCodes, user);
+        if (user == null)
+        {
+            outputProvider.Output("User not found");
+            return;
+        }
+
+        if (custodianCodes == null || custodianCodes.Length < 1)
+        {
+            outputProvider.Output("Please specify custodian codes to remove from user");
+            return;
+        }
+
+        var userConfirmation = ConfirmCustodianCodes(user.EmailAddress, custodianCodes);
+        if (!userConfirmation)
+        {
+            return;
+        }
+
+        var lasToRemove = user.LocalAuthorities.Where(la => custodianCodes.Contains(la.CustodianCode)).ToList();
+        var missingCodes = custodianCodes.Where(code => !lasToRemove.Any(la => la.CustodianCode.Equals(code))).ToList();
+        if (missingCodes.Count > 0)
+        {
+            outputProvider.Output($"Could not find LAs attached to {user.EmailAddress} for the following codes: {string.Join(", ", missingCodes)}. Please check your inputs and try again.");
+            return;
+        }
+
+        dbOperation.RemoveLasFromUser(user, lasToRemove);
+    }
+
+    public void CreateOrUpdateUser(string? userEmailAddress, string[] custodianCodes)
+    {
+        if (userEmailAddress == null)
+        {
+            outputProvider.Output("Please specify user E-mail address to create or update");
+            return;
+        }
+
+        var user = GetUser(userEmailAddress);
+        var userStatus = GetUserStatus(user);
+        DisplayUserStatus(userStatus);
+        outputProvider.Output("");
+
+        outputProvider.Output("!!! ATTENTION! READ CAREFULLY OR RISK A DATA BREACH !!!");
+        outputProvider.Output("");
+        outputProvider.Output("You are about to grant a user permission to read PERSONALLY IDENTIFIABLE INFORMATION submitted to LAs.");
+        outputProvider.Output("Take a moment to double check the following list and only continue if you are certain this user should have access to these LAs.");
+        outputProvider.Output("NB: in particular, you should only do this if for LAs that have signed their DSA contracts!");
+        outputProvider.Output("");
+
+        var confirmation = ConfirmCustodianCodes(userEmailAddress, custodianCodes);
+
+        if (confirmation)
+        {
+            if (userStatus.Equals(UserStatus.Active))
+            {
+                AddLas(user, custodianCodes);
+            }
+            else if (userStatus.Equals(UserStatus.New))
+            {
+                TryCreateUser(userEmailAddress, custodianCodes);
+            }
+        }
     }
 }
