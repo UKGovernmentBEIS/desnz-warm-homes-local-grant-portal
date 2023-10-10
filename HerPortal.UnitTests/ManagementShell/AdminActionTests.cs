@@ -39,4 +39,46 @@ public class AdminActionTests
         // Assert
         Assert.AreEqual(users[0].EmailAddress, returnedUser!.EmailAddress);
     }
+
+    [Test]
+    public void ReturnsConfirmedCustodianCodes()
+    {
+        // Arrange
+        var custodianCodes = new[] { "9052", "2525" };
+        const string userEmailAddress = "ExistingUser@email.com";
+        SetupConfirmCustodianCodes(custodianCodes, userEmailAddress);
+        
+        // Act
+        var userConfirmation = underTest.ConfirmCustodianCodes(custodianCodes, userEmailAddress);
+        
+        // Assert
+        Assert.True(userConfirmation);
+    }
+
+    [Test]
+    public void CreatesANewUser_WhenEmailNotInDatabase()
+    {
+        
+    }
+
+    [Test]
+    public void RollsBackTransaction_IfUserCreationFails()
+    {
+        
+    }
+    
+    private void SetupConfirmCustodianCodes(IEnumerable<string> custodianCodes, string userEmailAddress)
+    {
+        // Arrange
+        mockOutputProvider
+            .Setup(op =>
+                op.Output(
+                    $"You are changing permissions for user {userEmailAddress} for the following local authorities: "));
+        foreach (var code in custodianCodes)
+        {
+            mockOutputProvider.Setup(op => op.Output("Code: Local Authority"));
+        }
+
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
+    }
 }

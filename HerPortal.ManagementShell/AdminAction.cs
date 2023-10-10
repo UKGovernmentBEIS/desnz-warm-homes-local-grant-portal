@@ -35,8 +35,16 @@ public class AdminAction
         foreach (var code in codes)
 
         {
-            var localAuthority = custodianCodeToLaDict[code];
-            outputProvider.Output($"{code}: {localAuthority}");
+            try
+            {
+                var localAuthority = custodianCodeToLaDict[code];
+                outputProvider.Output($"{code}: {localAuthority}");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"{e.Message} Process terminated");
+                return false;
+            }
         }
 
         var hasUserConfirmed = outputProvider.Confirm("Please confirm (y/n)");
@@ -83,10 +91,5 @@ public class AdminAction
     public void RemoveLas(string[]? custodianCodes, User? user)
     {
         dbOperation.RemoveLasFromUser(custodianCodes, user);
-    }
-
-    public void Output(string outputString)
-    {
-        outputProvider.Output(outputString);
     }
 }

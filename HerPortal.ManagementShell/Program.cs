@@ -1,4 +1,4 @@
-﻿using HerPortal.BusinessLogic.Models;
+﻿using System.Security.Principal;
 using HerPortal.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +12,12 @@ namespace HerPortal.ManagementShell
             Active
         }
 
+        private enum Command
+        {
+            AddLas,
+            RemoveLas,
+            RemoveUser
+        }
         public static void Main(string[] args)
         {
             var contextOptions = new DbContextOptionsBuilder<HerDbContext>()
@@ -36,20 +42,20 @@ namespace HerPortal.ManagementShell
             }
             catch (IndexOutOfRangeException)
             {
-                adminAction.Output(
+                outputProvider.Output(
                     "Please specify a database action, user email address and at least one custodian code");
             }
 
             var foundUserOrDefault = adminAction.GetUser(userEmailAddress);
-            Enum userStatus = adminAction.GetUserStatus(foundUserOrDefault);
+            var userStatus = adminAction.GetUserStatus(foundUserOrDefault);
 
             bool userConfirmation;
-            switch (devAction)
+            switch (Enum.Parse<Command>(devAction, true))
             {
-                case "remove-user":
+                case Command.RemoveUser:
                     adminAction.TryRemoveUser(foundUserOrDefault);
                     break;
-                case "remove-las":
+                case Command.RemoveLas:
                     userConfirmation = adminAction.ConfirmCustodianCodes(custodianCodes, userEmailAddress);
                     if (userConfirmation)
                     {
@@ -57,171 +63,28 @@ namespace HerPortal.ManagementShell
                     }
 
                     break;
-                case "add-las":
+                case Command.AddLas:
                     adminAction.DisplayUserStatus(userStatus);
 
 
-                        userConfirmation = adminAction.ConfirmCustodianCodes(custodianCodes, userEmailAddress);
+                    userConfirmation = adminAction.ConfirmCustodianCodes(custodianCodes, userEmailAddress);
 
-                        if (userConfirmation)
+                    if (userConfirmation)
+                    {
+                        if (userStatus.Equals(UserStatus.Active))
                         {
-                            if (userStatus.Equals(UserStatus.Active))
-                            {
-                                adminAction.AddLas(custodianCodes, foundUserOrDefault);
-                            }
-                            else if (userStatus.Equals(UserStatus.New))
-                            {
-                                adminAction.TryCreateUser(userEmailAddress, custodianCodes);
-                            }
+                            adminAction.AddLas(custodianCodes, foundUserOrDefault);
+                        }
+                        else if (userStatus.Equals(UserStatus.New))
+                        {
+                            adminAction.TryCreateUser(userEmailAddress, custodianCodes);
+                        }
                     }
+
                     break;
-            }
-        }
-
-        private class DatabaseOperation : IDatabaseOperation
-        {
-            private readonly HerDbContext dbContext;
-            private readonly OutputProvider outputProvider;
-
-            public DatabaseOperation(HerDbContext dbContext, OutputProvider outputProvider)
-            {
-                this.dbContext = dbContext;
-                this.outputProvider = outputProvider;
-            }
-
-            public List<User> GetUsersWithLocalAuthorities()
-            {
-                return dbContext.Users
-                    .Include(user => user.LocalAuthorities)
-                    .ToList();
-            }
-
-            public void RemoveUserOrLogError(User? user)
-            {
-                using var dbContextTransaction = dbContext.Database.BeginTransaction();
-                try
-                {
-                    switch (user)
-                    {
-                        // removing a user also deletes all associated rows in the LocalAuthorityUser table
-                        case null:
-                            outputProvider.Output("User not found");
-                            break;
-                        default:
-                        {
-                            {
-                                dbContext.Users.Remove(user);
-                                dbContext.SaveChanges();
-                                var deletionConfirmation = outputProvider.Confirm(
-                                    "Attention! Deletion from a database. Are you sure you want to commit this transaction? (y/n)");
-
-                                if (deletionConfirmation)
-                                {
-                                    dbContextTransaction.Commit();
-                                }
-                                else
-                                {
-                                    dbContextTransaction.Rollback();
-                                    outputProvider.Output("Rollback complete");
-                                }
-                            }
-
-                            break;
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    outputProvider.Output($"Rollback following error in transaction: {e.InnerException?.Message}");
-                    dbContextTransaction.Rollback();
-                }
-            }
-
-            public void CreateUserOrLogError(string userEmailAddress, string[]? custodianCodes)
-            {
-                using var dbContextTransaction = dbContext.Database.BeginTransaction();
-                try
-                {
-                    var newLaUser = new User
-                    {
-                        EmailAddress = userEmailAddress,
-                        HasLoggedIn = false,
-                        LocalAuthorities = custodianCodes!
-                            .Select(code => dbContext.LocalAuthorities
-                                .Single(la => la.CustodianCode == code))
-                            .ToList()
-                    };
-                    dbContext.Add(newLaUser);
-                    dbContext.SaveChanges();
-                    outputProvider.Output("Operation successful");
-                    dbContextTransaction.Commit();
-                }
-                catch (Exception e)
-                {
-                    outputProvider.Output($"Rollback following error in transaction: {e.InnerException?.Message}");
-                    dbContextTransaction.Rollback();
-                }
-            }
-
-            public void RemoveLasFromUser(string[]? custodianCodes, User? user)
-            {
-                var lasToRemove = user?.LocalAuthorities.Where(la => custodianCodes!.Contains(la.CustodianCode)).ToList();
-                using var dbContextTransaction = dbContext.Database.BeginTransaction();
-                try
-                {
-                    if (lasToRemove != null)
-                        foreach (var la in lasToRemove)
-                        {
-                            user?.LocalAuthorities.Remove(la);
-                        }
-
-                    dbContext.SaveChanges();
-                    outputProvider.Output("Operation successful");
-                    dbContextTransaction.Commit();
-                }
-                catch (Exception e)
-                {
-                    outputProvider.Output($"Rollback following error in transaction: {e.InnerException?.Message}");
-                    dbContextTransaction.Rollback();
-                }
-            }
-
-            public void AddLasToUser(string[]? custodianCodes, User? user)
-            {
-                if (custodianCodes == null) return;
-                using var dbContextTransaction = dbContext.Database.BeginTransaction();
-                try
-                {
-                    foreach (var code in custodianCodes)
-                    {
-                        var la = dbContext.LocalAuthorities.SingleOrDefault(la => la.CustodianCode == code);
-                        user?.LocalAuthorities.Add(la);
-                    }
-
-                    dbContext.SaveChanges();
-                    outputProvider.Output("Operation successful");
-                    dbContextTransaction.Commit();
-                }
-                catch (Exception e)
-                {
-                    outputProvider.Output($"Rollback following error in transaction: {e.InnerException?.Message}");
-                    dbContextTransaction.Rollback();
-                }
-            }
-        }
-
-        private class OutputProvider : IOutputProvider
-        {
-            public void Output(string outputString)
-            {
-                Console.WriteLine(outputString);
-            }
-
-            public bool Confirm(string outputString)
-            {
-                Console.WriteLine(outputString);
-                var inputString = Console.ReadLine();
-                return inputString?.Trim() == "y";
+                default:
+                    outputProvider.Output("Invalid terminal command entered. Please refer to the documentation");
+                    break;
             }
         }
     }
