@@ -98,6 +98,13 @@ public class AdminAction
             return;
         }
 
+        var deletionConfirmation = outputProvider.Confirm(
+            $"Attention! This will delete user {user.EmailAddress} and all associated rows from the database. Are you sure you want to commit this transaction? (y/n)");
+        if (!deletionConfirmation)
+        {
+            return;
+        }
+
         dbOperation.RemoveUserOrLogError(user);
     }
     private void AddLas(User? user, string[]? custodianCodes)

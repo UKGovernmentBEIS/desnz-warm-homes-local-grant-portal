@@ -38,19 +38,8 @@ public class DatabaseOperation : IDatabaseOperation
             // removing a user also deletes all associated rows in the LocalAuthorityUser table
             dbContext.Users.Remove(user);
             dbContext.SaveChanges();
-            var deletionConfirmation = outputProvider.Confirm(
-                $"Attention! This will delete user {user.EmailAddress} and all associated rows from the database. Are you sure you want to commit this transaction? (y/n)");
-
-            if (deletionConfirmation)
-            {
-                dbContextTransaction.Commit();
-                outputProvider.Output($"Operation successful. User {user.EmailAddress} was deleted");
-            }
-            else
-            {
-                dbContextTransaction.Rollback();
-                outputProvider.Output("Rollback complete");
-            }
+            dbContextTransaction.Commit();
+            outputProvider.Output($"Operation successful. User {user.EmailAddress} was deleted");
         }
         catch (Exception e)
         {
@@ -87,11 +76,10 @@ public class DatabaseOperation : IDatabaseOperation
         using var dbContextTransaction = dbContext.Database.BeginTransaction();
         try
         {
-            if (lasToRemove != null)
-                foreach (var la in lasToRemove)
-                {
-                    user?.LocalAuthorities.Remove(la);
-                }
+            foreach (var la in lasToRemove)
+            {
+                user?.LocalAuthorities.Remove(la);
+            }
 
             dbContext.SaveChanges();
             outputProvider.Output("Operation successful");
