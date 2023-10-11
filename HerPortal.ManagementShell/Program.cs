@@ -1,8 +1,10 @@
 ﻿using HerPortal.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HerPortal.ManagementShell
 {
+    [ExcludeFromCodeCoverage]
     public static class Program
     {
         private enum Subcommand
@@ -15,6 +17,7 @@ namespace HerPortal.ManagementShell
         {
             var contextOptions = new DbContextOptionsBuilder<HerDbContext>()
                 .UseNpgsql(
+                    Environment.GetEnvironmentVariable("ConnectionStrings__PostgreSQLConnection") ??
                     @"UserId=postgres;Password=postgres;Server=localhost;Port=5432;Database=herportaldev;Integrated Security=true;Include Error Detail=true;Pooling=true")
                 .Options;
 

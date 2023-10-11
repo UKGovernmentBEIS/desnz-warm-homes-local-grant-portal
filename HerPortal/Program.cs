@@ -7,11 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using HerPortal.Data;
 using Microsoft.Extensions.Options;
 using GlobalConfiguration = HerPortal.BusinessLogic.GlobalConfiguration;
-using System.Diagnostics.CodeAnalysis;
 
 namespace HerPortal
 {
-    [ExcludeFromCodeCoverage]
     public class Program
     {
         public static void Main(string[] args)
