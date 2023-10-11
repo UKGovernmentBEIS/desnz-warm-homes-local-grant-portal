@@ -1,8 +1,10 @@
 ﻿using HerPortal.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HerPortal.ManagementShell
 {
+    [ExcludeFromCodeCoverage]
     public static class Program
     {
         private enum Subcommand
