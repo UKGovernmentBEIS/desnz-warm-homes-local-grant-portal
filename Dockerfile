@@ -15,15 +15,15 @@ COPY nuget.config .
 COPY HerPortal/*.csproj HerPortal/
 COPY HerPortal.BusinessLogic/*.csproj HerPortal.BusinessLogic/
 COPY HerPortal.Data/*.csproj HerPortal.Data/
-COPY HerPortal.ManagementShell/*.csproj HerPortal.ManagementShell/
+# COPY HerPortal.ManagementShell/*.csproj HerPortal.ManagementShell/
 COPY Lib/ Lib/
 RUN dotnet restore HerPortal/ --use-current-runtime
-RUN dotnet restore HerPortal.ManagementShell/ --use-current-runtime
+# RUN dotnet restore HerPortal.ManagementShell/ --use-current-runtime
 
 # copy and publish app and libraries
 COPY . .
 RUN dotnet publish HerPortal/ --use-current-runtime --self-contained false --no-restore -o /app
-RUN dotnet build HerPortal.ManagementShell/ --use-current-runtime --self-contained false --no-restore -o /app
+# RUN dotnet build HerPortal.ManagementShell/ --use-current-runtime --self-contained false --no-restore -o /app
 
 
 # final stage/image
