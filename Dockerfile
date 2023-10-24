@@ -16,8 +16,9 @@ COPY HerPortal/*.csproj HerPortal/
 COPY HerPortal.BusinessLogic/*.csproj HerPortal.BusinessLogic/
 COPY HerPortal.Data/*.csproj HerPortal.Data/
 COPY HerPortal.ManagementShell/*.csproj HerPortal.ManagementShell/
+COPY HerPortal.UnitTests/*.csproj HerPortal.UnitTests/
 COPY Lib/ Lib/
-RUN dotnet restore HerPortal/ HerPortal.ManagementShell/ --use-current-runtime
+RUN dotnet restore --use-current-runtime
 
 # copy and publish app and libraries
 COPY . .
@@ -29,4 +30,5 @@ RUN dotnet build HerPortal.ManagementShell/ --use-current-runtime --self-contain
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
 COPY --from=build /app .
+COPY --from=build /cli ./cli
 ENTRYPOINT ["dotnet", "HerPortal.dll"]
