@@ -28,6 +28,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL", "SQL", "{16067151-D51
 		SQL\add_users.sql = SQL\add_users.sql
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerPortal.ManagementShell", "HerPortal.ManagementShell\HerPortal.ManagementShell.csproj", "{390AAF3C-C580-4DED-8C25-F38FE44C7BB9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{52A59A93-AC33-48E1-927D-FFCBB37A330E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52A59A93-AC33-48E1-927D-FFCBB37A330E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52A59A93-AC33-48E1-927D-FFCBB37A330E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{390AAF3C-C580-4DED-8C25-F38FE44C7BB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{390AAF3C-C580-4DED-8C25-F38FE44C7BB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{390AAF3C-C580-4DED-8C25-F38FE44C7BB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{390AAF3C-C580-4DED-8C25-F38FE44C7BB9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

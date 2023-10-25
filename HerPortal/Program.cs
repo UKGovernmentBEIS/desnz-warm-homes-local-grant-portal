@@ -15,10 +15,10 @@ namespace HerPortal
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            
+
             // Hide that we are using Kestrel for security reasons
             builder.WebHost.ConfigureKestrel(serverOptions => serverOptions.AddServerHeader = false);
-            
+
             var startup = new Startup(builder.Configuration, builder.Environment);
             startup.ConfigureServices(builder.Services);
 
@@ -30,7 +30,7 @@ namespace HerPortal
             using var scope = app.Services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<HerDbContext>();
             dbContext.Database.Migrate();
-            
+
             // Run nightly tasks at 07:00 UTC daily
             // This code to get the config is odd, but it's in the documentation:
             //   https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-7.0#access-options-in-programcs
