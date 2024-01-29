@@ -10,29 +10,42 @@ public class CsvFileService : ICsvFileService
     private readonly IDataAccessProvider dataAccessProvider;
     private readonly S3ReferralFileKeyService keyService;
     private readonly IS3FileReader s3FileReader;
+    private readonly UserService userService;
 
     public CsvFileService
     (
         IDataAccessProvider dataAccessProvider,
         S3ReferralFileKeyService keyService,
-        IS3FileReader s3FileReader
+        IS3FileReader s3FileReader,
+        UserService userService
     ) {
         this.dataAccessProvider = dataAccessProvider;
         this.keyService = keyService;
         this.s3FileReader = s3FileReader;
+        this.userService = userService;
     }
 
     public async Task<IEnumerable<AbstractCsvFileData>> GetFileDataForUserAsync(string userEmailAddress)
     {
         // Make sure that we only return file data for files that the user currently has access to
-        var user = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
+        var user = await userService.GetUserByEmailAsync(userEmailAddress);
         var currentCustodianCodes = user.LocalAuthorities.Select(la => la.CustodianCode);
         
         var downloads = await dataAccessProvider.GetCsvFileDownloadDataForUserAsync(user.Id);
-        var files = new List<AbstractCsvFileData>()
-        {
-            new ConsortiumCsvFileData( "C_0033", 1, 2022, DateTime.Today.AddDays(-10), DateTime.Today.AddDays(-5))
-        };
+        var files = new List<AbstractCsvFileData>();
+
+        var consortiumIds = userService.GetConsortiumIdsForUser(user);
+
+        files.AddRange(
+            consortiumIds
+                .Select(consortiumId => new ConsortiumCsvFileData(
+                    consortiumId, 
+                    1, 
+                    2022, 
+                    DateTime.Today.AddDays(-10), 
+                    DateTime.Today.AddDays(-5)
+                    ))
+            );
 
         foreach (var custodianCode in currentCustodianCodes)
         {

@@ -22,4 +22,15 @@ public class UserService
     {
         await dataAccessProvider.MarkUserAsHavingLoggedInAsync(userId);
     }
+
+    public List<string> GetConsortiumIdsForUser(User user)
+    {
+        var userLocalAuthorities = user.LocalAuthorities.Select(la => la.CustodianCode);
+
+        // user is a consortium manager if they are a manager of all LAs in that consortium
+        return ConsortiumData.ConsortiumLocalAuthorityIdsByConsortiumId
+            .Where(pair => pair.Value.All(consortiumLa => userLocalAuthorities.Contains(consortiumLa)))
+            .Select(pair => pair.Key)
+            .ToList();
+    }
 }
