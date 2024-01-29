@@ -42,7 +42,7 @@ public class HomeFileControllerTests
         {
             CurrentPage = 1,
             MaximumPage = 1,
-            FileData = new List<CsvFileData>()
+            FileData = new List<LocalAuthorityCsvFileData>()
             {
                 new("114", 1, 2023, new DateTime(2023, 1, 31), null)
             }

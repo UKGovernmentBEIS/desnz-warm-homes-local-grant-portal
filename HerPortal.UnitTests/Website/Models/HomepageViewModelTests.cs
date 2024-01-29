@@ -78,7 +78,7 @@ public class HomepageViewModelTests
         string expectedDateString
     ) {
         // Arrange
-        var csvFileData = new CsvFileData
+        var csvFileData = new LocalAuthorityCsvFileData
         (
             ValidCustodianCode,
             month,
@@ -105,7 +105,7 @@ public class HomepageViewModelTests
         string expectedLastUpdatedString
     ) {
         // Arrange
-        var csvFileData = new CsvFileData
+        var csvFileData = new LocalAuthorityCsvFileData
         (
             ValidCustodianCode,
             1,
@@ -130,7 +130,7 @@ public class HomepageViewModelTests
         string expectedLocalAuthorityName
     ) {
         // Arrange
-        var csvFileData = new CsvFileData
+        var csvFileData = new LocalAuthorityCsvFileData
         (
             custodianCode,
             1,
@@ -143,14 +143,14 @@ public class HomepageViewModelTests
         var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData);
         
         // Assert
-        viewModelCsvFile.LocalAuthorityName.Should().Be(expectedLocalAuthorityName);
+        viewModelCsvFile.Name.Should().Be(expectedLocalAuthorityName);
     }
     
     [Test]
     public void HomepageViewModelCsvFile_WhenInvalidCustodianCodeIsGiven_ThrowsException()
     {
         // Arrange
-        var csvFileData = new CsvFileData
+        var csvFileData = new LocalAuthorityCsvFileData
         (
             InvalidCustodianCode,
             1,

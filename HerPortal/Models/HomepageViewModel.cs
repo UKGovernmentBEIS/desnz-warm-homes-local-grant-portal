@@ -15,23 +15,18 @@ public class HomepageViewModel
         public int Year { get; }
         public int Month { get; }
         public string MonthAndYearText => new DateOnly(Year, Month, 1).ToString("MMMM yyyy");
-        public string LocalAuthorityName => LocalAuthorityData.LocalAuthorityNamesByCustodianCode[CustodianCode];
+        public string Name { get; }
         public string LastUpdatedText { get; }
         public bool HasNewUpdates { get; }
 
-        public CsvFile(CsvFileData csvFileData)
+        public CsvFile(AbstractCsvFileData csvFileData)
         {
-            if (!LocalAuthorityData.LocalAuthorityNamesByCustodianCode.ContainsKey(csvFileData.CustodianCode))
-            {
-                throw new ArgumentOutOfRangeException(nameof(csvFileData.CustodianCode), csvFileData.CustodianCode,
-                    "The given custodian code is not known.");
-            }
-
-            CustodianCode = csvFileData.CustodianCode;
+            CustodianCode = csvFileData.Code;
             Year = csvFileData.Year;
             Month = csvFileData.Month;
             LastUpdatedText = csvFileData.LastUpdated.ToString("dd/MM/yy");
             HasNewUpdates = csvFileData.HasUpdatedSinceLastDownload;
+            Name = csvFileData.Name;
         }
     }
     

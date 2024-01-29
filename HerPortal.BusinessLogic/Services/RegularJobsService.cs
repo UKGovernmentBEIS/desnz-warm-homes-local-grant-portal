@@ -33,7 +33,7 @@ public class RegularJobsService
         var activeUsers = await dataProvider.GetAllActiveUsersAsync();
         foreach (var user in activeUsers)
         {
-            IEnumerable<CsvFileData> userCsvFiles;
+            IEnumerable<AbstractCsvFileData> userCsvFiles;
 
             try
             {

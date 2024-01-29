@@ -22,14 +22,17 @@ public class CsvFileService : ICsvFileService
         this.s3FileReader = s3FileReader;
     }
 
-    public async Task<IEnumerable<CsvFileData>> GetFileDataForUserAsync(string userEmailAddress)
+    public async Task<IEnumerable<AbstractCsvFileData>> GetFileDataForUserAsync(string userEmailAddress)
     {
         // Make sure that we only return file data for files that the user currently has access to
         var user = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
         var currentCustodianCodes = user.LocalAuthorities.Select(la => la.CustodianCode);
         
         var downloads = await dataAccessProvider.GetCsvFileDownloadDataForUserAsync(user.Id);
-        var files = new List<CsvFileData>();
+        var files = new List<AbstractCsvFileData>()
+        {
+            new ConsortiumCsvFileData( "C_0033", 1, 2022, DateTime.Today.AddDays(-10), DateTime.Today.AddDays(-5))
+        };
 
         foreach (var custodianCode in currentCustodianCodes)
         {
@@ -42,7 +45,7 @@ public class CsvFileService : ICsvFileService
                         && d.Year == data.Year
                         && d.Month == data.Month
                     );
-                    return new CsvFileData
+                    return new LocalAuthorityCsvFileData
                     (
                         data.CustodianCode,
                         data.Month,
@@ -56,7 +59,7 @@ public class CsvFileService : ICsvFileService
 
         return files
             .OrderByDescending(f => new DateOnly(f.Year, f.Month, 1))
-            .ThenBy(f => LocalAuthorityData.LocalAuthorityNamesByCustodianCode[f.CustodianCode]);
+            .ThenBy(f => f.Name);
     }
 
     // Page number starts at 1
@@ -68,7 +71,7 @@ public class CsvFileService : ICsvFileService
     {
         var allFileData = (await GetFileDataForUserAsync(userEmailAddress)).ToList();
         var filteredFileData = allFileData
-            .Where(cfd => custodianCodes.Count == 0 || custodianCodes.Contains(cfd.CustodianCode))
+            .Where(cfd => custodianCodes.Count == 0 || custodianCodes.Contains(cfd.Code))
             .ToList();
 
         var maxPage = ((filteredFileData.Count - 1) / pageSize) + 1;

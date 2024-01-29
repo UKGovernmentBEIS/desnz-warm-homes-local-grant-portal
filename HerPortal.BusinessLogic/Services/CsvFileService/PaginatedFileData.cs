@@ -2,7 +2,7 @@ namespace HerPortal.BusinessLogic.Services.CsvFileService;
 
 public class PaginatedFileData
 {
-    public IEnumerable<CsvFileData> FileData { get; set; } = new List<CsvFileData>();
+    public IEnumerable<AbstractCsvFileData> FileData { get; set; } = new List<AbstractCsvFileData>();
     public int CurrentPage { get; set; }
     public int MaximumPage { get; set; }
     

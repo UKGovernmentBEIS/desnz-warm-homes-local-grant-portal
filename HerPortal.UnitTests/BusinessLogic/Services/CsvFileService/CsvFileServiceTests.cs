@@ -79,7 +79,7 @@ public class CsvFileServiceTests
         var result = (await underTest.GetFileDataForUserAsync(user.EmailAddress)).ToList();
         
         // Assert
-        var expectedResult = new List<CsvFileData>()
+        var expectedResult = new List<LocalAuthorityCsvFileData>()
         {
             new("114", 1, 2023, new DateTime(2023, 01, 31), null),
             new("114", 2, 2023, new DateTime(2023, 02, 04), null),
@@ -122,7 +122,7 @@ public class CsvFileServiceTests
         var result = (await underTest.GetFileDataForUserAsync(user.EmailAddress)).ToList();
         
         // Assert
-        var expectedResult = new List<CsvFileData>()
+        var expectedResult = new List<LocalAuthorityCsvFileData>()
         {
             new ("114", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
         };
@@ -175,7 +175,7 @@ public class CsvFileServiceTests
         var result = (await underTest.GetFileDataForUserAsync(user.EmailAddress)).ToList();
         
         // Assert
-        var expectedResult = new List<CsvFileData>()
+        var expectedResult = new List<LocalAuthorityCsvFileData>()
         {
             new ("114", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
         };
@@ -228,7 +228,7 @@ public class CsvFileServiceTests
         var result = (await underTest.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string>(), 1, 20));
         
         // Assert
-        var expectedResult = new List<CsvFileData>()
+        var expectedResult = new List<LocalAuthorityCsvFileData>()
         {
             new ("114", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
             new ("910", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
@@ -282,7 +282,7 @@ public class CsvFileServiceTests
         var result = (await underTest.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string> { "114" }, 1, 20));
         
         // Assert
-        var expectedResult = new List<CsvFileData>()
+        var expectedResult = new List<LocalAuthorityCsvFileData>()
         {
             new ("114", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
         };
@@ -331,7 +331,7 @@ public class CsvFileServiceTests
         var result = (await underTest.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string>(), 2, 1));
         
         // Assert
-        var expectedResult = new List<CsvFileData>()
+        var expectedResult = new List<LocalAuthorityCsvFileData>()
         {
             new ("114", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
         };
