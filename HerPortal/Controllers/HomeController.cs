@@ -34,11 +34,36 @@ public class HomeController : Controller
 
         string GetPageLink(int pageNumber) => Url.Action(nameof(Index), "Home", new RouteValueDictionary() { { "custodianCodes", custodianCodes }, { "page", pageNumber } });
 
+        string GetDownloadLink(AbstractCsvFileData abstractCsvFileData)
+        {
+            return abstractCsvFileData switch
+            {
+                LocalAuthorityCsvFileData localAuthorityCsvFileData => Url.Action(
+                    nameof(CsvFileController.GetLaCsvFile), "CsvFile",
+                    new RouteValueDictionary()
+                    {
+                        { "custodianCode", localAuthorityCsvFileData.Code },
+                        { "year", localAuthorityCsvFileData.Year },
+                        { "month", localAuthorityCsvFileData.Month }
+                    }),
+                ConsortiumCsvFileData consortiumCsvFileData => Url.Action(nameof(CsvFileController.GetConsortiumCsvFile),
+                    "CsvFile",
+                    new RouteValueDictionary()
+                    {
+                        { "consortiumCode", consortiumCsvFileData.Code },
+                        { "year", consortiumCsvFileData.Year },
+                        { "month", consortiumCsvFileData.Month }
+                    }),
+                _ => ""
+            };
+        }
+
         var homepageViewModel = new HomepageViewModel
         (
             userData,
             csvFilePage,
-            GetPageLink
+            GetPageLink,
+            GetDownloadLink
         );
 
         if (!userData.HasLoggedIn)

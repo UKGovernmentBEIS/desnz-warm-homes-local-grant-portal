@@ -40,7 +40,7 @@ public class CsvFileControllerTests
             .ThrowsAsync(new SecurityException());
         
         // Act
-        var result = await underTest.GetCsvFile("115", 2023, 11);
+        var result = await underTest.GetLaCsvFile("115", 2023, 11);
         
         // Assert
         result.Should().BeOfType<UnauthorizedObjectResult>();
@@ -55,7 +55,7 @@ public class CsvFileControllerTests
             .ThrowsAsync(new ArgumentOutOfRangeException());
         
         // Act
-        var result = await underTest.GetCsvFile("115", 2023, 11);
+        var result = await underTest.GetLaCsvFile("115", 2023, 11);
         
         // Assert
         result.Should().BeOfType<NotFoundResult>();

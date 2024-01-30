@@ -16,9 +16,14 @@ public class HomepageViewModelTests
     private const string ValidCustodianCode = "505";
     private const string InvalidCustodianCode = "a";
 
-    private string GetDummyLink(int pageNumber)
+    private string GetDummyPageLink(int pageNumber)
     {
         return $"link-{pageNumber}";
+    }
+
+    private string GetDummyDownloadLink(AbstractCsvFileData abstractCsvFileData)
+    {
+        return $"link-{abstractCsvFileData.Name}";
     }
 
     [TestCase(true, false)]
@@ -36,7 +41,7 @@ public class HomepageViewModelTests
         };
         
         // Act
-        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyLink);
+        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
         
         // Assert
         viewModel.ShouldShowBanner.Should().Be(shouldShowBanner);
@@ -62,7 +67,7 @@ public class HomepageViewModelTests
         };
         
         // Act
-        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyLink);
+        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
         
         // Assert
         viewModel.ShouldShowFilters.Should().Be(expected);
@@ -88,7 +93,7 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData);
+        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData, "");
         
         // Assert
         viewModelCsvFile.MonthAndYearText.Should().Be(expectedDateString);
@@ -115,7 +120,7 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData);
+        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData, "");
         
         // Assert
         viewModelCsvFile.LastUpdatedText.Should().Be(expectedLastUpdatedString);
@@ -140,7 +145,7 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData);
+        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData, "");
         
         // Assert
         viewModelCsvFile.Name.Should().Be(expectedLocalAuthorityName);
@@ -160,7 +165,7 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var act = () => new HomepageViewModel.CsvFile(csvFileData);
+        var act = () => new HomepageViewModel.CsvFile(csvFileData, "");
         
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>();

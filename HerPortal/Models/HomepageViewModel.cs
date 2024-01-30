@@ -4,6 +4,7 @@ using System.Linq;
 using GovUkDesignSystem.GovUkDesignSystemComponents;
 using HerPortal.BusinessLogic.Models;
 using HerPortal.BusinessLogic.Services.CsvFileService;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace HerPortal.Models;
 
@@ -19,7 +20,9 @@ public class HomepageViewModel
         public string LastUpdatedText { get; }
         public bool HasNewUpdates { get; }
 
-        public CsvFile(AbstractCsvFileData csvFileData)
+        public string DownloadLink { get; }
+
+        public CsvFile(AbstractCsvFileData csvFileData, string downloadLink)
         {
             CustodianCode = csvFileData.Code;
             Year = csvFileData.Year;
@@ -27,6 +30,7 @@ public class HomepageViewModel
             LastUpdatedText = csvFileData.LastUpdated.ToString("dd/MM/yy");
             HasNewUpdates = csvFileData.HasUpdatedSinceLastDownload;
             Name = csvFileData.Name;
+            DownloadLink = downloadLink;
         }
     }
     
@@ -39,7 +43,12 @@ public class HomepageViewModel
     public int CurrentPage { get; }
     public string[] PageUrls { get; }
 
-    public HomepageViewModel(User user, PaginatedFileData paginatedFileData, Func<int, string> pageLinkGenerator)
+    public HomepageViewModel(
+        User user, 
+        PaginatedFileData paginatedFileData, 
+        Func<int, string> pageLinkGenerator,
+        Func<AbstractCsvFileData, string> downloadLinkGenerator
+        )
     {
         ShouldShowBanner = !user.HasLoggedIn;
         ShouldShowFilters = user.LocalAuthorities.Count >= 2;
@@ -56,7 +65,7 @@ public class HomepageViewModel
             )
             .OrderBy(kvp => kvp.Value.Text)
         );
-        CsvFiles = paginatedFileData.FileData.Select(cf => new CsvFile(cf));
+        CsvFiles = paginatedFileData.FileData.Select(cf => new CsvFile(cf, downloadLinkGenerator(cf)));
 
         UserHasNewUpdates = paginatedFileData.UserHasUndownloadedFiles;
 

@@ -24,8 +24,8 @@ public class CsvFileController : Controller
         this.logger = logger;
     }
     
-    [HttpGet("{custodianCode}/{year:int}/{month:int}")]
-    public async Task<IActionResult> GetCsvFile(string custodianCode, int year, int month)
+    [HttpGet("/la/{custodianCode}/{year:int}/{month:int}")]
+    public async Task<IActionResult> GetLaCsvFile(string custodianCode, int year, int month)
     {
         Stream file;
         try
@@ -56,5 +56,13 @@ public class CsvFileController : Controller
         }
 
         return File(file, "text/csv", $"{custodianCode}_{year}-{month:D2}.csv");
+    }
+    
+    [HttpGet("/consortium/{consortiumCode}/{year:int}/{month:int}")]
+    public async Task<IActionResult> GetConsortiumCsvFile(string consortiumCode, int year, int month)
+    {
+        Stream file = Stream.Null;
+
+        return File(file, "text/csv", $"{consortiumCode}_{year}-{month:D2}.csv");
     }
 }

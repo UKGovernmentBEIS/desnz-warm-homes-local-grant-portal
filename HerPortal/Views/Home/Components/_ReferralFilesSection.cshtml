@@ -39,7 +39,7 @@
                     {
                         new()
                         {
-                            Html = @<a class="govuk-link" asp-controller="CsvFile" asp-action="GetCsvFile" asp-route-custodianCode="@cf.CustodianCode" asp-route-year="@cf.Year" asp-route-month="@cf.Month" download>@cf.MonthAndYearText</a>
+                            Html = @<a class="govuk-link" href="@cf.DownloadLink" download>@cf.MonthAndYearText</a>
                         },
                         new()
                         {
