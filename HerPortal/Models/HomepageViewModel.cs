@@ -29,7 +29,7 @@ public class HomepageViewModel
             Month = csvFileData.Month;
             LastUpdatedText = csvFileData.LastUpdated.ToString("dd/MM/yy");
             HasNewUpdates = csvFileData.HasUpdatedSinceLastDownload;
-            Name = csvFileData.Name;
+            Name = csvFileData is ConsortiumCsvFileData ? $"{csvFileData.Name} (Consortium)" : csvFileData.Name;
             DownloadLink = downloadLink;
         }
     }
