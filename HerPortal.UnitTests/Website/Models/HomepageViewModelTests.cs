@@ -41,7 +41,7 @@ public class HomepageViewModelTests
         };
         
         // Act
-        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
+        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink, new List<string>());
         
         // Assert
         viewModel.ShouldShowBanner.Should().Be(shouldShowBanner);
@@ -67,7 +67,7 @@ public class HomepageViewModelTests
         };
         
         // Act
-        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
+        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink, new List<string>());
         
         // Assert
         viewModel.ShouldShowFilters.Should().Be(expected);

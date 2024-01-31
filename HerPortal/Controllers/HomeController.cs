@@ -25,14 +25,14 @@ public class HomeController : Controller
     }
     
     [HttpGet("/")]
-    public async Task<IActionResult> Index([FromQuery] List<string> custodianCodes, int page = 1)
+    public async Task<IActionResult> Index([FromQuery] List<string> codes, int page = 1)
     {
         var userEmailAddress = HttpContext.User.GetEmailAddress();
         var userData = await userService.GetUserByEmailAsync(userEmailAddress);
 
-        var csvFilePage = await csvFileService.GetPaginatedFileDataForUserAsync(userEmailAddress, custodianCodes, page, PageSize);
+        var csvFilePage = await csvFileService.GetPaginatedFileDataForUserAsync(userEmailAddress, codes, page, PageSize);
 
-        string GetPageLink(int pageNumber) => Url.Action(nameof(Index), "Home", new RouteValueDictionary() { { "custodianCodes", custodianCodes }, { "page", pageNumber } });
+        string GetPageLink(int pageNumber) => Url.Action(nameof(Index), "Home", new RouteValueDictionary() { { "custodianCodes", codes }, { "page", pageNumber } });
 
         string GetDownloadLink(AbstractCsvFileData abstractCsvFileData)
         {
@@ -58,12 +58,15 @@ public class HomeController : Controller
             };
         }
 
+        var consortiumCodes = userService.GetConsortiumIdsForUser(userData);
+
         var homepageViewModel = new HomepageViewModel
         (
             userData,
             csvFilePage,
             GetPageLink,
-            GetDownloadLink
+            GetDownloadLink,
+            consortiumCodes
         );
 
         if (!userData.HasLoggedIn)
