@@ -36,17 +36,6 @@ public class CsvFileService : ICsvFileService
 
         var consortiumIds = userService.GetConsortiumIdsForUser(user);
 
-        files.AddRange(
-            consortiumIds
-                .Select(consortiumId => new ConsortiumCsvFileData(
-                    consortiumId, 
-                    1, 
-                    2022, 
-                    DateTime.Today.AddDays(-10), 
-                    DateTime.Today.AddDays(-5)
-                    ))
-            );
-
         foreach (var custodianCode in currentCustodianCodes)
         {
             var s3Objects = await s3FileReader.GetS3ObjectsByCustodianCodeAsync(custodianCode);
@@ -70,6 +59,25 @@ public class CsvFileService : ICsvFileService
             ));
         }
 
+        files.AddRange(
+            files
+                .Where(file => LocalAuthorityData.LocalAuthorityConsortiumIdByCustodianCode.ContainsKey(file.Code))
+                .GroupBy(file => (LocalAuthorityData.LocalAuthorityConsortiumIdByCustodianCode[file.Code], file.Month,
+                    file.Year))
+                .Where(grouping => consortiumIds.Contains(grouping.Key.Item1))
+                .Select(grouping => new ConsortiumCsvFileData(
+                        grouping.Key.Item1, 
+                        grouping.Key.Month, 
+                        grouping.Key.Year, 
+                        grouping
+                            .Select(fileData => fileData.LastUpdated)
+                            .Max(), // find latest update of any LAs
+                        DateTime.Now.AddDays(-5) // TODO last download database
+                    )
+                )
+            );
+
+        // TODO bold consortium & put them at top of date
         return files
             .OrderByDescending(f => new DateOnly(f.Year, f.Month, 1))
             .ThenBy(f => f.Name);
