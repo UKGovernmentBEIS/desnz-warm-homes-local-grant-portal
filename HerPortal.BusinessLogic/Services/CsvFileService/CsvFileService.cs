@@ -116,9 +116,9 @@ public class CsvFileService : ICsvFileService
                 )
             );
 
-        // TODO bold consortium & put them at top of date
         return files
             .OrderByDescending(f => new DateOnly(f.Year, f.Month, 1))
+            .ThenByDescending(f => f is ConsortiumCsvFileData)
             .ThenBy(f => f.Name);
     }
 
