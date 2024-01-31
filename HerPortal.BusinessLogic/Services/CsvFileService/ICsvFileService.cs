@@ -10,5 +10,7 @@ public interface ICsvFileService
         int pageNumber,
         int pageSize);
     
-    public Task<Stream> GetFileForDownloadAsync(string custodianCode, int year, int month, string userEmailAddress);
+    public Task<Stream> GetLocalAuthorityFileForDownloadAsync(string custodianCode, int year, int month, string userEmailAddress);
+    
+    public Task<Stream> GetConsortiumFileForDownloadAsync(string consortiumCode, int year, int month, string userEmailAddress);
 }

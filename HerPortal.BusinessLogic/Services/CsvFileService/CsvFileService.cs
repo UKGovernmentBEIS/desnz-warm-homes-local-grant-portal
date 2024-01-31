@@ -2,6 +2,7 @@ using System.Security;
 using HerPortal.BusinessLogic.ExternalServices.S3FileReader;
 using HerPortal.BusinessLogic.Models;
 using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
+using Microsoft.Extensions.Logging;
 
 namespace HerPortal.BusinessLogic.Services.CsvFileService;
 
@@ -107,7 +108,7 @@ public class CsvFileService : ICsvFileService
         };
     }
 
-    public async Task<Stream> GetFileForDownloadAsync(string custodianCode, int year, int month, string userEmailAddress)
+    public async Task<Stream> GetLocalAuthorityFileForDownloadAsync(string custodianCode, int year, int month, string userEmailAddress)
     {
         // Important! First ensure the logged-in user is allowed to access this data
         var userData = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
@@ -132,5 +133,29 @@ public class CsvFileService : ICsvFileService
         await dataAccessProvider.MarkCsvFileAsDownloadedAsync(custodianCode, year, month, userData.Id);
 
         return fileStream;
+    }
+
+    public async Task<Stream> GetConsortiumFileForDownloadAsync(string consortiumCode, int year, int month, string userEmailAddress)
+    {
+        // Important! First ensure the logged-in user is allowed to access this data
+        var userData = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
+        var consortiumCodes = userService.GetConsortiumIdsForUser(userData);
+
+        if (!consortiumCodes.Contains(consortiumCode))
+        {
+            // We don't want to log the User's email address for GDPR reasons, but the ID is fine.
+            throw new SecurityException(
+                $"User {userData.Id} is not permitted to access file for consortium code: {consortiumCode} year: {year} month: {month}.");
+        }
+        
+        if (!ConsortiumData.ConsortiumNamesByConsortiumId.ContainsKey(consortiumCode))
+        {
+            throw new ArgumentOutOfRangeException(nameof(consortiumCode), consortiumCode,
+                "Given custodian code is not valid");
+        }
+
+        var custodianCode = ConsortiumData.ConsortiumLocalAuthorityIdsByConsortiumId[consortiumCode].First();
+
+        return await GetLocalAuthorityFileForDownloadAsync(custodianCode, year, month, userEmailAddress);
     }
 }

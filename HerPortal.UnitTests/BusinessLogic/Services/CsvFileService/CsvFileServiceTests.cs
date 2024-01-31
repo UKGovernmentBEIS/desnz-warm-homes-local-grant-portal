@@ -49,7 +49,7 @@ public class CsvFileServiceTests
             .ReturnsAsync(user);
         
         // Act and Assert
-        Assert.ThrowsAsync<SecurityException>(async () => await underTest.GetFileForDownloadAsync("115", 2020, 01, "test@example.com"));
+        Assert.ThrowsAsync<SecurityException>(async () => await underTest.GetLocalAuthorityFileForDownloadAsync("115", 2020, 01, "test@example.com"));
     }
 
     [Test]

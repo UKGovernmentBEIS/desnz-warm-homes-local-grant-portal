@@ -36,7 +36,7 @@ public class CsvFileControllerTests
     {
         // Arrange
         mockCsvFileService
-            .Setup(cfs => cfs.GetFileForDownloadAsync("115", 2023, 11, EmailAddress))
+            .Setup(cfs => cfs.GetLocalAuthorityFileForDownloadAsync("115", 2023, 11, EmailAddress))
             .ThrowsAsync(new SecurityException());
         
         // Act
@@ -51,7 +51,7 @@ public class CsvFileControllerTests
     {
         // Arrange
         mockCsvFileService
-            .Setup(cfs => cfs.GetFileForDownloadAsync("115", 2023, 11, EmailAddress))
+            .Setup(cfs => cfs.GetLocalAuthorityFileForDownloadAsync("115", 2023, 11, EmailAddress))
             .ThrowsAsync(new ArgumentOutOfRangeException());
         
         // Act
