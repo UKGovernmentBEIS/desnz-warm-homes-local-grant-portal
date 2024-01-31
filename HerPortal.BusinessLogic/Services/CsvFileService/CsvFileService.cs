@@ -1,8 +1,10 @@
+using System.Globalization;
 using System.Security;
+using CsvHelper;
+using CsvHelper.Configuration.Attributes;
 using HerPortal.BusinessLogic.ExternalServices.S3FileReader;
 using HerPortal.BusinessLogic.Models;
 using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
-using Microsoft.Extensions.Logging;
 
 namespace HerPortal.BusinessLogic.Services.CsvFileService;
 
@@ -12,6 +14,40 @@ public class CsvFileService : ICsvFileService
     private readonly S3ReferralFileKeyService keyService;
     private readonly IS3FileReader s3FileReader;
     private readonly UserService userService;
+    
+    private class CsvReferralRequest
+    {
+        [Name("Referral date")]
+        public string Date { get; set; }
+        [Name("Referral code")]
+        public string Code { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Telephone { get; set; }
+        public string Address1 { get; set; }
+        public string Address2 { get; set; }
+        public string Town { get; set; }
+        public string County { get; set; }
+        public string Postcode { get; set; }
+        [Name("UPRN")]
+        public string Uprn { get; set; }
+        [Name("EPC Band")]
+        public string EpcBand { get; set; }
+        [Name("EPC confirmed by homeowner")]
+        public string EpcConfirmedByHomeowner { get; set; }
+        [Name("EPC Lodgement Date")]
+        public string EpcLodgementDate { get; set; }
+        [Name("Is off gas grid")]
+        public string IsOffGasGrid { get; set; }
+        [Name("Household income band")]
+        public string HouseholdIncomeBand { get; set; }
+        [Name("Is eligible postcode")]
+        public string IsEligiblePostcode { get; set; }
+        public string Tenure { get; set; }
+        [Optional] // optional as it doesnt appear in input csv
+        [Name("Custodian Code")]
+        public string CustodianCode { get; set; }
+    }
 
     public CsvFileService
     (
@@ -154,8 +190,40 @@ public class CsvFileService : ICsvFileService
                 "Given custodian code is not valid");
         }
 
-        var custodianCode = ConsortiumData.ConsortiumLocalAuthorityIdsByConsortiumId[consortiumCode].First();
+        var referralRequests = new List<CsvReferralRequest>();
+        
+        foreach (var custodianCode in ConsortiumData.ConsortiumLocalAuthorityIdsByConsortiumId[consortiumCode])
+        {
+            var localAuthorityFile = await GetLocalAuthorityFileForDownloadAsync(custodianCode, year, month, userEmailAddress);
 
-        return await GetLocalAuthorityFileForDownloadAsync(custodianCode, year, month, userEmailAddress);
+            using var reader = new StreamReader(localAuthorityFile);
+            using var localAuthorityCsv = new CsvReader(reader, CultureInfo.InvariantCulture);
+            referralRequests.AddRange(localAuthorityCsv
+                .GetRecords<CsvReferralRequest>()
+                .Select(record =>
+                {
+                    record.CustodianCode = custodianCode;
+                    return record;
+                })
+            );
+        }
+
+        referralRequests = referralRequests
+            .Select(referralRequest => (DateTime.Parse(referralRequest.Date), referralRequest))
+            .OrderBy(dateAndReferralRequest => dateAndReferralRequest.Item1)
+            .Select(dateAndReferralRequest => dateAndReferralRequest.referralRequest)
+            .ToList();
+
+        byte[] outBytes;
+
+        using var stream = new MemoryStream();
+        await using var writer = new StreamWriter(stream);
+        await using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+        
+        await csv.WriteRecordsAsync(referralRequests);
+        await writer.FlushAsync();
+        
+        outBytes = stream.ToArray();
+        return new MemoryStream(outBytes);
     }
 }
