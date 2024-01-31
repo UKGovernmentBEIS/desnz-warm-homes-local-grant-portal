@@ -108,8 +108,10 @@ public class CsvFileService : ICsvFileService
                         grouping.Key.Year, 
                         grouping
                             .Select(fileData => fileData.LastUpdated)
-                            .Max(), // find latest update of any LAs
-                        DateTime.Now.AddDays(-5) // TODO last download database
+                            .Max(), // there are csv updates as new as
+                        grouping
+                            .Select(fileData => fileData.LastDownloaded)
+                            .Min() // there are csvs undownloaded for as long as
                     )
                 )
             );
