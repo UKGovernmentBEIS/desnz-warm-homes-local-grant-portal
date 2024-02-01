@@ -15,6 +15,7 @@ public class HomepageViewModelTests
 {
     private const string ValidCustodianCode = "505";
     private const string InvalidCustodianCode = "a";
+    private const string InvalidConsortiumCode = "a";
 
     private string GetDummyPageLink(int pageNumber)
     {
@@ -158,6 +159,51 @@ public class HomepageViewModelTests
         var csvFileData = new LocalAuthorityCsvFileData
         (
             InvalidCustodianCode,
+            1,
+            2024,
+            new DateTime(2023, 1, 1),
+            null
+        );
+        
+        // Act
+        var act = () => new HomepageViewModel.CsvFile(csvFileData, "");
+        
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>();
+    }
+    
+    [TestCase("C_0022", "Liverpool City Region (Consortium)")]
+    [TestCase("C_0006", "Cambridge (Consortium)")]
+    [TestCase("C_0004", "Broadland (Consortium)")]
+    public void HomepageViewModelCsvFile_WhenValidConsortiumCodeIsGiven_GetsTheConsortiumName
+    (
+        string consortiumCode,
+        string expectedLocalAuthorityName
+    ) {
+        // Arrange
+        var csvFileData = new ConsortiumCsvFileData
+        (
+            consortiumCode,
+            1,
+            2024,
+            new DateTime(2023, 1, 1),
+            null
+        );
+        
+        // Act
+        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData, "");
+        
+        // Assert
+        viewModelCsvFile.Name.Should().Be(expectedLocalAuthorityName);
+    }
+    
+    [Test]
+    public void HomepageViewModelCsvFile_WhenInvalidConsortiumCodeIsGiven_ThrowsException()
+    {
+        // Arrange
+        var csvFileData = new ConsortiumCsvFileData
+        (
+            InvalidConsortiumCode,
             1,
             2024,
             new DateTime(2023, 1, 1),
