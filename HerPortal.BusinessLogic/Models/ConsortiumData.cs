@@ -8,7 +8,7 @@ public static class ConsortiumData
     {
         { "C_0002", "Blackpool" },
         { "C_0003", "Bristol" },
-        { "C_0004", "Broadland " },
+        { "C_0004", "Broadland" },
         { "C_0006", "Cambridge" },
         { "C_0007", "Cambridgeshire & Peterborough Combined Authority" },
         { "C_0008", "Cheshire East" },
