@@ -19,7 +19,6 @@ public class HomepageViewModel
         public string Name { get; }
         public string LastUpdatedText { get; }
         public bool HasNewUpdates { get; }
-
         public string DownloadLink { get; }
 
         public CsvFile(AbstractCsvFileData csvFileData, string downloadLink)
@@ -63,12 +62,11 @@ public class HomepageViewModel
             )
             .ToList();
         
-        
         checkboxLabels.AddRange(consortiumCodes.Select(consortiumCode => new KeyValuePair<string, LabelViewModel>(
             consortiumCode,
             new LabelViewModel
             {
-                Text = $"{ConsortiumData.ConsortiumNamesByConsortiumId[consortiumCode]} (Consortium)"
+                Text = $"{ConsortiumData.ConsortiumNamesByConsortiumCode[consortiumCode]} (Consortium)"
             }
             )));
         

@@ -2,8 +2,6 @@
 using System.IO;
 using System.Security;
 using System.Threading.Tasks;
-using HerPortal.BusinessLogic.Models;
-using HerPortal.BusinessLogic.Services;
 using HerPortal.BusinessLogic.Services.CsvFileService;
 using HerPortal.Helpers;
 using Microsoft.AspNetCore.Mvc;
