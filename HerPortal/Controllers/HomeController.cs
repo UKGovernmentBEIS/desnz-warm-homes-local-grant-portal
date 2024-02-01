@@ -58,7 +58,7 @@ public class HomeController : Controller
             };
         }
 
-        var consortiumCodes = userService.GetConsortiumIdsForUser(userData);
+        var consortiumCodes = userService.GetConsortiumCodesForUser(userData);
 
         var homepageViewModel = new HomepageViewModel
         (

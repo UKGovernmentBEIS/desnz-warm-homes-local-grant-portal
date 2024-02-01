@@ -376,7 +376,7 @@ public static class LocalAuthorityData
         { "2741", "York" },
     };
     
-    public static readonly Dictionary<string, string> LocalAuthorityConsortiumIdByCustodianCode = new()
+    public static readonly Dictionary<string, string> LocalAuthorityConsortiumCodeByCustodianCode = new()
     {
         { "3805", "C_0031" },
         { "1005", "C_0024" },

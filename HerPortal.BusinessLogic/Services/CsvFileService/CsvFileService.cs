@@ -71,7 +71,7 @@ public class CsvFileService : ICsvFileService
         var downloads = await dataAccessProvider.GetCsvFileDownloadDataForUserAsync(user.Id);
         var files = new List<AbstractCsvFileData>();
 
-        var consortiumIds = userService.GetConsortiumIdsForUser(user);
+        var consortiumCodes = userService.GetConsortiumCodesForUser(user);
 
         foreach (var custodianCode in currentCustodianCodes)
         {
@@ -98,10 +98,10 @@ public class CsvFileService : ICsvFileService
 
         files.AddRange(
             files
-                .Where(file => LocalAuthorityData.LocalAuthorityConsortiumIdByCustodianCode.ContainsKey(file.Code))
-                .GroupBy(file => (LocalAuthorityData.LocalAuthorityConsortiumIdByCustodianCode[file.Code], file.Month,
+                .Where(file => LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode.ContainsKey(file.Code))
+                .GroupBy(file => (LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode[file.Code], file.Month,
                     file.Year))
-                .Where(grouping => consortiumIds.Contains(grouping.Key.Item1))
+                .Where(grouping => consortiumCodes.Contains(grouping.Key.Item1))
                 .Select(grouping => new ConsortiumCsvFileData(
                         grouping.Key.Item1, 
                         grouping.Key.Month, 
@@ -177,7 +177,7 @@ public class CsvFileService : ICsvFileService
     {
         // Important! First ensure the logged-in user is allowed to access this data
         var userData = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
-        var consortiumCodes = userService.GetConsortiumIdsForUser(userData);
+        var consortiumCodes = userService.GetConsortiumCodesForUser(userData);
 
         if (!consortiumCodes.Contains(consortiumCode))
         {
@@ -186,7 +186,7 @@ public class CsvFileService : ICsvFileService
                 $"User {userData.Id} is not permitted to access file for consortium code: {consortiumCode} year: {year} month: {month}.");
         }
         
-        if (!ConsortiumData.ConsortiumNamesByConsortiumId.ContainsKey(consortiumCode))
+        if (!ConsortiumData.ConsortiumNamesByConsortiumCode.ContainsKey(consortiumCode))
         {
             throw new ArgumentOutOfRangeException(nameof(consortiumCode), consortiumCode,
                 "Given custodian code is not valid");
@@ -194,7 +194,7 @@ public class CsvFileService : ICsvFileService
 
         var referralRequests = new List<CsvReferralRequest>();
         
-        foreach (var custodianCode in ConsortiumData.ConsortiumLocalAuthorityIdsByConsortiumId[consortiumCode])
+        foreach (var custodianCode in ConsortiumData.ConsortiumCustodianCodesIdsByConsortiumCode[consortiumCode])
         {
             var localAuthorityFile = await GetLocalAuthorityFileForDownloadAsync(custodianCode, year, month, userEmailAddress);
 

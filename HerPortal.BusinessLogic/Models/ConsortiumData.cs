@@ -4,7 +4,7 @@ public static class ConsortiumData
 {
     // The mapping from custodian code to name comes from the publicly available "Local custodian codes" download link
     // on https://www.ordnancesurvey.co.uk/business-government/tools-support/addressbase-support
-    public static readonly Dictionary<string, string> ConsortiumNamesByConsortiumId = new()
+    public static readonly Dictionary<string, string> ConsortiumNamesByConsortiumCode = new()
     {
         { "C_0002", "Blackpool" },
         { "C_0003", "Bristol" },
@@ -32,7 +32,7 @@ public static class ConsortiumData
         { "C_0044", "West Devon" }
     };
     
-    public static readonly Dictionary<string, List<string>> ConsortiumLocalAuthorityIdsByConsortiumId = new()
+    public static readonly Dictionary<string, List<string>> ConsortiumCustodianCodesIdsByConsortiumCode = new()
     {
         { "C_0002", new List<string> { "2372", "2373", "2315", "2320", "2330", "2335", "2340", "2345", "2350", "2355", "2360", "2365", "2370" } },
         { "C_0003", new List<string> { "114", "116", "121" } },
