@@ -419,6 +419,123 @@ public class CsvFileServiceTests
         result.UserHasUndownloadedFiles.Should().BeFalse();
     }
     
+    [Test]
+    public async Task GetFileDataForUserAsync_WhenCalledWithConsortium_ReturnsFileData()
+    {
+        // Arrange
+        var user = GetUserWithLas("660", "665");
+        
+        mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>{"C_0008"});
+        
+        mockDataAccessProvider
+            .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
+            .ReturnsAsync(new List<CsvFileDownload>
+            {
+                new()
+                {
+                    CustodianCode = "660",
+                    LastDownloaded = new DateTime(2023, 02, 06),
+                    Month = 2,
+                    Year = 2023,
+                    UserId = user.Id
+                },
+                new()
+                {
+                    CustodianCode = "665",
+                    LastDownloaded = new DateTime(2023, 02, 06),
+                    Month = 2,
+                    Year = 2023,
+                    UserId = user.Id
+                }
+            });
+        
+        var s3Objects660 = new List<S3Object>
+        {
+            new() { Key = "660/2023_02.csv", LastModified = new DateTime(2023, 02, 04) },
+        };
+
+        mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("660")).ReturnsAsync(s3Objects660);
+        
+        var s3Objects665 = new List<S3Object>
+        {
+            new() { Key = "665/2023_02.csv", LastModified = new DateTime(2023, 02, 04) },
+        };
+
+        mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("665")).ReturnsAsync(s3Objects665);
+
+        // Act
+        var result = (await underTest.GetFileDataForUserAsync(user.EmailAddress)).ToList();
+        
+        // Assert
+        var expectedResult = new List<AbstractCsvFileData>()
+        {
+            new ConsortiumCsvFileData("C_0008", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+            new LocalAuthorityCsvFileData("660", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+            new LocalAuthorityCsvFileData("665", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+        };
+        result.Should().BeEquivalentTo(expectedResult);
+    }
+    
+    [Test]
+    public async Task GetFileDataForUserAsync_WhenCalledWithConsortium_ReturnsFileData_WithCorrectConsortiumDates()
+    {
+        // Arrange
+        var user = GetUserWithLas("660", "665");
+        
+        mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>{"C_0008"});
+        
+        mockDataAccessProvider
+            .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
+            .ReturnsAsync(new List<CsvFileDownload>
+            {
+                new()
+                {
+                    CustodianCode = "660",
+                    LastDownloaded = new DateTime(2023, 02, 10),
+                    Month = 2,
+                    Year = 2023,
+                    UserId = user.Id
+                },
+                new()
+                {
+                    CustodianCode = "665",
+                    LastDownloaded = new DateTime(2023, 02, 06),
+                    Month = 2,
+                    Year = 2023,
+                    UserId = user.Id
+                }
+            });
+        
+        var s3Objects660 = new List<S3Object>
+        {
+            new() { Key = "660/2023_02.csv", LastModified = new DateTime(2023, 02, 02) },
+        };
+
+        mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("660")).ReturnsAsync(s3Objects660);
+        
+        var s3Objects665 = new List<S3Object>
+        {
+            new() { Key = "665/2023_02.csv", LastModified = new DateTime(2023, 02, 04) },
+        };
+
+        mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("665")).ReturnsAsync(s3Objects665);
+
+        // Act
+        var result = (await underTest.GetFileDataForUserAsync(user.EmailAddress)).ToList();
+        
+        // Assert
+        var expectedResult = new List<AbstractCsvFileData>()
+        {
+            new ConsortiumCsvFileData("C_0008", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+            new LocalAuthorityCsvFileData("660", 2, 2023, new DateTime(2023, 02, 02), new DateTime(2023, 02, 10)),
+            new LocalAuthorityCsvFileData("665", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+        };
+        result.Should().BeEquivalentTo(expectedResult);
+    }
+
+    
     private User GetUserWithLas(params string[] las)
     {
         return new UserBuilder("test@example.com")
