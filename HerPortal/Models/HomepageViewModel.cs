@@ -23,6 +23,24 @@ public class HomepageViewModel
 
         public CsvFile(AbstractCsvFileData csvFileData, string downloadLink)
         {
+            switch (csvFileData)
+            {
+                case LocalAuthorityCsvFileData:
+                    if (!LocalAuthorityData.LocalAuthorityNamesByCustodianCode.ContainsKey(csvFileData.Code))
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(csvFileData.Code), csvFileData.Code,
+                            "The given custodian code is not known.");
+                    }
+                    break;
+                case ConsortiumCsvFileData:
+                    if (!ConsortiumData.ConsortiumNamesByConsortiumCode.ContainsKey(csvFileData.Code))
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(csvFileData.Code), csvFileData.Code,
+                            "The given consortium code is not known.");
+                    }
+                    break;
+            }
+            
             CustodianCode = csvFileData.Code;
             Year = csvFileData.Year;
             Month = csvFileData.Month;

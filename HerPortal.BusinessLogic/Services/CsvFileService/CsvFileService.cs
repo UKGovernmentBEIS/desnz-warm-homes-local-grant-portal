@@ -13,7 +13,6 @@ public class CsvFileService : ICsvFileService
     private readonly IDataAccessProvider dataAccessProvider;
     private readonly S3ReferralFileKeyService keyService;
     private readonly IS3FileReader s3FileReader;
-    private readonly UserService userService;
     
     private class CsvReferralRequest
     {
@@ -53,25 +52,23 @@ public class CsvFileService : ICsvFileService
     (
         IDataAccessProvider dataAccessProvider,
         S3ReferralFileKeyService keyService,
-        IS3FileReader s3FileReader,
-        UserService userService
+        IS3FileReader s3FileReader
     ) {
         this.dataAccessProvider = dataAccessProvider;
         this.keyService = keyService;
         this.s3FileReader = s3FileReader;
-        this.userService = userService;
     }
 
     public async Task<IEnumerable<AbstractCsvFileData>> GetFileDataForUserAsync(string userEmailAddress)
     {
         // Make sure that we only return file data for files that the user currently has access to
-        var user = await userService.GetUserByEmailAsync(userEmailAddress);
+        var user = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
         var currentCustodianCodes = user.LocalAuthorities.Select(la => la.CustodianCode);
         
         var downloads = await dataAccessProvider.GetCsvFileDownloadDataForUserAsync(user.Id);
         var files = new List<AbstractCsvFileData>();
 
-        var consortiumCodes = userService.GetConsortiumCodesForUser(user);
+        var consortiumCodes = dataAccessProvider.GetConsortiumCodesForUser(user);
 
         foreach (var custodianCode in currentCustodianCodes)
         {
@@ -177,7 +174,7 @@ public class CsvFileService : ICsvFileService
     {
         // Important! First ensure the logged-in user is allowed to access this data
         var userData = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
-        var consortiumCodes = userService.GetConsortiumCodesForUser(userData);
+        var consortiumCodes = dataAccessProvider.GetConsortiumCodesForUser(userData);
 
         if (!consortiumCodes.Contains(consortiumCode))
         {

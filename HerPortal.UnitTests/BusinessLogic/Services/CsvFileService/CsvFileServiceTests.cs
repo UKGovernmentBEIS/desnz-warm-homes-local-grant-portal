@@ -23,7 +23,6 @@ public class CsvFileServiceTests
     private Mock<ILogger<S3ReferralFileKeyService>> mockS3Logger;
     private Mock<IDataAccessProvider> mockDataAccessProvider;
     private Mock<IS3FileReader> mockFileReader;
-    private Mock<UserService> mockUserService;
     private HerPortal.BusinessLogic.Services.CsvFileService.CsvFileService underTest;
     
     [SetUp]
@@ -32,10 +31,9 @@ public class CsvFileServiceTests
         mockDataAccessProvider = new Mock<IDataAccessProvider>();
         mockS3Logger = new Mock<ILogger<S3ReferralFileKeyService>>();
         mockFileReader = new Mock<IS3FileReader>();
-        mockUserService = new Mock<UserService>();
         var s3ReferralFileKeyService = new S3ReferralFileKeyService(mockS3Logger.Object);
 
-        underTest = new HerPortal.BusinessLogic.Services.CsvFileService.CsvFileService(mockDataAccessProvider.Object, s3ReferralFileKeyService, mockFileReader.Object, mockUserService.Object);
+        underTest = new HerPortal.BusinessLogic.Services.CsvFileService.CsvFileService(mockDataAccessProvider.Object, s3ReferralFileKeyService, mockFileReader.Object);
     }
 
     [Test]
@@ -59,6 +57,7 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114", "910");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -99,6 +98,7 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -139,6 +139,7 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -192,6 +193,7 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114", "910");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -246,6 +248,7 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114", "910");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -299,6 +302,7 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -348,6 +352,7 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -384,6 +389,7 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
