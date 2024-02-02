@@ -97,4 +97,16 @@ public class S3FileReader : IS3FileReader
             throw;
         }
     }
+
+    public async Task<bool> FileExistsAsync(string custodianCode, int year, int month)
+    {
+        var key = keyService.GetS3KeyFromData(custodianCode, year, month);
+        var request = new ListObjectsV2Request
+        {
+            BucketName = config.BucketName,
+            Prefix = key,
+        };
+        var files = await s3Client.ListObjectsV2Async(request);
+        return files.KeyCount > 0;
+    }
 }

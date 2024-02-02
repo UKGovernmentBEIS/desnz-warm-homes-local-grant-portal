@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Security;
+using Amazon.S3;
 using CsvHelper;
 using CsvHelper.Configuration.Attributes;
 using HerPortal.BusinessLogic.ExternalServices.S3FileReader;
@@ -193,6 +194,11 @@ public class CsvFileService : ICsvFileService
         
         foreach (var custodianCode in ConsortiumData.ConsortiumCustodianCodesIdsByConsortiumCode[consortiumCode])
         {
+            if (!await s3FileReader.FileExistsAsync(custodianCode, year, month))
+            {
+                continue;
+            }
+            
             var localAuthorityFile = await GetLocalAuthorityFileForDownloadAsync(custodianCode, year, month, userEmailAddress);
 
             using var reader = new StreamReader(localAuthorityFile);
