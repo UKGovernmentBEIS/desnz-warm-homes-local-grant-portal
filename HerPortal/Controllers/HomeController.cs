@@ -34,7 +34,7 @@ public class HomeController : Controller
 
         string GetPageLink(int pageNumber) => Url.Action(nameof(Index), "Home", new RouteValueDictionary() { { "custodianCodes", codes }, { "page", pageNumber } });
 
-        string GetDownloadLink(AbstractCsvFileData abstractCsvFileData)
+        string GetDownloadLink(CsvFileData abstractCsvFileData)
         {
             return abstractCsvFileData switch
             {

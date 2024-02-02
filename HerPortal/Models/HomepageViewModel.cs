@@ -21,7 +21,7 @@ public class HomepageViewModel
         public bool HasNewUpdates { get; }
         public string DownloadLink { get; }
 
-        public CsvFile(AbstractCsvFileData csvFileData, string downloadLink)
+        public CsvFile(CsvFileData csvFileData, string downloadLink)
         {
             switch (csvFileData)
             {
@@ -64,7 +64,7 @@ public class HomepageViewModel
         User user, 
         PaginatedFileData paginatedFileData, 
         Func<int, string> pageLinkGenerator,
-        Func<AbstractCsvFileData, string> downloadLinkGenerator,
+        Func<CsvFileData, string> downloadLinkGenerator,
         List<string> consortiumCodes
         )
     {

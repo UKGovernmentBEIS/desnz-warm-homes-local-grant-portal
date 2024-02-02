@@ -59,14 +59,14 @@ public class CsvFileService : ICsvFileService
         this.s3FileReader = s3FileReader;
     }
 
-    public async Task<IEnumerable<AbstractCsvFileData>> GetFileDataForUserAsync(string userEmailAddress)
+    public async Task<IEnumerable<CsvFileData>> GetFileDataForUserAsync(string userEmailAddress)
     {
         // Make sure that we only return file data for files that the user currently has access to
         var user = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
         var currentCustodianCodes = user.LocalAuthorities.Select(la => la.CustodianCode);
         
         var downloads = await dataAccessProvider.GetCsvFileDownloadDataForUserAsync(user.Id);
-        var files = new List<AbstractCsvFileData>();
+        var files = new List<CsvFileData>();
 
         var consortiumCodes = dataAccessProvider.GetConsortiumCodesForUser(user);
 

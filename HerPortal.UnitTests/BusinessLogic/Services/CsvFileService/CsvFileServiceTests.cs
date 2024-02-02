@@ -468,7 +468,7 @@ public class CsvFileServiceTests
         var result = (await underTest.GetFileDataForUserAsync(user.EmailAddress)).ToList();
         
         // Assert
-        var expectedResult = new List<AbstractCsvFileData>()
+        var expectedResult = new List<CsvFileData>()
         {
             new ConsortiumCsvFileData("C_0008", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
             new LocalAuthorityCsvFileData("660", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
@@ -526,7 +526,7 @@ public class CsvFileServiceTests
         var result = (await underTest.GetFileDataForUserAsync(user.EmailAddress)).ToList();
         
         // Assert
-        var expectedResult = new List<AbstractCsvFileData>()
+        var expectedResult = new List<CsvFileData>()
         {
             new ConsortiumCsvFileData("C_0008", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
             new LocalAuthorityCsvFileData("660", 2, 2023, new DateTime(2023, 02, 02), new DateTime(2023, 02, 10)),

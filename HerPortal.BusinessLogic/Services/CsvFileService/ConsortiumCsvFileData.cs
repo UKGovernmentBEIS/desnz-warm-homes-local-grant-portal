@@ -2,7 +2,7 @@ using HerPortal.BusinessLogic.Models;
 
 namespace HerPortal.BusinessLogic.Services.CsvFileService;
 
-public class ConsortiumCsvFileData : AbstractCsvFileData
+public class ConsortiumCsvFileData : CsvFileData
 {
     public override string Name => ConsortiumData.ConsortiumNamesByConsortiumCode[Code];
 

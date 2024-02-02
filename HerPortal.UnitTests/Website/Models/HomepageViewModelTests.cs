@@ -22,9 +22,9 @@ public class HomepageViewModelTests
         return $"link-{pageNumber}";
     }
 
-    private string GetDummyDownloadLink(AbstractCsvFileData abstractCsvFileData)
+    private string GetDummyDownloadLink(CsvFileData csvFileData)
     {
-        return $"link-{abstractCsvFileData.Name}";
+        return $"link-{csvFileData.Name}";
     }
 
     [TestCase(true, false)]

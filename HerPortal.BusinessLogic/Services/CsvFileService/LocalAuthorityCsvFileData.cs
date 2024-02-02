@@ -2,7 +2,7 @@ using HerPortal.BusinessLogic.Models;
 
 namespace HerPortal.BusinessLogic.Services.CsvFileService;
 
-public class LocalAuthorityCsvFileData : AbstractCsvFileData
+public class LocalAuthorityCsvFileData : CsvFileData
 {
     public override string Name => LocalAuthorityData.LocalAuthorityNamesByCustodianCode[Code];
 

@@ -2,7 +2,7 @@ namespace HerPortal.BusinessLogic.Services.CsvFileService;
 
 public interface ICsvFileService
 {
-    public Task<IEnumerable<AbstractCsvFileData>> GetFileDataForUserAsync(string userEmailAddress);
+    public Task<IEnumerable<CsvFileData>> GetFileDataForUserAsync(string userEmailAddress);
 
     public Task<PaginatedFileData> GetPaginatedFileDataForUserAsync(
         string userEmailAddress,

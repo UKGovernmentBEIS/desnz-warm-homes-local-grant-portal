@@ -1,6 +1,6 @@
 namespace HerPortal.BusinessLogic.Services.CsvFileService;
 
-public abstract class AbstractCsvFileData
+public abstract class CsvFileData
 {
     public string Code { get; }
     public int Month { get; }
@@ -14,7 +14,7 @@ public abstract class AbstractCsvFileData
     public bool HasUpdatedSinceLastDownload => !LastDownloaded.HasValue || LastDownloaded.Value.CompareTo(LastUpdated) < 0;
     public abstract string Name { get; }
 
-    protected AbstractCsvFileData
+    protected CsvFileData
     (
         string code,
         int month,
