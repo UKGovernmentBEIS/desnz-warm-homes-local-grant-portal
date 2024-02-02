@@ -25,20 +25,48 @@ public class HomeController : Controller
     }
     
     [HttpGet("/")]
-    public async Task<IActionResult> Index([FromQuery] List<string> custodianCodes, int page = 1)
+    public async Task<IActionResult> Index([FromQuery] List<string> codes, int page = 1)
     {
         var userEmailAddress = HttpContext.User.GetEmailAddress();
         var userData = await userService.GetUserByEmailAsync(userEmailAddress);
 
-        var csvFilePage = await csvFileService.GetPaginatedFileDataForUserAsync(userEmailAddress, custodianCodes, page, PageSize);
+        var csvFilePage = await csvFileService.GetPaginatedFileDataForUserAsync(userEmailAddress, codes, page, PageSize);
 
-        string GetPageLink(int pageNumber) => Url.Action(nameof(Index), "Home", new RouteValueDictionary() { { "custodianCodes", custodianCodes }, { "page", pageNumber } });
+        string GetPageLink(int pageNumber) => Url.Action(nameof(Index), "Home", new RouteValueDictionary() { { "custodianCodes", codes }, { "page", pageNumber } });
+
+        string GetDownloadLink(CsvFileData abstractCsvFileData)
+        {
+            return abstractCsvFileData switch
+            {
+                LocalAuthorityCsvFileData localAuthorityCsvFileData => Url.Action(
+                    nameof(CsvFileController.GetLaCsvFile), "CsvFile",
+                    new RouteValueDictionary()
+                    {
+                        { "custodianCode", localAuthorityCsvFileData.Code },
+                        { "year", localAuthorityCsvFileData.Year },
+                        { "month", localAuthorityCsvFileData.Month }
+                    }),
+                ConsortiumCsvFileData consortiumCsvFileData => Url.Action(nameof(CsvFileController.GetConsortiumCsvFile),
+                    "CsvFile",
+                    new RouteValueDictionary()
+                    {
+                        { "consortiumCode", consortiumCsvFileData.Code },
+                        { "year", consortiumCsvFileData.Year },
+                        { "month", consortiumCsvFileData.Month }
+                    }),
+                _ => ""
+            };
+        }
+
+        var consortiumCodes = userService.GetConsortiumCodesForUser(userData);
 
         var homepageViewModel = new HomepageViewModel
         (
             userData,
             csvFilePage,
-            GetPageLink
+            GetPageLink,
+            GetDownloadLink,
+            consortiumCodes
         );
 
         if (!userData.HasLoggedIn)

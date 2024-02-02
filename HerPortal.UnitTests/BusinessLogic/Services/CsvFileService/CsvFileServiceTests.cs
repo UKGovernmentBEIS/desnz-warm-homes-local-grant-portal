@@ -8,6 +8,7 @@ using FluentAssertions;
 using HerPortal.BusinessLogic;
 using HerPortal.BusinessLogic.ExternalServices.S3FileReader;
 using HerPortal.BusinessLogic.Models;
+using HerPortal.BusinessLogic.Services;
 using HerPortal.BusinessLogic.Services.CsvFileService;
 using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using Microsoft.Extensions.Logging;
@@ -46,7 +47,7 @@ public class CsvFileServiceTests
             .ReturnsAsync(user);
         
         // Act and Assert
-        Assert.ThrowsAsync<SecurityException>(async () => await underTest.GetFileForDownloadAsync("115", 2020, 01, "test@example.com"));
+        Assert.ThrowsAsync<SecurityException>(async () => await underTest.GetLocalAuthorityFileForDownloadAsync("115", 2020, 01, "test@example.com"));
     }
 
     [Test]
@@ -56,6 +57,7 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114", "910");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -79,7 +81,7 @@ public class CsvFileServiceTests
         var result = (await underTest.GetFileDataForUserAsync(user.EmailAddress)).ToList();
         
         // Assert
-        var expectedResult = new List<CsvFileData>()
+        var expectedResult = new List<LocalAuthorityCsvFileData>()
         {
             new("114", 1, 2023, new DateTime(2023, 01, 31), null),
             new("114", 2, 2023, new DateTime(2023, 02, 04), null),
@@ -96,6 +98,7 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -122,7 +125,7 @@ public class CsvFileServiceTests
         var result = (await underTest.GetFileDataForUserAsync(user.EmailAddress)).ToList();
         
         // Assert
-        var expectedResult = new List<CsvFileData>()
+        var expectedResult = new List<LocalAuthorityCsvFileData>()
         {
             new ("114", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
         };
@@ -136,6 +139,7 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -175,7 +179,7 @@ public class CsvFileServiceTests
         var result = (await underTest.GetFileDataForUserAsync(user.EmailAddress)).ToList();
         
         // Assert
-        var expectedResult = new List<CsvFileData>()
+        var expectedResult = new List<LocalAuthorityCsvFileData>()
         {
             new ("114", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
         };
@@ -189,6 +193,7 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114", "910");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -228,7 +233,7 @@ public class CsvFileServiceTests
         var result = (await underTest.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string>(), 1, 20));
         
         // Assert
-        var expectedResult = new List<CsvFileData>()
+        var expectedResult = new List<LocalAuthorityCsvFileData>()
         {
             new ("114", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
             new ("910", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
@@ -243,6 +248,7 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114", "910");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -282,7 +288,7 @@ public class CsvFileServiceTests
         var result = (await underTest.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string> { "114" }, 1, 20));
         
         // Assert
-        var expectedResult = new List<CsvFileData>()
+        var expectedResult = new List<LocalAuthorityCsvFileData>()
         {
             new ("114", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
         };
@@ -296,6 +302,7 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -331,7 +338,7 @@ public class CsvFileServiceTests
         var result = (await underTest.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string>(), 2, 1));
         
         // Assert
-        var expectedResult = new List<CsvFileData>()
+        var expectedResult = new List<LocalAuthorityCsvFileData>()
         {
             new ("114", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
         };
@@ -345,6 +352,7 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -381,6 +389,7 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -409,6 +418,123 @@ public class CsvFileServiceTests
         // Assert
         result.UserHasUndownloadedFiles.Should().BeFalse();
     }
+    
+    [Test]
+    public async Task GetFileDataForUserAsync_WhenCalledWithConsortium_ReturnsFileData()
+    {
+        // Arrange
+        var user = GetUserWithLas("660", "665");
+        
+        mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>{"C_0008"});
+        
+        mockDataAccessProvider
+            .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
+            .ReturnsAsync(new List<CsvFileDownload>
+            {
+                new()
+                {
+                    CustodianCode = "660",
+                    LastDownloaded = new DateTime(2023, 02, 06),
+                    Month = 2,
+                    Year = 2023,
+                    UserId = user.Id
+                },
+                new()
+                {
+                    CustodianCode = "665",
+                    LastDownloaded = new DateTime(2023, 02, 06),
+                    Month = 2,
+                    Year = 2023,
+                    UserId = user.Id
+                }
+            });
+        
+        var s3Objects660 = new List<S3Object>
+        {
+            new() { Key = "660/2023_02.csv", LastModified = new DateTime(2023, 02, 04) },
+        };
+
+        mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("660")).ReturnsAsync(s3Objects660);
+        
+        var s3Objects665 = new List<S3Object>
+        {
+            new() { Key = "665/2023_02.csv", LastModified = new DateTime(2023, 02, 04) },
+        };
+
+        mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("665")).ReturnsAsync(s3Objects665);
+
+        // Act
+        var result = (await underTest.GetFileDataForUserAsync(user.EmailAddress)).ToList();
+        
+        // Assert
+        var expectedResult = new List<CsvFileData>()
+        {
+            new ConsortiumCsvFileData("C_0008", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+            new LocalAuthorityCsvFileData("660", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+            new LocalAuthorityCsvFileData("665", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+        };
+        result.Should().BeEquivalentTo(expectedResult);
+    }
+    
+    [Test]
+    public async Task GetFileDataForUserAsync_WhenCalledWithConsortium_ReturnsFileData_WithCorrectConsortiumDates()
+    {
+        // Arrange
+        var user = GetUserWithLas("660", "665");
+        
+        mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
+        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>{"C_0008"});
+        
+        mockDataAccessProvider
+            .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
+            .ReturnsAsync(new List<CsvFileDownload>
+            {
+                new()
+                {
+                    CustodianCode = "660",
+                    LastDownloaded = new DateTime(2023, 02, 10),
+                    Month = 2,
+                    Year = 2023,
+                    UserId = user.Id
+                },
+                new()
+                {
+                    CustodianCode = "665",
+                    LastDownloaded = new DateTime(2023, 02, 06),
+                    Month = 2,
+                    Year = 2023,
+                    UserId = user.Id
+                }
+            });
+        
+        var s3Objects660 = new List<S3Object>
+        {
+            new() { Key = "660/2023_02.csv", LastModified = new DateTime(2023, 02, 02) },
+        };
+
+        mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("660")).ReturnsAsync(s3Objects660);
+        
+        var s3Objects665 = new List<S3Object>
+        {
+            new() { Key = "665/2023_02.csv", LastModified = new DateTime(2023, 02, 04) },
+        };
+
+        mockFileReader.Setup(fr => fr.GetS3ObjectsByCustodianCodeAsync("665")).ReturnsAsync(s3Objects665);
+
+        // Act
+        var result = (await underTest.GetFileDataForUserAsync(user.EmailAddress)).ToList();
+        
+        // Assert
+        var expectedResult = new List<CsvFileData>()
+        {
+            new ConsortiumCsvFileData("C_0008", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+            new LocalAuthorityCsvFileData("660", 2, 2023, new DateTime(2023, 02, 02), new DateTime(2023, 02, 10)),
+            new LocalAuthorityCsvFileData("665", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+        };
+        result.Should().BeEquivalentTo(expectedResult);
+    }
+
     
     private User GetUserWithLas(params string[] las)
     {
