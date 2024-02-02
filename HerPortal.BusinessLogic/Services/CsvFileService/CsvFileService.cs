@@ -186,7 +186,7 @@ public class CsvFileService : ICsvFileService
         if (!ConsortiumData.ConsortiumNamesByConsortiumCode.ContainsKey(consortiumCode))
         {
             throw new ArgumentOutOfRangeException(nameof(consortiumCode), consortiumCode,
-                "Given custodian code is not valid");
+                "Given consortium code is not valid");
         }
 
         var referralRequests = new List<CsvReferralRequest>();
