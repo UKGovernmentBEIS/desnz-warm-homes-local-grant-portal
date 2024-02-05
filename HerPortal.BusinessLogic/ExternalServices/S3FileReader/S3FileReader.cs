@@ -1,4 +1,5 @@
-﻿using Amazon.S3;
+﻿using Amazon.Runtime;
+using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
@@ -101,12 +102,20 @@ public class S3FileReader : IS3FileReader
     public async Task<bool> FileExistsAsync(string custodianCode, int year, int month)
     {
         var key = keyService.GetS3KeyFromData(custodianCode, year, month);
-        var request = new ListObjectsV2Request
+        var request = new GetObjectMetadataRequest()
         {
             BucketName = config.BucketName,
-            Prefix = key,
+            Key = key,
         };
-        var files = await s3Client.ListObjectsV2Async(request);
-        return files.KeyCount > 0;
+
+        try
+        {
+            await s3Client.GetObjectMetadataAsync(request);
+            return true;
+        }
+        catch (AmazonServiceException)
+        {
+            return false;
+        }
     }
 }
