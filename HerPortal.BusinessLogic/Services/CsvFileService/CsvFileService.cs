@@ -18,30 +18,47 @@ public class CsvFileService : ICsvFileService
     {
         [Name("Referral date")]
         public string Date { get; set; }
+        [Optional]
         [Name("Referral code")]
         public string Code { get; set; }
+        [Optional]
         public string Name { get; set; }
+        [Optional]
         public string Email { get; set; }
+        [Optional]
         public string Telephone { get; set; }
+        [Optional]
         public string Address1 { get; set; }
+        [Optional]
         public string Address2 { get; set; }
+        [Optional]
         public string Town { get; set; }
+        [Optional]
         public string County { get; set; }
+        [Optional]
         public string Postcode { get; set; }
+        [Optional]
         [Name("UPRN")]
         public string Uprn { get; set; }
+        [Optional]
         [Name("EPC Band")]
         public string EpcBand { get; set; }
+        [Optional]
         [Name("EPC confirmed by homeowner")]
         public string EpcConfirmedByHomeowner { get; set; }
+        [Optional]
         [Name("EPC Lodgement Date")]
         public string EpcLodgementDate { get; set; }
+        [Optional]
         [Name("Is off gas grid")]
         public string IsOffGasGrid { get; set; }
+        [Optional]
         [Name("Household income band")]
         public string HouseholdIncomeBand { get; set; }
+        [Optional]
         [Name("Is eligible postcode")]
         public string IsEligiblePostcode { get; set; }
+        [Optional]
         public string Tenure { get; set; }
         [Optional] // optional as it doesnt appear in input csv
         [Name("Custodian Code")]
