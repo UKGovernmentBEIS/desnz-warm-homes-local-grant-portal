@@ -186,13 +186,18 @@ public class CsvFileService : ICsvFileService
         if (!ConsortiumData.ConsortiumNamesByConsortiumCode.ContainsKey(consortiumCode))
         {
             throw new ArgumentOutOfRangeException(nameof(consortiumCode), consortiumCode,
-                "Given custodian code is not valid");
+                "Given consortium code is not valid");
         }
 
         var referralRequests = new List<CsvReferralRequest>();
         
         foreach (var custodianCode in ConsortiumData.ConsortiumCustodianCodesIdsByConsortiumCode[consortiumCode])
         {
+            if (!await s3FileReader.FileExistsAsync(custodianCode, year, month))
+            {
+                continue;
+            }
+            
             var localAuthorityFile = await GetLocalAuthorityFileForDownloadAsync(custodianCode, year, month, userEmailAddress);
 
             using var reader = new StreamReader(localAuthorityFile);
