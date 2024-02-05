@@ -32,30 +32,60 @@ public class CsvFileControllerTests
     }
 
     [Test]
-    public async Task GetCsvFile_WhenCalledForUnauthorisedCustodianCode_ReturnsUnauthorised()
+    public async Task GetLaCsvFile_WhenCalledForUnauthorisedCustodianCode_ReturnsUnauthorised()
     {
         // Arrange
         mockCsvFileService
-            .Setup(cfs => cfs.GetFileForDownloadAsync("115", 2023, 11, EmailAddress))
+            .Setup(cfs => cfs.GetLocalAuthorityFileForDownloadAsync("115", 2023, 11, EmailAddress))
             .ThrowsAsync(new SecurityException());
         
         // Act
-        var result = await underTest.GetCsvFile("115", 2023, 11);
+        var result = await underTest.GetLaCsvFile("115", 2023, 11);
         
         // Assert
         result.Should().BeOfType<UnauthorizedObjectResult>();
     }
     
     [Test]
-    public async Task GetCsvFile_WhenCalledForMissingFile_ReturnsNotFound()
+    public async Task GetLaCsvFile_WhenCalledForMissingFile_ReturnsNotFound()
     {
         // Arrange
         mockCsvFileService
-            .Setup(cfs => cfs.GetFileForDownloadAsync("115", 2023, 11, EmailAddress))
+            .Setup(cfs => cfs.GetLocalAuthorityFileForDownloadAsync("115", 2023, 11, EmailAddress))
             .ThrowsAsync(new ArgumentOutOfRangeException());
         
         // Act
-        var result = await underTest.GetCsvFile("115", 2023, 11);
+        var result = await underTest.GetLaCsvFile("115", 2023, 11);
+        
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [Test]
+    public async Task GetConsortiumCsvFile_WhenCalledForUnauthorisedCustodianCode_ReturnsUnauthorised()
+    {
+        // Arrange
+        mockCsvFileService
+            .Setup(cfs => cfs.GetConsortiumFileForDownloadAsync("C_0001", 2023, 11, EmailAddress))
+            .ThrowsAsync(new SecurityException());
+        
+        // Act
+        var result = await underTest.GetConsortiumCsvFile("C_0001", 2023, 11);
+        
+        // Assert
+        result.Should().BeOfType<UnauthorizedObjectResult>();
+    }
+    
+    [Test]
+    public async Task GetConsortiumCsvFile_WhenCalledForMissingFile_ReturnsNotFound()
+    {
+        // Arrange
+        mockCsvFileService
+            .Setup(cfs => cfs.GetConsortiumFileForDownloadAsync("C_0001", 2023, 11, EmailAddress))
+            .ThrowsAsync(new ArgumentOutOfRangeException());
+        
+        // Act
+        var result = await underTest.GetConsortiumCsvFile("C_0001", 2023, 11);
         
         // Assert
         result.Should().BeOfType<NotFoundResult>();

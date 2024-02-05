@@ -15,10 +15,16 @@ public class HomepageViewModelTests
 {
     private const string ValidCustodianCode = "505";
     private const string InvalidCustodianCode = "a";
+    private const string InvalidConsortiumCode = "a";
 
-    private string GetDummyLink(int pageNumber)
+    private string GetDummyPageLink(int pageNumber)
     {
         return $"link-{pageNumber}";
+    }
+
+    private string GetDummyDownloadLink(CsvFileData csvFileData)
+    {
+        return $"link-{csvFileData.Name}";
     }
 
     [TestCase(true, false)]
@@ -36,7 +42,7 @@ public class HomepageViewModelTests
         };
         
         // Act
-        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyLink);
+        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink, new List<string>());
         
         // Assert
         viewModel.ShouldShowBanner.Should().Be(shouldShowBanner);
@@ -62,7 +68,7 @@ public class HomepageViewModelTests
         };
         
         // Act
-        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyLink);
+        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink, new List<string>());
         
         // Assert
         viewModel.ShouldShowFilters.Should().Be(expected);
@@ -78,7 +84,7 @@ public class HomepageViewModelTests
         string expectedDateString
     ) {
         // Arrange
-        var csvFileData = new CsvFileData
+        var csvFileData = new LocalAuthorityCsvFileData
         (
             ValidCustodianCode,
             month,
@@ -88,7 +94,7 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData);
+        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData, "");
         
         // Assert
         viewModelCsvFile.MonthAndYearText.Should().Be(expectedDateString);
@@ -105,7 +111,7 @@ public class HomepageViewModelTests
         string expectedLastUpdatedString
     ) {
         // Arrange
-        var csvFileData = new CsvFileData
+        var csvFileData = new LocalAuthorityCsvFileData
         (
             ValidCustodianCode,
             1,
@@ -115,7 +121,7 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData);
+        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData, "");
         
         // Assert
         viewModelCsvFile.LastUpdatedText.Should().Be(expectedLastUpdatedString);
@@ -130,7 +136,7 @@ public class HomepageViewModelTests
         string expectedLocalAuthorityName
     ) {
         // Arrange
-        var csvFileData = new CsvFileData
+        var csvFileData = new LocalAuthorityCsvFileData
         (
             custodianCode,
             1,
@@ -140,17 +146,17 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData);
+        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData, "");
         
         // Assert
-        viewModelCsvFile.LocalAuthorityName.Should().Be(expectedLocalAuthorityName);
+        viewModelCsvFile.Name.Should().Be(expectedLocalAuthorityName);
     }
     
     [Test]
     public void HomepageViewModelCsvFile_WhenInvalidCustodianCodeIsGiven_ThrowsException()
     {
         // Arrange
-        var csvFileData = new CsvFileData
+        var csvFileData = new LocalAuthorityCsvFileData
         (
             InvalidCustodianCode,
             1,
@@ -160,7 +166,52 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var act = () => new HomepageViewModel.CsvFile(csvFileData);
+        var act = () => new HomepageViewModel.CsvFile(csvFileData, "");
+        
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>();
+    }
+    
+    [TestCase("C_0022", "Liverpool City Region (Consortium)")]
+    [TestCase("C_0006", "Cambridge (Consortium)")]
+    [TestCase("C_0004", "Broadland (Consortium)")]
+    public void HomepageViewModelCsvFile_WhenValidConsortiumCodeIsGiven_GetsTheConsortiumName
+    (
+        string consortiumCode,
+        string expectedLocalAuthorityName
+    ) {
+        // Arrange
+        var csvFileData = new ConsortiumCsvFileData
+        (
+            consortiumCode,
+            1,
+            2024,
+            new DateTime(2023, 1, 1),
+            null
+        );
+        
+        // Act
+        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData, "");
+        
+        // Assert
+        viewModelCsvFile.Name.Should().Be(expectedLocalAuthorityName);
+    }
+    
+    [Test]
+    public void HomepageViewModelCsvFile_WhenInvalidConsortiumCodeIsGiven_ThrowsException()
+    {
+        // Arrange
+        var csvFileData = new ConsortiumCsvFileData
+        (
+            InvalidConsortiumCode,
+            1,
+            2024,
+            new DateTime(2023, 1, 1),
+            null
+        );
+        
+        // Act
+        var act = () => new HomepageViewModel.CsvFile(csvFileData, "");
         
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>();

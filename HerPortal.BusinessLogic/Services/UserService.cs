@@ -22,4 +22,9 @@ public class UserService
     {
         await dataAccessProvider.MarkUserAsHavingLoggedInAsync(userId);
     }
+
+    public List<string> GetConsortiumCodesForUser(User user)
+    {
+        return dataAccessProvider.GetConsortiumCodesForUser(user);
+    }
 }

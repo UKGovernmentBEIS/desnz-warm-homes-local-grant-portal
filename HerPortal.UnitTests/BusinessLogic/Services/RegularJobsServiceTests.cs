@@ -56,7 +56,7 @@ public class RegularJobsServiceTests
     public async Task SendReminderEmailsAsync_WhenThereAreNoUpdates_DoesntSendEmails()
     {
         // Arrange
-        var files = new List<CsvFileData>()
+        var files = new List<LocalAuthorityCsvFileData>()
         {
             new("114", 1, 2023, new DateTime(2023, 1, 31), new DateTime(2023, 02, 01)),
         };
@@ -88,11 +88,11 @@ public class RegularJobsServiceTests
     public async Task SendReminderEmailsAsync_WhenThereAreUpdates_SendsEmails()
     {
         // Arrange
-        var user1Files = new List<CsvFileData>()
+        var user1Files = new List<LocalAuthorityCsvFileData>()
         {
             new("114", 1, 2023, new DateTime(2023, 1, 31), new DateTime(2023, 01, 30)),
         };
-        var user2Files = new List<CsvFileData>()
+        var user2Files = new List<LocalAuthorityCsvFileData>()
         {
             new("910", 1, 2023, new DateTime(2023, 1, 31), new DateTime(2023, 02, 01)),
         };
@@ -138,11 +138,11 @@ public class RegularJobsServiceTests
     public async Task SendReminderEmailsAsync_WhenThereAreErrors_ContinuesSendingEmails()
     {
         // Arrange
-        var user1Files = new List<CsvFileData>()
+        var user1Files = new List<LocalAuthorityCsvFileData>()
         {
             new("114", 1, 2023, new DateTime(2023, 1, 31), new DateTime(2023, 01, 30)),
         };
-        var user2Files = new List<CsvFileData>()
+        var user2Files = new List<LocalAuthorityCsvFileData>()
         {
             new("910", 1, 2023, new DateTime(2023, 1, 31), new DateTime(2023, 01, 30)),
         };

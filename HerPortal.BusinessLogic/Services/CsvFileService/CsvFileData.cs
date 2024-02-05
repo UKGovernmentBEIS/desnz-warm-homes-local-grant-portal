@@ -1,8 +1,8 @@
 namespace HerPortal.BusinessLogic.Services.CsvFileService;
 
-public class CsvFileData
+public abstract class CsvFileData
 {
-    public string CustodianCode { get; }
+    public string Code { get; }
     public int Month { get; }
     public int Year { get; }
     public DateTime LastUpdated { get; }
@@ -12,16 +12,17 @@ public class CsvFileData
     // When LastDownloaded is null, we assume it hasn't been downloaded, therefore
     //   it will always have been updated since it was last downloaded.
     public bool HasUpdatedSinceLastDownload => !LastDownloaded.HasValue || LastDownloaded.Value.CompareTo(LastUpdated) < 0;
+    public abstract string Name { get; }
 
-    public CsvFileData
+    protected CsvFileData
     (
-        string custodianCode,
+        string code,
         int month,
         int year,
         DateTime lastUpdated,
         DateTime? lastDownloaded
     ) {
-        CustodianCode = custodianCode;
+        Code = code;
         Month = month;
         Year = year;
         LastUpdated = lastUpdated;
