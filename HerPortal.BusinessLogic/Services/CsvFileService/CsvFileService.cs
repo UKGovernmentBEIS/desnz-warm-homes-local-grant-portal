@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Security;
-using Amazon.S3;
 using CsvHelper;
 using CsvHelper.Configuration.Attributes;
 using HerPortal.BusinessLogic.ExternalServices.S3FileReader;
