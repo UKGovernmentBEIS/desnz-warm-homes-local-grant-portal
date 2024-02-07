@@ -1,5 +1,5 @@
 # Node build step
-FROM node:18 as node_build
+FROM public.ecr.aws/docker/library/node:18 as node_build
 COPY HerPortal /HerPortal
 WORKDIR /HerPortal
 RUN npm ci
