@@ -43,7 +43,6 @@ public class AdminAction
         }
 
         foreach (var code in codes)
-
         {
             try
             {
@@ -173,7 +172,7 @@ public class AdminAction
         outputProvider.Output("");
         outputProvider.Output("You are about to grant a user permission to read PERSONALLY IDENTIFIABLE INFORMATION submitted to LAs.");
         outputProvider.Output("Take a moment to double check the following list and only continue if you are certain this user should have access to these LAs.");
-        outputProvider.Output("NB: in particular, you should only do this if for LAs that have signed their DSA contracts!");
+        outputProvider.Output("NB: in particular, you should only do this for LAs that have signed their DSA contracts!");
         outputProvider.Output("");
 
         var confirmation = ConfirmCustodianCodes(userEmailAddress, custodianCodes);
