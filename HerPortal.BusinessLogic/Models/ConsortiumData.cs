@@ -19,7 +19,7 @@ public static class ConsortiumData
         { "C_0017", "Greater London Authority" },
         { "C_0021", "Lewes" },
         { "C_0022", "Liverpool City Region" },
-        { "C_0024", "Midlands NetZero Hub" },
+        { "C_0024", "Midlands Net Zero Hub" },
         { "C_0027", "North Yorkshire County Council" },
         { "C_0029", "Oxfordshire County Council" },
         { "C_0031", "Portsmouth" },
