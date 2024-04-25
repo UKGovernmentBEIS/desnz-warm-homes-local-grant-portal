@@ -61,6 +61,9 @@ public class CsvFileService : ICsvFileService
         [Optional]
         public string Tenure { get; set; }
         [Optional] // optional as it doesnt appear in input csv
+        [Name("Custodian Code")]
+        public string CustodianCode { get; set; }
+        [Optional]
         [Name("Local Authority")]
         public string LocalAuthority { get; set; }
     }
@@ -224,6 +227,7 @@ public class CsvFileService : ICsvFileService
                 .GetRecords<CsvReferralRequest>()
                 .Select(record =>
                 {
+                    record.CustodianCode = custodianCode;
                     record.LocalAuthority = localAuthorityName;
                     return record;
                 })
