@@ -63,6 +63,9 @@ public class CsvFileService : ICsvFileService
         [Optional] // optional as it doesnt appear in input csv
         [Name("Custodian Code")]
         public string CustodianCode { get; set; }
+        [Optional]
+        [Name("Local Authority")]
+        public string LocalAuthority { get; set; }
     }
 
     public CsvFileService
@@ -216,6 +219,7 @@ public class CsvFileService : ICsvFileService
             }
             
             var localAuthorityFile = await GetLocalAuthorityFileForDownloadAsync(custodianCode, year, month, userEmailAddress);
+            var localAuthorityName = LocalAuthorityData.LocalAuthorityNamesByCustodianCode[custodianCode];
 
             using var reader = new StreamReader(localAuthorityFile);
             using var localAuthorityCsv = new CsvReader(reader, CultureInfo.InvariantCulture);
@@ -224,6 +228,7 @@ public class CsvFileService : ICsvFileService
                 .Select(record =>
                 {
                     record.CustodianCode = custodianCode;
+                    record.LocalAuthority = localAuthorityName;
                     return record;
                 })
             );
