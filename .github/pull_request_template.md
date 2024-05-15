@@ -15,7 +15,7 @@ Add the ticket number below and uncomment
 - [ ] I have added tests where applicable
 - [ ] If I have made any changes to the code, I have used the IDE auto-formatter on it
 - [ ] If I have made any changes to website flow, I have checked forward and back behaviour is still consistent
-- [ ] If I have made any changes to the Local Authority or Consortium data, I have made sure these changes have been reflected in [HUG2](https://github.com/UKGovernmentBEIS/desnz-home-energy-retrofit-beta)
+- [ ] If I have made any changes to the Local Authority or Consortium data, I have made sure these changes have been reflected in [the main HUG2 repository](https://github.com/UKGovernmentBEIS/desnz-home-energy-retrofit-beta)
 
 # Screenshots
 
