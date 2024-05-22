@@ -7,4 +7,5 @@ public class User
     public bool HasLoggedIn { get; set; }
     
     public List<LocalAuthority> LocalAuthorities { get; set; }
+    public List<Consortium> Consortia { get; set; }
 }
