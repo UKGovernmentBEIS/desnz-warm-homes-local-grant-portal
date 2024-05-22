@@ -1,8 +1,8 @@
 ﻿namespace HerPortal.BusinessLogic.Models;
 
 /// <summary>
-/// This class does not contain full Consortium Data.
-/// The full data (including an the Consortium's relationship to LAs) can be found in the HUG2 Public Website codebase
+///     This class does not contain full Consortium Data.
+///     The full data (including an the Consortium's relationship to LAs) can be found in the HUG2 Public Website codebase
 /// </summary>
 public static class ConsortiumData
 {
