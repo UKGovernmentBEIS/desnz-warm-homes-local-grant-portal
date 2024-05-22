@@ -6,6 +6,7 @@
 /// </summary>
 public static class ConsortiumData
 {
+    // If Consortium Codes change, migrations or mapping will be required to maintain correct relationships
     public static readonly Dictionary<string, string> ConsortiumNamesByConsortiumCode = new()
     {
         { "C_0002", "Blackpool" },
