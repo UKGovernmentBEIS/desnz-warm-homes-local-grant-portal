@@ -7,7 +7,8 @@
 /// </summary>
 public static class LocalAuthorityData
 {
-    // If Custodian Codes change, migrations or mapping will be required to maintain correct relationships
+    // If Custodian Codes change, migrations or mapping will be required to maintain
+    // correct relationships with the referenced LA in the HUG2 Public site codebase
     // The mapping from custodian code to name comes from the publicly available "Local custodian codes" download link
     // on https://www.ordnancesurvey.co.uk/business-government/tools-support/addressbase-support
     public static readonly Dictionary<string, string> LocalAuthorityNamesByCustodianCode = new()

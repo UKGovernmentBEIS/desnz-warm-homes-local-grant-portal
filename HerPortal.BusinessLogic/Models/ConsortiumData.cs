@@ -6,7 +6,8 @@
 /// </summary>
 public static class ConsortiumData
 {
-    // If Consortium Codes change, migrations or mapping will be required to maintain correct relationships
+    // If Consortium Codes change, migrations or mapping will be required to maintain
+    // correct relationships with the referenced LA in the HUG2 Public site codebase
     public static readonly Dictionary<string, string> ConsortiumNamesByConsortiumCode = new()
     {
         { "C_0002", "Blackpool" },
