@@ -7,7 +7,7 @@
 /// </summary>
 public static class ConsortiumData
 {
-    /// If any Custodian/Consortium codes are changed, consider remapping required in <see cref="LocalAuthorityData"/>
+    /// If any Custodian/Consortium codes are changed, consider if remapping is required in <see cref="LocalAuthorityData"/>
     public static readonly Dictionary<string, string> ConsortiumNamesByConsortiumCode = new()
     {
         { "C_0002", "Blackpool" },
