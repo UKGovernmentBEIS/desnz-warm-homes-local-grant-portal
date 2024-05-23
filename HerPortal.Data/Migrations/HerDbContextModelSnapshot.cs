@@ -22,6 +22,21 @@ namespace HerPortal.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ConsortiumUser", b =>
+                {
+                    b.Property<int>("ConsortiaId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ConsortiaId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("ConsortiumUser");
+                });
+
             modelBuilder.Entity("HerPortal.BusinessLogic.Models.AuditDownload", b =>
                 {
                     b.Property<int>("Id")
@@ -50,6 +65,22 @@ namespace HerPortal.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AuditDownloads");
+                });
+
+            modelBuilder.Entity("HerPortal.BusinessLogic.Models.Consortium", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ConsortiumCode")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Consortia");
                 });
 
             modelBuilder.Entity("HerPortal.BusinessLogic.Models.CsvFileDownload", b =>
@@ -164,6 +195,21 @@ namespace HerPortal.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DataProtectionKeys");
+                });
+
+            modelBuilder.Entity("ConsortiumUser", b =>
+                {
+                    b.HasOne("HerPortal.BusinessLogic.Models.Consortium", null)
+                        .WithMany()
+                        .HasForeignKey("ConsortiaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HerPortal.BusinessLogic.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HerPortal.BusinessLogic.Models.CsvFileDownload", b =>
