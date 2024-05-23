@@ -1,16 +1,20 @@
 ﻿namespace HerPortal.BusinessLogic.Models;
 
 /// <summary>
-///     This model is not a full model for Local Authority Data.
-///     It should be considered as a reference to the full data for a Local Authority.
-///     The full data (including an LAs relationship to a Consortium) can be found in the HUG2 Public Website codebase
+///     This class does not contain all data for Local Authorities.
+///     Full data (including an LAs relationship to a Consortium) can be found in the HUG2 Public Website codebase
+///     <see href="https://github.com/UKGovernmentBEIS/desnz-home-energy-retrofit-beta/blob/develop/HerPublicWebsite.BusinessLogic/Models/LocalAuthorityData.cs"> HUG2 Public Website codebase </see>
+///     The LA-Consortium mapping contained here must be the same as the LocalAuthorityData.cs file in the
+///     public website repository.
 /// </summary>
 public static class LocalAuthorityData
 {
-    // If Custodian Codes change, migrations or mapping will be required to maintain
-    // correct relationships with the referenced LA in the HUG2 Public site codebase
-    // The mapping from custodian code to name comes from the publicly available "Local custodian codes" download link
-    // on https://www.ordnancesurvey.co.uk/business-government/tools-support/addressbase-support
+    
+    /// If Custodian Codes change, mappings in <see cref="LocalAuthorityConsortiumCodeByCustodianCode"/>
+    /// will need to be updated and a migration will need to be done to ensure that correct relationships are maintained
+    /// and users' relationships with Local Authorities stay consistent.
+    /// The mapping from custodian code to name comes from the publicly available "Local custodian codes" download link
+    /// on https://www.ordnancesurvey.co.uk/business-government/tools-support/addressbase-support
     public static readonly Dictionary<string, string> LocalAuthorityNamesByCustodianCode = new()
     {
         { "9052", "Aberdeenshire" },
@@ -383,6 +387,10 @@ public static class LocalAuthorityData
         { "2741", "York" },
     };
     
+    /// If a Consortium Code changes, we will need to perform a migration to map old users of the code to
+    /// use the new code, and begin using the new code.
+    /// The mappings contained here should be consistent with the mapping in the HUG2 Public Website Repo's LocalAuthorityData.cs
+    /// <see href="https://github.com/UKGovernmentBEIS/desnz-home-energy-retrofit-beta/blob/develop/HerPublicWebsite.BusinessLogic/Models/LocalAuthorityData.cs"> HUG2 Public Website codebase </see>
     public static readonly Dictionary<string, string> LocalAuthorityConsortiumCodeByCustodianCode = new()
     {
         { "3805", "C_0031" },

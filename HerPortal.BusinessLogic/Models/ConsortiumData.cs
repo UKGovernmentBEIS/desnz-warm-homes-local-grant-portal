@@ -1,13 +1,15 @@
 ﻿namespace HerPortal.BusinessLogic.Models;
 
 /// <summary>
-///     This class does not contain full Consortium Data.
-///     The full data (including an the Consortium's relationship to LAs) can be found in the HUG2 Public Website codebase
+///     LA-Consortium mapping data can be found both in <see cref="LocalAuthorityData"/>, and in the HUG2 Public Website codebase's LocalAuthorityData.cs.
+///     <seealso href="https://github.com/UKGovernmentBEIS/desnz-home-energy-retrofit-beta/blob/develop/HerPublicWebsite.BusinessLogic/Models/LocalAuthorityData.cs">Link to HUG2 Public Website codebase's LocalAuthorityData.cs</seealso>
+///     Note: Mappings in the above files are expected to be consistent between both repos
 /// </summary>
 public static class ConsortiumData
 {
-    // If Consortium Codes change, migrations or mapping will be required to maintain
-    // correct relationships with the referenced LA in the HUG2 Public site codebase
+    /// Ensure that the code mapping in <see cref="LocalAuthorityData"/> is updated if any custodian codes change
+    /// If a Consortium Code changes, we will need to perform a migration to map old users of the code to
+    /// use the new code, and begin using the new code.
     public static readonly Dictionary<string, string> ConsortiumNamesByConsortiumCode = new()
     {
         { "C_0002", "Blackpool" },
