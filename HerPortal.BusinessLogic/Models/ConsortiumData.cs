@@ -7,9 +7,7 @@
 /// </summary>
 public static class ConsortiumData
 {
-    /// Ensure that the code mapping in <see cref="LocalAuthorityData"/> is updated if any custodian codes change
-    /// If a Consortium Code changes, we will need to perform a migration to map old users of the code to
-    /// use the new code, and begin using the new code.
+    /// If any Custodian/Consortium codes are changed, consider remapping required in <see cref="LocalAuthorityData"/>
     public static readonly Dictionary<string, string> ConsortiumNamesByConsortiumCode = new()
     {
         { "C_0002", "Blackpool" },
