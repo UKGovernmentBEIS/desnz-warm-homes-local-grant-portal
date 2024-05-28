@@ -59,10 +59,8 @@ public class AdminAction
             if (user != null)
             {
                 // flag the need to not add LAs that are in consortia the user owns
-                var custodianCodesOfConsortia = user.Consortia
-                    .SelectMany(consortium =>
-                        consortiumCodeToCustodianCodesDict[consortium.ConsortiumCode]);
-                var custodianCodeInOwnedConsortiumGrouping = custodianCodes.ToLookup(custodianCodesOfConsortia.Contains);
+                var custodianCodeInOwnedConsortiumGrouping = custodianCodes.ToLookup(custodianCode =>
+                    CustodianCodeIsInOwnedConsortium(user, custodianCode));
                 var custodianCodesNotInOwnedConsortium = custodianCodeInOwnedConsortiumGrouping[false].ToList();
                 var custodianCodesInOwnedConsortium = custodianCodeInOwnedConsortiumGrouping[true].ToList();
                 
@@ -92,6 +90,14 @@ public class AdminAction
         return hasUserConfirmed;
     }
 
+    private bool CustodianCodeIsInOwnedConsortium(User user, string custodianCode)
+    {
+        var custodianCodesOfConsortia = user.Consortia
+            .SelectMany(consortium =>
+                consortiumCodeToCustodianCodesDict[consortium.ConsortiumCode]);
+        return custodianCodesOfConsortia.Contains(custodianCode);
+    }
+
     private bool ConfirmConsortiumCodes(string? userEmailAddress, string[] consortiumCodes, User? user)
     {
         outputProvider.Output(
@@ -105,14 +111,10 @@ public class AdminAction
                 PrintCodes(consortiumCodes, consortiumCodeToConsortiumNameDict);
                 
                 // flag the need to remove access for any LAs in the new consortia
-                var ownedLaInConsortia = user.LocalAuthorities
-                    .Where(localAuthority =>
-                        consortiumCodes.Contains(custodianCodeToConsortiumCodeDict[localAuthority.CustodianCode]))
-                    .Select(localAuthority => localAuthority.CustodianCode)
-                    .ToList();
+                var ownedCustodianCodesInConsortia = GetOwnedCustodianCodesInConsortia(user, consortiumCodes);
                 
                 outputProvider.Output("Remove the following Local Authorities in these Consortia:");
-                PrintCodes(ownedLaInConsortia, custodianCodeToLaNameDict);
+                PrintCodes(ownedCustodianCodesInConsortia, custodianCodeToLaNameDict);
             }
             else
             {
@@ -133,6 +135,15 @@ public class AdminAction
         }
 
         return hasUserConfirmed;
+    }
+
+    private List<string> GetOwnedCustodianCodesInConsortia(User user, string[] consortiumCodes)
+    {
+        return user.LocalAuthorities
+            .Where(localAuthority =>
+                consortiumCodes.Contains(custodianCodeToConsortiumCodeDict[localAuthority.CustodianCode]))
+            .Select(localAuthority => localAuthority.CustodianCode)
+            .ToList();
     }
 
     private void DisplayUserStatus(Enum status)
@@ -191,7 +202,10 @@ public class AdminAction
             return;
         }
 
-        var lasToAdd = dbOperation.GetLas(custodianCodes);
+        var filteredCustodianCodes = custodianCodes
+            .Where(custodianCode => !CustodianCodeIsInOwnedConsortium(user, custodianCode));
+
+        var lasToAdd = dbOperation.GetLas(filteredCustodianCodes);
         dbOperation.AddLasToUser(user, lasToAdd);
     }
 
@@ -241,7 +255,11 @@ public class AdminAction
         }
 
         var consortiaToAdd = dbOperation.GetConsortia(consortiumCodes);
-        dbOperation.AddConsortiaToUser(user, consortiaToAdd);
+        
+        var ownedCustodianCodesInConsortia = GetOwnedCustodianCodesInConsortia(user, consortiumCodes);
+        var lasToRemove = dbOperation.GetLas(ownedCustodianCodesInConsortia);
+        
+        dbOperation.AddConsortiaAndRemoveLasFromUser(user, consortiaToAdd, lasToRemove);
     }
 
     private (User? user, UserStatus userStatus) SetupUser(string userEmailAddress)

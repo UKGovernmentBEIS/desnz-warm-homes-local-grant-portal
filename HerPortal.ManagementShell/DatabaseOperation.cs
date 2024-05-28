@@ -25,7 +25,7 @@ public class DatabaseOperation : IDatabaseOperation
             .ToList();
     }
 
-    public List<LocalAuthority> GetLas(string[] custodianCodes)
+    public List<LocalAuthority> GetLas(IEnumerable<string> custodianCodes)
     {
         return custodianCodes
             .Select(code => dbContext.LocalAuthorities
@@ -33,7 +33,7 @@ public class DatabaseOperation : IDatabaseOperation
             .ToList();
     }
 
-    public List<Consortium> GetConsortia(string[] custodianCodes)
+    public List<Consortium> GetConsortia(IEnumerable<string> custodianCodes)
     {
         return custodianCodes
             .Select(code => dbContext.Consortia
@@ -91,6 +91,31 @@ public class DatabaseOperation : IDatabaseOperation
             foreach (var la in lasToRemove)
             {
                 user?.LocalAuthorities.Remove(la);
+            }
+
+            dbContext.SaveChanges();
+            outputProvider.Output("Operation successful");
+            dbContextTransaction.Commit();
+        }
+        catch (Exception e)
+        {
+            outputProvider.Output($"Rollback following error in transaction: {e.InnerException?.Message}");
+            dbContextTransaction.Rollback();
+        }
+    }
+
+    public void AddConsortiaAndRemoveLasFromUser(User user, List<Consortium> consortia, List<LocalAuthority> localAuthorities)
+    {
+        using var dbContextTransaction = dbContext.Database.BeginTransaction();
+        try
+        {
+            foreach (var consortium in consortia)
+            {
+                user?.Consortia.Add(consortium);
+            }
+            foreach (var localAuthority in localAuthorities)
+            {
+                user?.LocalAuthorities.Remove(localAuthority);
             }
 
             dbContext.SaveChanges();
