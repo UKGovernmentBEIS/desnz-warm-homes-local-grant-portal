@@ -12,7 +12,8 @@ namespace HerPortal.ManagementShell
             AddLas,
             RemoveLas,
             RemoveUser,
-            AddConsortia
+            AddConsortia,
+            RemoveConsortia
         }
         public static void Main(string[] args)
         {
@@ -58,6 +59,9 @@ namespace HerPortal.ManagementShell
                     return;
                 case Subcommand.AddConsortia:
                     adminAction.CreateOrUpdateUserWithConsortia(userEmailAddress, codes);
+                    break;
+                case Subcommand.RemoveConsortia:
+                    adminAction.RemoveConsortia(adminAction.GetUser(userEmailAddress), codes);
                     break;
                 default:
                     outputProvider.Output("Invalid terminal command entered. Please refer to the documentation");

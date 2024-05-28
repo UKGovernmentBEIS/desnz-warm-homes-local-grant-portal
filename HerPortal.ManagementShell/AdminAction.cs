@@ -49,14 +49,19 @@ public class AdminAction
         }
     }
 
-    private bool ConfirmCustodianCodes(string userEmailAddress, IReadOnlyCollection<string> custodianCodes, User? user)
+    private bool ConfirmCustodianCodes(string userEmailAddress, IReadOnlyCollection<string> custodianCodes, User? user, bool remove)
     {
         outputProvider.Output(
             $"You are changing permissions for user {userEmailAddress} for the following Local Authorities:");
 
         try
         {
-            if (user != null)
+            if (remove)
+            {
+                outputProvider.Output("Remove the following Local Authorities:");
+                PrintCodes(custodianCodes, custodianCodeToLaNameDict);
+            }
+            else if (user != null)
             {
                 // flag the need to not add LAs that are in consortia the user owns
                 var custodianCodeInOwnedConsortiumGrouping = custodianCodes.ToLookup(custodianCode =>
@@ -98,14 +103,19 @@ public class AdminAction
         return custodianCodesOfConsortia.Contains(custodianCode);
     }
 
-    private bool ConfirmConsortiumCodes(string? userEmailAddress, IReadOnlyCollection<string> consortiumCodes, User? user)
+    private bool ConfirmConsortiumCodes(string? userEmailAddress, IReadOnlyCollection<string> consortiumCodes, User? user, bool remove)
     {
         outputProvider.Output(
             $"You are changing permissions for user {userEmailAddress} for the following Consortia:");
 
         try
         {
-            if (user != null)
+            if (remove)
+            {
+                outputProvider.Output("Remove the following Consortia:");
+                PrintCodes(consortiumCodes, consortiumCodeToConsortiumNameDict);
+            }
+            else if (user != null)
             {
                 outputProvider.Output("Add the following Consortia:");
                 PrintCodes(consortiumCodes, consortiumCodeToConsortiumNameDict);
@@ -223,7 +233,7 @@ public class AdminAction
             return;
         }
 
-        var userConfirmation = ConfirmCustodianCodes(user.EmailAddress, custodianCodes, user);
+        var userConfirmation = ConfirmCustodianCodes(user.EmailAddress, custodianCodes, user, true);
         if (!userConfirmation)
         {
             return;
@@ -289,7 +299,7 @@ public class AdminAction
         
         var (user, userStatus) = SetupUser(userEmailAddress);
 
-        var confirmation = ConfirmCustodianCodes(userEmailAddress, custodianCodes, user);
+        var confirmation = ConfirmCustodianCodes(userEmailAddress, custodianCodes, user, false);
 
         if (confirmation)
         {
@@ -314,7 +324,7 @@ public class AdminAction
         
         var (user, userStatus) = SetupUser(userEmailAddress);
 
-        var confirmation = ConfirmConsortiumCodes(userEmailAddress, consortiumCodes, user);
+        var confirmation = ConfirmConsortiumCodes(userEmailAddress, consortiumCodes, user, false);
 
         if (confirmation)
         {
@@ -328,5 +338,36 @@ public class AdminAction
                     break;
             }
         }
+    }
+
+    public void RemoveConsortia(User? user, IReadOnlyCollection<string>? consortiumCodes)
+    {
+        if (user == null)
+        {
+            outputProvider.Output("User not found");
+            return;
+        }
+
+        if (consortiumCodes == null || consortiumCodes.Count < 1)
+        {
+            outputProvider.Output("Please specify consortium codes to remove from user");
+            return;
+        }
+
+        var userConfirmation = ConfirmConsortiumCodes(user.EmailAddress, consortiumCodes, user, true);
+        if (!userConfirmation)
+        {
+            return;
+        }
+
+        var consortiaToRemove = user.Consortia.Where(consortium => consortiumCodes.Contains(consortium.ConsortiumCode)).ToList();
+        var missingCodes = consortiumCodes.Where(code => !consortiaToRemove.Any(consortium => consortium.ConsortiumCode.Equals(code))).ToList();
+        if (missingCodes.Count > 0)
+        {
+            outputProvider.Output($"Could not find Consortia attached to {user.EmailAddress} for the following codes: {string.Join(", ", missingCodes)}. Please check your inputs and try again.");
+            return;
+        }
+
+        dbOperation.RemoveConsortiaFromUser(user, consortiaToRemove);
     }
 }

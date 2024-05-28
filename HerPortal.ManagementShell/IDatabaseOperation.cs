@@ -13,4 +13,5 @@ public interface IDatabaseOperation
     public void AddConsortiaToUser(User user, List<Consortium> consortia);
     public void RemoveLasFromUser(User user, List<LocalAuthority> localAuthorities);
     public void AddConsortiaAndRemoveLasFromUser(User user, List<Consortium> consortia, List<LocalAuthority> localAuthorities);
+    public void RemoveConsortiaFromUser(User user, List<Consortium> consortia);
 }

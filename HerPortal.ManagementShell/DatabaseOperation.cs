@@ -129,6 +129,27 @@ public class DatabaseOperation : IDatabaseOperation
         }
     }
 
+    public void RemoveConsortiaFromUser(User user, List<Consortium> consortia)
+    {
+        using var dbContextTransaction = dbContext.Database.BeginTransaction();
+        try
+        {
+            foreach (var consortium in consortia)
+            {
+                user?.Consortia.Remove(consortium);
+            }
+
+            dbContext.SaveChanges();
+            outputProvider.Output("Operation successful");
+            dbContextTransaction.Commit();
+        }
+        catch (Exception e)
+        {
+            outputProvider.Output($"Rollback following error in transaction: {e.InnerException?.Message}");
+            dbContextTransaction.Rollback();
+        }
+    }
+
     public void AddLasToUser(User user, List<LocalAuthority> localAuthorities)
     {
         using var dbContextTransaction = dbContext.Database.BeginTransaction();
