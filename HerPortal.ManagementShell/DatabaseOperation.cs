@@ -25,17 +25,27 @@ public class DatabaseOperation : IDatabaseOperation
             .ToList();
     }
 
-    public List<LocalAuthority> GetLas(IEnumerable<string> custodianCodes)
+    public List<LocalAuthority>? GetLas(IReadOnlyCollection<string> custodianCodes)
     {
+        if (custodianCodes.Any(code => !dbContext.LocalAuthorities.Any(la => la.CustodianCode == code)))
+        {
+            return null;
+        }
+        
         return custodianCodes
             .Select(code => dbContext.LocalAuthorities
                 .Single(la => la.CustodianCode == code))
             .ToList();
     }
 
-    public List<Consortium> GetConsortia(IEnumerable<string> custodianCodes)
+    public List<Consortium>? GetConsortia(IReadOnlyCollection<string> consortiumCodes)
     {
-        return custodianCodes
+        if (consortiumCodes.Any(code => !dbContext.Consortia.Any(la => la.ConsortiumCode == code)))
+        {
+            return null;
+        }
+        
+        return consortiumCodes
             .Select(code => dbContext.Consortia
                 .Single(la => la.ConsortiumCode == code))
             .ToList();

@@ -174,10 +174,22 @@ public class AdminAction
         return userOrNull == null ? UserStatus.New : UserStatus.Active;
     }
 
-    private void TryCreateUser(string userEmailAddress, IEnumerable<string>? custodianCodes, IEnumerable<string>? consortiumCodes)
+    private void TryCreateUser(string userEmailAddress, IReadOnlyCollection<string>? custodianCodes, IReadOnlyCollection<string>? consortiumCodes)
     {
         var lasToAdd = dbOperation.GetLas(custodianCodes ?? Array.Empty<string>());
         var consortiaToAdd = dbOperation.GetConsortia(consortiumCodes ?? Array.Empty<string>());
+
+        if (lasToAdd == null)
+        {
+            outputProvider.Output("Unrecognised LA. Make sure all codes are present in the database.");
+            return;
+        }
+        if (consortiaToAdd == null)
+        {
+            outputProvider.Output("Unrecognised Consortium. Make sure all codes are present in the database.");
+            return;
+        }
+        
         dbOperation.CreateUserOrLogError(userEmailAddress, lasToAdd, consortiaToAdd);
     }
 
@@ -213,9 +225,17 @@ public class AdminAction
         }
 
         var filteredCustodianCodes = custodianCodes
-            .Where(custodianCode => !CustodianCodeIsInOwnedConsortium(user, custodianCode));
+            .Where(custodianCode => !CustodianCodeIsInOwnedConsortium(user, custodianCode))
+            .ToList();
 
         var lasToAdd = dbOperation.GetLas(filteredCustodianCodes);
+
+        if (lasToAdd == null)
+        {
+            outputProvider.Output("Unrecognised LA. Make sure all codes are present in the database.");
+            return;
+        }
+        
         dbOperation.AddLasToUser(user, lasToAdd);
     }
 
@@ -267,7 +287,13 @@ public class AdminAction
         var consortiaToAdd = dbOperation.GetConsortia(consortiumCodes);
         
         var ownedCustodianCodesInConsortia = GetOwnedCustodianCodesInConsortia(user, consortiumCodes);
-        var lasToRemove = dbOperation.GetLas(ownedCustodianCodesInConsortia);
+        var lasToRemove = dbOperation.GetLas(ownedCustodianCodesInConsortia) ?? new List<LocalAuthority>();
+        
+        if (consortiaToAdd == null)
+        {
+            outputProvider.Output("Unrecognised Consortium. Make sure all codes are present in the database.");
+            return;
+        }
         
         dbOperation.AddConsortiaAndRemoveLasFromUser(user, consortiaToAdd, lasToRemove);
     }

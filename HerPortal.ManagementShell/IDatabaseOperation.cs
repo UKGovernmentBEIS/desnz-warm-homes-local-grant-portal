@@ -5,8 +5,8 @@ namespace HerPortal.ManagementShell;
 public interface IDatabaseOperation
 {
     public List<User> GetUsersWithLocalAuthoritiesAndConsortia();
-    public List<LocalAuthority> GetLas(IEnumerable<string> custodianCodes);
-    public List<Consortium> GetConsortia(IEnumerable<string> consortiumCodes);
+    public List<LocalAuthority>? GetLas(IReadOnlyCollection<string> custodianCodes);
+    public List<Consortium>? GetConsortia(IReadOnlyCollection<string> consortiumCodes);
     public void RemoveUserOrLogError(User user);
     public void CreateUserOrLogError(string userEmailAddress, List<LocalAuthority> localAuthorities, List<Consortium> consortia);
     public void AddLasToUser(User user, List<LocalAuthority> localAuthorities);
