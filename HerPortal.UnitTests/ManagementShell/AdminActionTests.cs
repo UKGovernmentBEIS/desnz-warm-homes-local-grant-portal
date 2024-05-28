@@ -132,6 +132,48 @@ public class AdminActionTests
     }
 
     [Test]
+    public void CreateOrUpdateUserWithLas_AddsLasToExistingUser_IgnoresLasInOwnedConsortia()
+    {
+        // Arrange
+        var currentConsortia = new List<Consortium>
+        {
+            new()
+            {
+                Id = 2,
+                ConsortiumCode = "C_0002"
+            }
+        };
+        const string userEmailAddress = "existinguser@email.com";
+
+        var users = new List<User>
+        {
+            new UserBuilder("existinguser@email.com").WithConsortia(currentConsortia).Build()
+        };
+        mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
+
+        // 2372 is in consortium C_0002
+        var custodianCodes = new[] { "9052", "2372" };
+        var filteredCustodianCodes = new[] { "9052" };
+        SetupConfirmCustodianCodes(filteredCustodianCodes, userEmailAddress, true);
+
+        var lasToAdd = new List<LocalAuthority>
+        {
+            new()
+            {
+                Id = 1,
+                CustodianCode = "9052"
+            }
+        };
+        mockDatabaseOperation.Setup(mock => mock.GetLas(filteredCustodianCodes)).Returns(lasToAdd);
+
+        // Act
+        underTest.CreateOrUpdateUserWithLas(userEmailAddress, custodianCodes);
+
+        // Assert
+        mockDatabaseOperation.Verify(mock => mock.AddLasToUser(users[0], lasToAdd));
+    }
+
+    [Test]
     public void RemoveLas_RemovesLasFromExistingUser_IfUserFoundByDbOperation()
     {
         // Arrange
@@ -476,7 +518,7 @@ public class AdminActionTests
         };
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
 
-        var custodianCodes = new[] { "C_0002" };
+        var custodianCodes = new[] { "C_0003" };
         SetupConfirmCustodianCodes(custodianCodes, userEmailAddress, true);
 
         var consortiaToAdd = new List<Consortium>
@@ -671,6 +713,48 @@ public class AdminActionTests
 
         // Assert
         mockOutputProvider.Verify(mock => mock.Output("2372: Blackburn With Darwen"), Times.Once());
+    }
+
+    [Test]
+    public void CreateOrUpdateUserWithConsortia_WhenUserHasLasInConsortia_RemovesThem()
+    {
+        // Arrange
+        var currentLa = new List<LocalAuthority>
+        {
+            new()
+            {
+                Id = 2,
+                CustodianCode = "2372"
+            }
+        };
+        const string userEmailAddress = "existinguser@email.com";
+
+        var users = new List<User>
+        {
+            new UserBuilder("existinguser@email.com").WithLocalAuthorities(currentLa).Build()
+        };
+        mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
+
+        var consortiumCodes = new[] { "C_0002" };
+        var custodianCodesToRemove = new[] { "2372" };
+        SetupConfirmCustodianCodes(consortiumCodes, userEmailAddress, true);
+
+        var consortiaToAdd = new List<Consortium>
+        {
+            new()
+            {
+                Id = 1,
+                ConsortiumCode = "C_0002"
+            }
+        };
+        mockDatabaseOperation.Setup(mock => mock.GetConsortia(consortiumCodes)).Returns(consortiaToAdd);
+        mockDatabaseOperation.Setup(mock => mock.GetLas(custodianCodesToRemove)).Returns(currentLa);
+
+        // Act
+        underTest.CreateOrUpdateUserWithConsortia(userEmailAddress, consortiumCodes);
+
+        // Assert
+        mockDatabaseOperation.Verify(mock => mock.AddConsortiaAndRemoveLasFromUser(users[0], consortiaToAdd, currentLa));
     }
 
     private void SetupConfirmConsortiumCodes(IEnumerable<string> consortiumCodes, string userEmailAddress,
