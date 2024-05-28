@@ -8,4 +8,15 @@ public class User
 
     public List<LocalAuthority> LocalAuthorities { get; set; }
     public List<Consortium> Consortia { get; set; }
+    
+    public List<string> GetAdministratedCustodianCodes()
+    {
+        var consortiumCodes = Consortia.Select(consortium => consortium.ConsortiumCode).ToList();
+        var custodianCodes = LocalAuthorities.Select(la => la.CustodianCode).ToList();
+        return LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode
+            .Where(codes => consortiumCodes.Contains(codes.Value))
+            .Select(codes => codes.Key)
+            .Union(custodianCodes)
+            .ToList();
+    }
 }

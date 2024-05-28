@@ -39,6 +39,7 @@ public class HomepageViewModelTests
         {
             HasLoggedIn = hasUserLoggedIn,
             LocalAuthorities = new List<LocalAuthority>(),
+            Consortia = new List<Consortium>()
         };
         
         // Act
@@ -48,14 +49,16 @@ public class HomepageViewModelTests
         viewModel.ShouldShowBanner.Should().Be(shouldShowBanner);
     }
     
-    [TestCase(1, false)]
-    [TestCase(2, true)]
-    [TestCase(3, true)]
-    [TestCase(4, true)]
-    [TestCase(100, true)]
+    [TestCase(1, 0, false)]
+    [TestCase(2, 0, true)]
+    [TestCase(3, 0, true)]
+    [TestCase(4, 0,true)]
+    [TestCase(100, 0,true)]
+    [TestCase(0, 1, true)]
     public void HomepageViewModel_OnlyWhenUserHasOneLocalAuthority_ShouldNotShowFilters
     (
         int numberOfLas,
+        int numberOfConsortia,
         bool expected
     ) {
         // Arrange
@@ -65,6 +68,7 @@ public class HomepageViewModelTests
             LocalAuthorities = ValidLocalAuthorityGenerator
                 .GetLocalAuthoritiesWithDifferentCodes(numberOfLas)
                 .ToList(),
+            Consortia = ValidConsortiumGenerator.GetConsortiaWithDifferentCodes(numberOfConsortia).ToList()
         };
         
         // Act

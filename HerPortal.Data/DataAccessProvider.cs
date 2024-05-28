@@ -17,6 +17,7 @@ public class DataAccessProvider : IDataAccessProvider
     {
         var users = await context.Users
             .Include(u => u.LocalAuthorities)
+            .Include(u => u.Consortia)
             // In order to compare email addresses case-insensitively, we bring the whole table into memory here
             //   to perform the comparison in C#, since Entity Framework doesn't allow for the StringComparison
             //   overload. However, since we don't expect this table to be monstrously huge this is acceptable
@@ -45,6 +46,7 @@ public class DataAccessProvider : IDataAccessProvider
         return await context.Users
             .Where(u => u.HasLoggedIn)
             .Include(u => u.LocalAuthorities)
+            .Include(u => u.Consortia)
             .ToListAsync();
     }
 
@@ -106,11 +108,14 @@ public class DataAccessProvider : IDataAccessProvider
     public List<string> GetConsortiumCodesForUser(User user)
     {
         var userLocalAuthorities = user.LocalAuthorities.Select(la => la.CustodianCode);
-
+        var userConsortia = user.Consortia.Select(consortium => consortium.ConsortiumCode);
+        
         // user is a consortium manager if they are a manager of all LAs in that consortium
-        return ConsortiumData.ConsortiumCustodianCodesIdsByConsortiumCode
+        return  ConsortiumData.ConsortiumCustodianCodesIdsByConsortiumCode
             .Where(pair => pair.Value.All(consortiumLa => userLocalAuthorities.Contains(consortiumLa)))
             .Select(pair => pair.Key)
+            //Include all explicitly listed consortium codes
+            .Union(userConsortia)
             .ToList();
     }
 }

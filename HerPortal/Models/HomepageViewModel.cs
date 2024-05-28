@@ -68,13 +68,13 @@ public class HomepageViewModel
         List<string> consortiumCodes
         )
     {
-        var checkboxLabels = user.LocalAuthorities
-            .Select(la => new KeyValuePair<string, LabelViewModel>
+        var checkboxLabels = user.GetAdministratedCustodianCodes()
+            .Select(custodianCode => new KeyValuePair<string, LabelViewModel>
                 (
-                    la.CustodianCode,
+                    custodianCode,
                     new LabelViewModel
                     {
-                        Text = LocalAuthorityData.LocalAuthorityNamesByCustodianCode[la.CustodianCode],
+                        Text = LocalAuthorityData.LocalAuthorityNamesByCustodianCode[custodianCode],
                     }
                 )
             )
@@ -89,9 +89,9 @@ public class HomepageViewModel
             )));
         
         ShouldShowBanner = !user.HasLoggedIn;
-        ShouldShowFilters = user.LocalAuthorities.Count >= 2;
+        ShouldShowFilters = user.GetAdministratedCustodianCodes().Count >= 2;
         Codes = new List<string>();
-        Codes.AddRange(user.LocalAuthorities.Select(la => la.CustodianCode));
+        Codes.AddRange(user.GetAdministratedCustodianCodes());
         Codes.AddRange(consortiumCodes);
         LocalAuthorityCheckboxLabels = new Dictionary<string, LabelViewModel>(checkboxLabels
             .OrderBy(kvp => kvp.Value.Text)

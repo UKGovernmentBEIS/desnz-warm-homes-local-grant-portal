@@ -83,7 +83,7 @@ public class CsvFileService : ICsvFileService
     {
         // Make sure that we only return file data for files that the user currently has access to
         var user = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
-        var currentCustodianCodes = user.LocalAuthorities.Select(la => la.CustodianCode);
+        var currentCustodianCodes = user.GetAdministratedCustodianCodes();
         
         var downloads = await dataAccessProvider.GetCsvFileDownloadDataForUserAsync(user.Id);
         var files = new List<CsvFileData>();
@@ -167,7 +167,7 @@ public class CsvFileService : ICsvFileService
     {
         // Important! First ensure the logged-in user is allowed to access this data
         var userData = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
-        if (!userData.LocalAuthorities.Any(la => la.CustodianCode == custodianCode))
+        if (userData.GetAdministratedCustodianCodes().All(custodianCodes => custodianCodes != custodianCode))
         {
             // We don't want to log the User's email address for GDPR reasons, but the ID is fine.
             throw new SecurityException(
