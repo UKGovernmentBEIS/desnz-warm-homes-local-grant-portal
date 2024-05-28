@@ -53,7 +53,7 @@ namespace HerPortal.ManagementShell
                     adminAction.RemoveLas(adminAction.GetUser(userEmailAddress), custodianCodes);
                     return;
                 case Subcommand.AddLas:
-                    adminAction.CreateOrUpdateUser(userEmailAddress, custodianCodes);
+                    adminAction.CreateOrUpdateUserWithLas(userEmailAddress, custodianCodes);
                     return;
                 default:
                     outputProvider.Output("Invalid terminal command entered. Please refer to the documentation");

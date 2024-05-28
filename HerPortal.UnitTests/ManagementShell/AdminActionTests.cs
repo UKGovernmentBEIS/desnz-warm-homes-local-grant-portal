@@ -55,7 +55,7 @@ public class AdminActionTests
         SetupConfirmCustodianCodes(custodianCodes, userEmailAddress, true);
 
         // Act
-        underTest.CreateOrUpdateUser(userEmailAddress, custodianCodes);
+        underTest.CreateOrUpdateUserWithLas(userEmailAddress, custodianCodes);
 
         // Assert
         mockOutputProvider.Verify(mock => mock.Confirm(It.IsAny<string>()), Times.Once());
@@ -84,10 +84,11 @@ public class AdminActionTests
         mockDatabaseOperation.Setup(mock => mock.GetLas(custodianCodes)).Returns(las);
         
         // Act
-        underTest.CreateOrUpdateUser(userEmailAddress, custodianCodes);
+        underTest.CreateOrUpdateUserWithLas(userEmailAddress, custodianCodes);
         
         // Assert
-        mockDatabaseOperation.Verify(mock => mock.CreateUserOrLogError(userEmailAddress, las), Times.Once());
+        mockDatabaseOperation.Verify(
+            mock => mock.CreateUserOrLogError(userEmailAddress, las, It.IsAny<List<Consortium>>()), Times.Once());
     }
 
     [Test]
@@ -124,7 +125,7 @@ public class AdminActionTests
         mockDatabaseOperation.Setup(mock => mock.GetLas(custodianCodes)).Returns(lasToAdd);
         
         // Act
-        underTest.CreateOrUpdateUser(userEmailAddress, custodianCodes);
+        underTest.CreateOrUpdateUserWithLas(userEmailAddress, custodianCodes);
         
         // Assert
         mockDatabaseOperation.Verify(mock => mock.AddLasToUser(users[0], lasToAdd));
@@ -192,7 +193,7 @@ public class AdminActionTests
         SetupConfirmCustodianCodes(Array.Empty<string>(), userEmailAddress, true);
 
         // Act
-        underTest.CreateOrUpdateUser(userEmailAddress, Array.Empty<string>());
+        underTest.CreateOrUpdateUserWithLas(userEmailAddress, Array.Empty<string>());
         
         // Assert
         mockOutputProvider.Verify(mock => mock.Output(It.IsAny<string>()));
@@ -242,7 +243,7 @@ public class AdminActionTests
         var listWithCustodianCodeNotInDict = new [] { "1111" };
 
         // Act
-        underTest.CreateOrUpdateUser(userEmailAddress, listWithCustodianCodeNotInDict);
+        underTest.CreateOrUpdateUserWithLas(userEmailAddress, listWithCustodianCodeNotInDict);
         
         // Assert
         mockOutputProvider.Verify(mock => mock.Output(It.IsAny<string>()));
@@ -298,11 +299,12 @@ public class AdminActionTests
         };
         
         // Act
-        underTest.CreateOrUpdateUser(userEmailAddress, custodianCodes);
+        underTest.CreateOrUpdateUserWithLas(userEmailAddress, custodianCodes);
         
         // Assert
         mockOutputProvider.Verify(mock => mock.Output("Process cancelled, no changes were made to the database"));
-        mockDatabaseOperation.Verify(mock => mock.CreateUserOrLogError(userEmailAddress, lasToAdd), Times.Never());
+        mockDatabaseOperation.Verify(
+            mock => mock.CreateUserOrLogError(userEmailAddress, lasToAdd, It.IsAny<List<Consortium>>()), Times.Never());
     }
     
     [Test]
@@ -318,7 +320,7 @@ public class AdminActionTests
         var custodianCodes = new[] { "9052"};
         
         // Act
-        underTest.CreateOrUpdateUser(userEmailAddress, custodianCodes);
+        underTest.CreateOrUpdateUserWithLas(userEmailAddress, custodianCodes);
 
         // Assert
         mockOutputProvider.Verify(mock => mock.Confirm("Please confirm (y/n)"), Times.Once);
@@ -336,7 +338,7 @@ public class AdminActionTests
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthorities()).Returns(users);
         var custodianCodes = new[] { "9052"};
         // Act
-        underTest.CreateOrUpdateUser(userEmailAddress, custodianCodes);
+        underTest.CreateOrUpdateUserWithLas(userEmailAddress, custodianCodes);
         
         // Assert
         mockOutputProvider.Verify(mock => mock.Output("User found in database. LAs will be added to their account"), Times.Once());
@@ -354,7 +356,7 @@ public class AdminActionTests
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthorities()).Returns(users);
         var custodianCodes = new[] { "9052"};
         // Act
-        underTest.CreateOrUpdateUser(userEmailAddress, custodianCodes);
+        underTest.CreateOrUpdateUserWithLas(userEmailAddress, custodianCodes);
         
         // Assert
         mockOutputProvider.Verify(mock => mock.Output("User not found in database. A new user will be created"), Times.Once());

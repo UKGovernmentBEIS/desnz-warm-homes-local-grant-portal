@@ -32,6 +32,14 @@ public class DatabaseOperation : IDatabaseOperation
             .ToList();
     }
 
+    public List<Consortium> GetConsortia(string[] custodianCodes)
+    {
+        return custodianCodes
+            .Select(code => dbContext.Consortia
+                .Single(la => la.ConsortiumCode == code))
+            .ToList();
+    }
+
     public void RemoveUserOrLogError(User user)
     {
         using var dbContextTransaction = dbContext.Database.BeginTransaction();
@@ -50,7 +58,7 @@ public class DatabaseOperation : IDatabaseOperation
         }
     }
 
-    public void CreateUserOrLogError(string userEmailAddress, List<LocalAuthority> localAuthorities)
+    public void CreateUserOrLogError(string userEmailAddress, List<LocalAuthority> localAuthorities, List<Consortium> consortia)
     {
         using var dbContextTransaction = dbContext.Database.BeginTransaction();
         try
@@ -59,7 +67,8 @@ public class DatabaseOperation : IDatabaseOperation
             {
                 EmailAddress = userEmailAddress,
                 HasLoggedIn = false,
-                LocalAuthorities = localAuthorities
+                LocalAuthorities = localAuthorities,
+                Consortia = consortia
             };
             dbContext.Add(newLaUser);
             dbContext.SaveChanges();

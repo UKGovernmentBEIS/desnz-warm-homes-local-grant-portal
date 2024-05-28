@@ -83,10 +83,11 @@ public class AdminAction
         return userOrNull == null ? UserStatus.New : UserStatus.Active;
     }
 
-    private void TryCreateUser(string userEmailAddress, string[]? custodianCodes)
+    private void TryCreateUser(string userEmailAddress, string[]? custodianCodes, string[]? consortiumCodes)
     {
         var lasToAdd = dbOperation.GetLas(custodianCodes ?? Array.Empty<string>());
-        dbOperation.CreateUserOrLogError(userEmailAddress, lasToAdd);
+        var consortiaToAdd = dbOperation.GetConsortia(consortiumCodes ?? Array.Empty<string>());
+        dbOperation.CreateUserOrLogError(userEmailAddress, lasToAdd, consortiaToAdd);
     }
 
     public void TryRemoveUser(User? user)
@@ -155,7 +156,7 @@ public class AdminAction
         dbOperation.RemoveLasFromUser(user, lasToRemove);
     }
 
-    public void CreateOrUpdateUser(string? userEmailAddress, string[] custodianCodes)
+    public void CreateOrUpdateUserWithLas(string? userEmailAddress, string[] custodianCodes)
     {
         if (userEmailAddress == null)
         {
@@ -185,7 +186,7 @@ public class AdminAction
             }
             else if (userStatus.Equals(UserStatus.New))
             {
-                TryCreateUser(userEmailAddress, custodianCodes);
+                TryCreateUser(userEmailAddress, custodianCodes, null);
             }
         }
     }
