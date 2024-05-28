@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HerPortal.BusinessLogic.Models;
 
-public class ValidConsortiumGenerator
+public static class ValidConsortiumGenerator
 {
     public static IEnumerable<Consortium> GetConsortiaWithDifferentCodes(int count)
     {

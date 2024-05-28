@@ -8,7 +8,7 @@ public class User
 
     public List<LocalAuthority> LocalAuthorities { get; set; }
     public List<Consortium> Consortia { get; set; }
-    
+
     public List<string> GetAdministratedCustodianCodes()
     {
         var consortiumCodes = Consortia.Select(consortium => consortium.ConsortiumCode).ToList();

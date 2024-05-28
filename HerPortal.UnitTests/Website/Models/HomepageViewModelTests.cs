@@ -48,12 +48,12 @@ public class HomepageViewModelTests
         // Assert
         viewModel.ShouldShowBanner.Should().Be(shouldShowBanner);
     }
-    
+
     [TestCase(1, 0, false)]
     [TestCase(2, 0, true)]
     [TestCase(3, 0, true)]
-    [TestCase(4, 0,true)]
-    [TestCase(100, 0,true)]
+    [TestCase(4, 0, true)]
+    [TestCase(100, 0, true)]
     [TestCase(0, 1, true)]
     public void HomepageViewModel_OnlyWhenUserHasOneLocalAuthority_ShouldNotShowFilters
     (
