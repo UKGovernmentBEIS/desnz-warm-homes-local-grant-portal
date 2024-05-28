@@ -756,6 +756,93 @@ public class AdminActionTests
         // Assert
         mockDatabaseOperation.Verify(mock => mock.AddConsortiaAndRemoveLasFromUser(users[0], consortiaToAdd, currentLa));
     }
+    
+    [Test]
+    public void RemoveConsortia_RemovesLasFromExistingUser_IfUserFoundByDbOperation()
+    {
+        // Arrange
+        var consortiumToRemove = new Consortium
+        {
+            ConsortiumCode = "C_0002",
+            Id = 123
+        };
+
+        var consortiumToKeep = new Consortium
+        {
+            ConsortiumCode = "C_0003",
+            Id = 456
+        };
+
+        var userEmailAddress = "existinguser@email.com";
+        var user = new UserBuilder(userEmailAddress)
+            .WithConsortia(new List<Consortium> { consortiumToRemove, consortiumToKeep }).Build();
+        var users = new List<User> { user };
+        mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
+
+        var custodianCodes = new[] { consortiumToRemove.ConsortiumCode };
+        SetupConfirmConsortiumCodes(custodianCodes, userEmailAddress, true);
+
+        // Act
+        underTest.RemoveConsortia(user, custodianCodes);
+
+        // Assert
+        mockDatabaseOperation.Verify(mock => mock.RemoveConsortiaFromUser(user, new List<Consortium> { consortiumToRemove }),
+            Times.Once());
+    }
+
+    [Test]
+    public void RemoveConsortia_DisplaysErrorMessage_IfCustodianCodeToRemove_DoesNotMatchAnyOfExistingUsersLas()
+    {
+        // Arrange
+        var consortiumToRemove = new Consortium
+        {
+            ConsortiumCode = "C_0002",
+            Id = 123
+        };
+
+        var usersCurrentConsortium = new Consortium
+        {
+            ConsortiumCode = "C_0003",
+            Id = 7
+        };
+
+        var userEmailAddress = "existinguser@email.com";
+        var user = new UserBuilder(userEmailAddress).WithConsortia(new List<Consortium> { usersCurrentConsortium })
+            .Build();
+        var users = new List<User> { user };
+        mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
+
+        var consortiumCodes = new[] { consortiumToRemove.ConsortiumCode };
+        SetupConfirmConsortiumCodes(consortiumCodes, userEmailAddress, true);
+
+        // Act
+        underTest.RemoveConsortia(user, consortiumCodes);
+
+        // Assert
+        mockOutputProvider.Verify(mock =>
+            mock.Output(
+                "Could not find Consortia attached to existinguser@email.com for the following codes: C_0002. Please check your inputs and try again."));
+    }
+
+    [Test]
+    public void RemoveConsortia_DisplaysErrorMessage_WhenRemovingLas_IfUserNotInDatabase()
+    {
+        // Arrange
+        const string userEmailAddress = "usernotindb@email.com";
+        var users = new List<User>
+        {
+            new UserBuilder("userindb@email.com").Build()
+        };
+        mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
+        var consortiumCodes = new[] { "C_0002" };
+        SetupConfirmConsortiumCodes(consortiumCodes, userEmailAddress, false);
+
+        // Act
+        underTest.RemoveConsortia(null, consortiumCodes);
+
+        // Assert
+        mockOutputProvider.Verify(mock => mock.Output("User not found"));
+    }
 
     private void SetupConfirmConsortiumCodes(IEnumerable<string> consortiumCodes, string userEmailAddress,
         bool confirmation)
