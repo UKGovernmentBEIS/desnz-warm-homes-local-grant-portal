@@ -13,6 +13,7 @@ public class AdminAction
     private readonly IDatabaseOperation dbOperation;
     private readonly IOutputProvider outputProvider;
     private readonly Dictionary<string, string> custodianCodeToLaDict = LocalAuthorityData.LocalAuthorityNamesByCustodianCode;
+    private readonly Dictionary<string, string> consortiumCodeToConsortiumDict = ConsortiumData.ConsortiumNamesByConsortiumCode;
 
     public AdminAction(IDatabaseOperation dbOperation, IOutputProvider outputProvider)
     {
@@ -22,7 +23,7 @@ public class AdminAction
 
     public User? GetUser(string emailAddress)
     {
-        var portalUsers = dbOperation.GetUsersWithLocalAuthorities();
+        var portalUsers = dbOperation.GetUsersWithLocalAuthoritiesAndConsortia();
         return
             portalUsers.SingleOrDefault(user => string.Equals
             (
@@ -32,28 +33,57 @@ public class AdminAction
             ));
     }
 
+    private void PrintCodes(string[] codes, Dictionary<string, string> codeToNameDict)
+    {
+        if (codes.Length < 1)
+        {
+            outputProvider.Output("(None)");
+        }
+
+        foreach (var code in codes)
+        {
+            var name = codeToNameDict[code];
+            outputProvider.Output($"{code}: {name}");
+        }
+    }
+
     private bool ConfirmCustodianCodes(string userEmailAddress, string[] codes)
     {
         outputProvider.Output(
             $"You are changing permissions for user {userEmailAddress} for the following local authorities:");
 
-        if (codes.Length < 1)
+        try
         {
-            outputProvider.Output("(No LAs specified)");
+            PrintCodes(codes, custodianCodeToLaDict);
+        } 
+        catch (Exception e)
+        {
+            outputProvider.Output($"{e.Message} Process terminated");
+            return false;
+        }
+        
+        var hasUserConfirmed = outputProvider.Confirm("Please confirm (y/n)");
+        if (!hasUserConfirmed)
+        {
+            outputProvider.Output("Process cancelled, no changes were made to the database");
         }
 
-        foreach (var code in codes)
+        return hasUserConfirmed;
+    }
+
+    private bool ConfirmConsortiumCodes(string? userEmailAddress, string[] codes)
+    {
+        outputProvider.Output(
+            $"You are changing permissions for user {userEmailAddress} for the following consortiums:");
+
+        try
         {
-            try
-            {
-                var localAuthority = custodianCodeToLaDict[code];
-                outputProvider.Output($"{code}: {localAuthority}");
-            }
-            catch (Exception e)
-            {
-                outputProvider.Output($"{e.Message} Process terminated");
-                return false;
-            }
+            PrintCodes(codes, consortiumCodeToConsortiumDict);
+        } 
+        catch (Exception e)
+        {
+            outputProvider.Output($"{e.Message} Process terminated");
+            return false;
         }
 
         var hasUserConfirmed = outputProvider.Confirm("Please confirm (y/n)");
@@ -78,7 +108,7 @@ public class AdminAction
         }
     }
 
-    private Enum GetUserStatus(User? userOrNull)
+    private UserStatus GetUserStatus(User? userOrNull)
     {
         return userOrNull == null ? UserStatus.New : UserStatus.Active;
     }
@@ -155,15 +185,27 @@ public class AdminAction
 
         dbOperation.RemoveLasFromUser(user, lasToRemove);
     }
-
-    public void CreateOrUpdateUserWithLas(string? userEmailAddress, string[] custodianCodes)
+    
+    private void AddConsortia(User? user, string[]? consortiumCodes)
     {
-        if (userEmailAddress == null)
+        if (user == null)
         {
-            outputProvider.Output("Please specify user E-mail address to create or update");
+            outputProvider.Output("User not found");
             return;
         }
 
+        if (consortiumCodes == null || consortiumCodes.Length < 1)
+        {
+            outputProvider.Output("Please specify consortium codes to add to user");
+            return;
+        }
+
+        var consortiaToAdd = dbOperation.GetConsortia(consortiumCodes);
+        dbOperation.AddConsortiaToUser(user, consortiaToAdd);
+    }
+
+    private (User? user, UserStatus userStatus) SetupUser(string userEmailAddress)
+    {
         var user = GetUser(userEmailAddress);
         var userStatus = GetUserStatus(user);
         DisplayUserStatus(userStatus);
@@ -175,6 +217,19 @@ public class AdminAction
         outputProvider.Output("Take a moment to double check the following list and only continue if you are certain this user should have access to these LAs.");
         outputProvider.Output("NB: in particular, you should only do this for LAs that have signed their DSA contracts!");
         outputProvider.Output("");
+        
+        return (user, userStatus);
+    }
+
+    public void CreateOrUpdateUserWithLas(string? userEmailAddress, string[] custodianCodes)
+    {
+        if (userEmailAddress == null)
+        {
+            outputProvider.Output("Please specify user E-mail address to create or update");
+            return;
+        }
+        
+        var (user, userStatus) = SetupUser(userEmailAddress);
 
         var confirmation = ConfirmCustodianCodes(userEmailAddress, custodianCodes);
 
@@ -187,6 +242,32 @@ public class AdminAction
             else if (userStatus.Equals(UserStatus.New))
             {
                 TryCreateUser(userEmailAddress, custodianCodes, null);
+            }
+        }
+    }
+
+    public void CreateOrUpdateUserWithConsortia(string? userEmailAddress, string[] consortiumCodes)
+    {
+        if (userEmailAddress == null)
+        {
+            outputProvider.Output("Please specify user E-mail address to create or update");
+            return;
+        }
+        
+        var (user, userStatus) = SetupUser(userEmailAddress);
+
+        var confirmation = ConfirmConsortiumCodes(userEmailAddress, consortiumCodes);
+
+        if (confirmation)
+        {
+            switch (userStatus)
+            {
+                case UserStatus.Active:
+                    AddConsortia(user, consortiumCodes);
+                    break;
+                case UserStatus.New:
+                    TryCreateUser(userEmailAddress, null, consortiumCodes);
+                    break;
             }
         }
     }

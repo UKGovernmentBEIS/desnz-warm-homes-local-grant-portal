@@ -11,7 +11,8 @@ namespace HerPortal.ManagementShell
         {
             AddLas,
             RemoveLas,
-            RemoveUser
+            RemoveUser,
+            AddConsortia
         }
         public static void Main(string[] args)
         {
@@ -28,13 +29,13 @@ namespace HerPortal.ManagementShell
 
             Subcommand command;
             var userEmailAddress = "";
-            var custodianCodes = Array.Empty<string>();
+            var codes = Array.Empty<string>();
 
             try
             {
                 command = Enum.Parse<Subcommand>(args[0], true);
                 userEmailAddress = args[1];
-                custodianCodes = args.Skip(2).ToArray();
+                codes = args.Skip(2).ToArray();
             }
             catch (Exception)
             {
@@ -50,11 +51,14 @@ namespace HerPortal.ManagementShell
                     adminAction.TryRemoveUser(adminAction.GetUser(userEmailAddress));
                     return;
                 case Subcommand.RemoveLas:
-                    adminAction.RemoveLas(adminAction.GetUser(userEmailAddress), custodianCodes);
+                    adminAction.RemoveLas(adminAction.GetUser(userEmailAddress), codes);
                     return;
                 case Subcommand.AddLas:
-                    adminAction.CreateOrUpdateUserWithLas(userEmailAddress, custodianCodes);
+                    adminAction.CreateOrUpdateUserWithLas(userEmailAddress, codes);
                     return;
+                case Subcommand.AddConsortia:
+                    adminAction.CreateOrUpdateUserWithConsortia(userEmailAddress, codes);
+                    break;
                 default:
                     outputProvider.Output("Invalid terminal command entered. Please refer to the documentation");
                     return;

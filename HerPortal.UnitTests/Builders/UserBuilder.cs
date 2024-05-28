@@ -29,6 +29,12 @@ public class UserBuilder
         return this;
     }
 
+    public UserBuilder WithConsortia(List<Consortium> consortia)
+    {
+        user.Consortia = consortia;
+        return this;
+    }
+
     public UserBuilder WithHasLoggedIn(bool hasLoggedIn)
     {
         user.HasLoggedIn = hasLoggedIn;

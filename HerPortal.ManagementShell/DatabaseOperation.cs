@@ -17,10 +17,11 @@ public class DatabaseOperation : IDatabaseOperation
         this.outputProvider = outputProvider;
     }
 
-    public List<User> GetUsersWithLocalAuthorities()
+    public List<User> GetUsersWithLocalAuthoritiesAndConsortia()
     {
         return dbContext.Users
             .Include(user => user.LocalAuthorities)
+            .Include(user => user.Consortia)
             .ToList();
     }
 
@@ -113,6 +114,35 @@ public class DatabaseOperation : IDatabaseOperation
                 try
                 {
                     user?.LocalAuthorities.Add(la);
+                }
+                catch (Exception e)
+                {
+                    outputProvider.Output(e.Message);
+                    throw;
+                }
+            }
+
+            dbContext.SaveChanges();
+            outputProvider.Output("Operation successful");
+            dbContextTransaction.Commit();
+        }
+        catch (Exception e)
+        {
+            outputProvider.Output($"Rollback following error in transaction: {e.InnerException?.Message}");
+            dbContextTransaction.Rollback();
+        }
+    }
+
+    public void AddConsortiaToUser(User user, List<Consortium> consortia)
+    {
+        using var dbContextTransaction = dbContext.Database.BeginTransaction();
+        try
+        {
+            foreach (var consortium in consortia)
+            {
+                try
+                {
+                    user?.Consortia.Add(consortium);
                 }
                 catch (Exception e)
                 {
