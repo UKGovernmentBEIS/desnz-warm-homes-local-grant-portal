@@ -52,7 +52,7 @@ public class AdminActionTests
         };
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
         var custodianCodes = new[] { "9052", "2525" };
-        SetupConfirmCustodianCodes(custodianCodes, userEmailAddress, true);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         // Act
         underTest.CreateOrUpdateUserWithLas(userEmailAddress, custodianCodes);
@@ -72,7 +72,7 @@ public class AdminActionTests
         };
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
         var custodianCodes = new[] { "9052" };
-        SetupConfirmCustodianCodes(custodianCodes, userEmailAddress, true);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
         var las = new List<LocalAuthority>
         {
             new()
@@ -112,7 +112,7 @@ public class AdminActionTests
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
 
         var custodianCodes = new[] { "9052" };
-        SetupConfirmCustodianCodes(custodianCodes, userEmailAddress, true);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         var lasToAdd = new List<LocalAuthority>
         {
@@ -154,7 +154,7 @@ public class AdminActionTests
         // 2372 is in consortium C_0002
         var custodianCodes = new[] { "9052", "2372" };
         var filteredCustodianCodes = new[] { "9052" };
-        SetupConfirmCustodianCodes(filteredCustodianCodes, userEmailAddress, true);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         var lasToAdd = new List<LocalAuthority>
         {
@@ -196,7 +196,7 @@ public class AdminActionTests
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
 
         var custodianCodes = new[] { laToRemove.CustodianCode };
-        SetupConfirmCustodianCodes(custodianCodes, userEmailAddress, true);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         // Act
         underTest.RemoveLas(user, custodianCodes);
@@ -234,7 +234,7 @@ public class AdminActionTests
             new UserBuilder("existinguser@email.com").Build()
         };
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
-        SetupConfirmCustodianCodes(Array.Empty<string>(), userEmailAddress, true);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         // Act
         underTest.CreateOrUpdateUserWithLas(userEmailAddress, Array.Empty<string>());
@@ -266,7 +266,7 @@ public class AdminActionTests
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
 
         var custodianCodes = new[] { laToRemove.CustodianCode };
-        SetupConfirmCustodianCodes(custodianCodes, userEmailAddress, true);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         // Act
         underTest.RemoveLas(user, custodianCodes);
@@ -306,7 +306,7 @@ public class AdminActionTests
         };
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
         var custodianCodes = new[] { "9052" };
-        SetupConfirmCustodianCodes(custodianCodes, userEmailAddress, false);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
         var lasToAdd = new List<LocalAuthority>
         {
             new()
@@ -334,7 +334,7 @@ public class AdminActionTests
         };
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
         var custodianCodes = new[] { "9052" };
-        SetupConfirmCustodianCodes(custodianCodes, userEmailAddress, false);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(false);
         var lasToAdd = new List<LocalAuthority>
         {
             new()
@@ -429,24 +429,6 @@ public class AdminActionTests
         mockOutputProvider.Verify(mock => mock.Output("3805: Adur"), Times.Once());
     }
 
-    private void SetupConfirmCustodianCodes(IEnumerable<string> custodianCodes, string userEmailAddress,
-        bool confirmation)
-    {
-        mockOutputProvider
-            .Setup(op =>
-                op.Output(
-                    $"You are changing permissions for user {userEmailAddress} for the following Local Authorities:"));
-        mockOutputProvider
-            .Setup(op => op.Output("Add the following Local Authorities:"));
-        foreach (var code in custodianCodes) mockOutputProvider.Setup(op => op.Output("Code: Local Authority"));
-        mockOutputProvider
-            .Setup(op =>
-                op.Output("Ignore the following Local Authorities already in owned Consortia:"));
-        mockOutputProvider.Setup(op => op.Output("(None)"));
-
-        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(confirmation);
-    }
-
     [Test]
     public void CreateOrUpdateUserWithConsortia_ConfirmsCustodianCodesWhenUpdating()
     {
@@ -458,7 +440,7 @@ public class AdminActionTests
         };
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
         var custodianCodes = new[] { "C_0002", "C_0003" };
-        SetupConfirmCustodianCodes(custodianCodes, userEmailAddress, true);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         // Act
         underTest.CreateOrUpdateUserWithConsortia(userEmailAddress, custodianCodes);
@@ -478,7 +460,7 @@ public class AdminActionTests
         };
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
         var consortiumCodes = new[] { "C_0002" };
-        SetupConfirmCustodianCodes(consortiumCodes, userEmailAddress, true);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
         var consortia = new List<Consortium>
         {
             new()
@@ -519,7 +501,7 @@ public class AdminActionTests
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
 
         var custodianCodes = new[] { "C_0003" };
-        SetupConfirmCustodianCodes(custodianCodes, userEmailAddress, true);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         var consortiaToAdd = new List<Consortium>
         {
@@ -549,7 +531,7 @@ public class AdminActionTests
             new UserBuilder("existinguser@email.com").Build()
         };
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
-        SetupConfirmCustodianCodes(Array.Empty<string>(), userEmailAddress, true);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         // Act
         underTest.CreateOrUpdateUserWithConsortia(userEmailAddress, Array.Empty<string>());
@@ -591,7 +573,7 @@ public class AdminActionTests
         };
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
         var consortiumCodes = new[] { "C_0002" };
-        SetupConfirmConsortiumCodes(consortiumCodes, userEmailAddress, false);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(false);
         var consortiaToAdd = new List<Consortium>
         {
             new()
@@ -737,7 +719,7 @@ public class AdminActionTests
 
         var consortiumCodes = new[] { "C_0002" };
         var custodianCodesToRemove = new[] { "2372" };
-        SetupConfirmCustodianCodes(consortiumCodes, userEmailAddress, true);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         var consortiaToAdd = new List<Consortium>
         {
@@ -780,7 +762,7 @@ public class AdminActionTests
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
 
         var custodianCodes = new[] { consortiumToRemove.ConsortiumCode };
-        SetupConfirmConsortiumCodes(custodianCodes, userEmailAddress, true);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         // Act
         underTest.RemoveConsortia(user, custodianCodes);
@@ -813,7 +795,7 @@ public class AdminActionTests
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
 
         var consortiumCodes = new[] { consortiumToRemove.ConsortiumCode };
-        SetupConfirmConsortiumCodes(consortiumCodes, userEmailAddress, true);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         // Act
         underTest.RemoveConsortia(user, consortiumCodes);
@@ -835,24 +817,12 @@ public class AdminActionTests
         };
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
         var consortiumCodes = new[] { "C_0002" };
-        SetupConfirmConsortiumCodes(consortiumCodes, userEmailAddress, false);
+        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         // Act
         underTest.RemoveConsortia(null, consortiumCodes);
 
         // Assert
         mockOutputProvider.Verify(mock => mock.Output("User not found"));
-    }
-
-    private void SetupConfirmConsortiumCodes(IEnumerable<string> consortiumCodes, string userEmailAddress,
-        bool confirmation)
-    {
-        mockOutputProvider
-            .Setup(op =>
-                op.Output(
-                    $"You are changing permissions for user {userEmailAddress} for the following consortiums: "));
-        foreach (var code in consortiumCodes) mockOutputProvider.Setup(op => op.Output("Code: Consortium"));
-
-        mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(confirmation);
     }
 }
