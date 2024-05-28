@@ -111,7 +111,7 @@ public class AdminActionTests
         };
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
         
-        var custodianCodes = new[] { "9052"};
+        var custodianCodes = new[] { "9052" };
         SetupConfirmCustodianCodes(custodianCodes, userEmailAddress, true);
         
         var lasToAdd = new List<LocalAuthority>
@@ -355,7 +355,7 @@ public class AdminActionTests
             new UserBuilder("existinguser@email.com").Build()
         };
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
-        var custodianCodes = new[] { "9052"};
+        var custodianCodes = new[] { "9052" };
         // Act
         underTest.CreateOrUpdateUserWithLas(userEmailAddress, custodianCodes);
         
@@ -363,16 +363,41 @@ public class AdminActionTests
         mockOutputProvider.Verify(mock => mock.Output("User not found in database. A new user will be created"), Times.Once());
     }
     
+    [Test]
+    public void CreateOrUpdateUserWithLas_WhenGivenLocalAuthorities_PrintsThem()
+    {
+        // Arrange
+        const string userEmailAddress = "newuser@email.com";
+        var users = new List<User>
+        {
+            new UserBuilder("existinguser@email.com").Build()
+        };
+        mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
+        var custodianCodes = new[] { "9052", "3805" };
+        // Act
+        underTest.CreateOrUpdateUserWithLas(userEmailAddress, custodianCodes);
+        
+        // Assert
+        mockOutputProvider.Verify(mock => mock.Output("9052: Aberdeenshire"), Times.Once());
+        mockOutputProvider.Verify(mock => mock.Output("3805: Adur"), Times.Once());
+    }
+    
     private void SetupConfirmCustodianCodes(IEnumerable<string> custodianCodes, string userEmailAddress, bool confirmation)
     {
         mockOutputProvider
             .Setup(op =>
                 op.Output(
-                    $"You are changing permissions for user {userEmailAddress} for the following local authorities: "));
+                    $"You are changing permissions for user {userEmailAddress} for the following Local Authorities:"));
+        mockOutputProvider
+            .Setup(op => op.Output("Add the following Local Authorities:"));
         foreach (var code in custodianCodes)
         {
             mockOutputProvider.Setup(op => op.Output("Code: Local Authority"));
         }
+        mockOutputProvider
+            .Setup(op => 
+                op.Output("Ignore the following Local Authorities already in owned Consortia:"));
+        mockOutputProvider.Setup(op => op.Output("(None)"));
 
         mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(confirmation);
     }
@@ -594,6 +619,52 @@ public class AdminActionTests
         
         // Assert
         mockOutputProvider.Verify(mock => mock.Output("User not found in database. A new user will be created"), Times.Once());
+    }
+    
+    [Test]
+    public void CreateOrUpdateUserWithConsortia_WhenGivenConsortia_PrintsThem()
+    {
+        // Arrange
+        const string userEmailAddress = "newuser@email.com";
+        var users = new List<User>
+        {
+            new UserBuilder("existinguser@email.com").Build()
+        };
+        mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
+        var consortiumCodes = new[] { "C_0002", "C_0003" };
+        // Act
+        underTest.CreateOrUpdateUserWithConsortia(userEmailAddress, consortiumCodes);
+        
+        // Assert
+        mockOutputProvider.Verify(mock => mock.Output("C_0002: Blackpool"), Times.Once());
+        mockOutputProvider.Verify(mock => mock.Output("C_0003: Bristol"), Times.Once());
+    }
+    
+    [Test]
+    public void CreateOrUpdateUserWithConsortia_WhenUserOwnsLocalAuthorityInConsortium_PrintsThem()
+    {
+        // Arrange
+        var currentLa = new List<LocalAuthority>
+        {
+            new()
+            {
+                Id = 2,
+                CustodianCode = "2372"
+            }
+        };
+        
+        const string userEmailAddress = "existinguser@email.com";
+        var users = new List<User>
+        {
+            new UserBuilder("existinguser@email.com").WithLocalAuthorities(currentLa).Build()
+        };
+        mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
+        var consortiumCodes = new[] { "C_0002" };
+        // Act
+        underTest.CreateOrUpdateUserWithConsortia(userEmailAddress, consortiumCodes);
+        
+        // Assert
+        mockOutputProvider.Verify(mock => mock.Output("2372: Blackburn With Darwen"), Times.Once());
     }
     
     private void SetupConfirmConsortiumCodes(IEnumerable<string> consortiumCodes, string userEmailAddress, bool confirmation)

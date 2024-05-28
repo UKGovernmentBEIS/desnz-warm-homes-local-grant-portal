@@ -14,7 +14,8 @@ public class UserBuilder
             Id = 13,
             EmailAddress = emailAddress,
             HasLoggedIn = true,
-            LocalAuthorities = new List<LocalAuthority>()
+            LocalAuthorities = new List<LocalAuthority>(),
+            Consortia = new List<Consortium>()
         };
     }
 

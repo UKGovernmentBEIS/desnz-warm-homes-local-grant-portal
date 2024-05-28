@@ -12,8 +12,10 @@ public class AdminAction
 
     private readonly IDatabaseOperation dbOperation;
     private readonly IOutputProvider outputProvider;
-    private readonly Dictionary<string, string> custodianCodeToLaDict = LocalAuthorityData.LocalAuthorityNamesByCustodianCode;
-    private readonly Dictionary<string, string> consortiumCodeToConsortiumDict = ConsortiumData.ConsortiumNamesByConsortiumCode;
+    private readonly Dictionary<string, string> custodianCodeToLaNameDict = LocalAuthorityData.LocalAuthorityNamesByCustodianCode;
+    private readonly Dictionary<string, string> custodianCodeToConsortiumCodeDict = LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode;
+    private readonly Dictionary<string, string> consortiumCodeToConsortiumNameDict = ConsortiumData.ConsortiumNamesByConsortiumCode;
+    private readonly Dictionary<string, List<string>> consortiumCodeToCustodianCodesDict = ConsortiumData.ConsortiumCustodianCodesIdsByConsortiumCode;
 
     public AdminAction(IDatabaseOperation dbOperation, IOutputProvider outputProvider)
     {
@@ -33,9 +35,9 @@ public class AdminAction
             ));
     }
 
-    private void PrintCodes(string[] codes, Dictionary<string, string> codeToNameDict)
+    private void PrintCodes(IReadOnlyCollection<string> codes, IReadOnlyDictionary<string, string> codeToNameDict)
     {
-        if (codes.Length < 1)
+        if (codes.Count < 1)
         {
             outputProvider.Output("(None)");
         }
@@ -47,14 +49,33 @@ public class AdminAction
         }
     }
 
-    private bool ConfirmCustodianCodes(string userEmailAddress, string[] codes)
+    private bool ConfirmCustodianCodes(string userEmailAddress, string[] custodianCodes, User? user)
     {
         outputProvider.Output(
-            $"You are changing permissions for user {userEmailAddress} for the following local authorities:");
+            $"You are changing permissions for user {userEmailAddress} for the following Local Authorities:");
 
         try
         {
-            PrintCodes(codes, custodianCodeToLaDict);
+            if (user != null)
+            {
+                // flag the need to not add LAs that are in consortia the user owns
+                var custodianCodesOfConsortia = user.Consortia
+                    .SelectMany(consortium =>
+                        consortiumCodeToCustodianCodesDict[consortium.ConsortiumCode]);
+                var custodianCodeInOwnedConsortiumGrouping = custodianCodes.ToLookup(custodianCodesOfConsortia.Contains);
+                var custodianCodesNotInOwnedConsortium = custodianCodeInOwnedConsortiumGrouping[false].ToList();
+                var custodianCodesInOwnedConsortium = custodianCodeInOwnedConsortiumGrouping[true].ToList();
+                
+                outputProvider.Output("Add the following Local Authorities:");
+                PrintCodes(custodianCodesNotInOwnedConsortium, custodianCodeToLaNameDict);
+                outputProvider.Output("Ignore the following Local Authorities already in owned Consortia:");
+                PrintCodes(custodianCodesInOwnedConsortium, custodianCodeToLaNameDict);
+            }
+            else
+            {
+                outputProvider.Output("Add the following Local Authorities:");
+                PrintCodes(custodianCodes, custodianCodeToLaNameDict);
+            }
         } 
         catch (Exception e)
         {
@@ -71,14 +92,33 @@ public class AdminAction
         return hasUserConfirmed;
     }
 
-    private bool ConfirmConsortiumCodes(string? userEmailAddress, string[] codes)
+    private bool ConfirmConsortiumCodes(string? userEmailAddress, string[] consortiumCodes, User? user)
     {
         outputProvider.Output(
-            $"You are changing permissions for user {userEmailAddress} for the following consortiums:");
+            $"You are changing permissions for user {userEmailAddress} for the following Consortia:");
 
         try
         {
-            PrintCodes(codes, consortiumCodeToConsortiumDict);
+            if (user != null)
+            {
+                outputProvider.Output("Add the following Consortia:");
+                PrintCodes(consortiumCodes, consortiumCodeToConsortiumNameDict);
+                
+                // flag the need to remove access for any LAs in the new consortia
+                var ownedLaInConsortia = user.LocalAuthorities
+                    .Where(localAuthority =>
+                        consortiumCodes.Contains(custodianCodeToConsortiumCodeDict[localAuthority.CustodianCode]))
+                    .Select(localAuthority => localAuthority.CustodianCode)
+                    .ToList();
+                
+                outputProvider.Output("Remove the following Local Authorities in these Consortia:");
+                PrintCodes(ownedLaInConsortia, custodianCodeToLaNameDict);
+            }
+            else
+            {
+                outputProvider.Output("Add the following Consortia:");
+                PrintCodes(consortiumCodes, consortiumCodeToConsortiumNameDict);
+            }
         } 
         catch (Exception e)
         {
@@ -169,7 +209,7 @@ public class AdminAction
             return;
         }
 
-        var userConfirmation = ConfirmCustodianCodes(user.EmailAddress, custodianCodes);
+        var userConfirmation = ConfirmCustodianCodes(user.EmailAddress, custodianCodes, user);
         if (!userConfirmation)
         {
             return;
@@ -231,7 +271,7 @@ public class AdminAction
         
         var (user, userStatus) = SetupUser(userEmailAddress);
 
-        var confirmation = ConfirmCustodianCodes(userEmailAddress, custodianCodes);
+        var confirmation = ConfirmCustodianCodes(userEmailAddress, custodianCodes, user);
 
         if (confirmation)
         {
@@ -256,7 +296,7 @@ public class AdminAction
         
         var (user, userStatus) = SetupUser(userEmailAddress);
 
-        var confirmation = ConfirmConsortiumCodes(userEmailAddress, consortiumCodes);
+        var confirmation = ConfirmConsortiumCodes(userEmailAddress, consortiumCodes, user);
 
         if (confirmation)
         {
