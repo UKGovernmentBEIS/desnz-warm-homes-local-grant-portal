@@ -49,7 +49,7 @@ public class AdminAction
         }
     }
 
-    private bool ConfirmCustodianCodes(string userEmailAddress, string[] custodianCodes, User? user)
+    private bool ConfirmCustodianCodes(string userEmailAddress, IReadOnlyCollection<string> custodianCodes, User? user)
     {
         outputProvider.Output(
             $"You are changing permissions for user {userEmailAddress} for the following Local Authorities:");
@@ -98,7 +98,7 @@ public class AdminAction
         return custodianCodesOfConsortia.Contains(custodianCode);
     }
 
-    private bool ConfirmConsortiumCodes(string? userEmailAddress, string[] consortiumCodes, User? user)
+    private bool ConfirmConsortiumCodes(string? userEmailAddress, IReadOnlyCollection<string> consortiumCodes, User? user)
     {
         outputProvider.Output(
             $"You are changing permissions for user {userEmailAddress} for the following Consortia:");
@@ -137,7 +137,7 @@ public class AdminAction
         return hasUserConfirmed;
     }
 
-    private List<string> GetOwnedCustodianCodesInConsortia(User user, string[] consortiumCodes)
+    private List<string> GetOwnedCustodianCodesInConsortia(User user, IEnumerable<string> consortiumCodes)
     {
         return user.LocalAuthorities
             .Where(localAuthority =>
@@ -164,7 +164,7 @@ public class AdminAction
         return userOrNull == null ? UserStatus.New : UserStatus.Active;
     }
 
-    private void TryCreateUser(string userEmailAddress, string[]? custodianCodes, string[]? consortiumCodes)
+    private void TryCreateUser(string userEmailAddress, IEnumerable<string>? custodianCodes, IEnumerable<string>? consortiumCodes)
     {
         var lasToAdd = dbOperation.GetLas(custodianCodes ?? Array.Empty<string>());
         var consortiaToAdd = dbOperation.GetConsortia(consortiumCodes ?? Array.Empty<string>());
@@ -188,7 +188,7 @@ public class AdminAction
 
         dbOperation.RemoveUserOrLogError(user);
     }
-    private void AddLas(User? user, string[]? custodianCodes)
+    private void AddLas(User? user, IReadOnlyCollection<string>? custodianCodes)
     {
         if (user == null)
         {
@@ -196,7 +196,7 @@ public class AdminAction
             return;
         }
 
-        if (custodianCodes == null || custodianCodes.Length < 1)
+        if (custodianCodes == null || custodianCodes.Count < 1)
         {
             outputProvider.Output("Please specify custodian codes to add to user");
             return;
@@ -209,7 +209,7 @@ public class AdminAction
         dbOperation.AddLasToUser(user, lasToAdd);
     }
 
-    public void RemoveLas(User? user, string[]? custodianCodes)
+    public void RemoveLas(User? user, IReadOnlyCollection<string>? custodianCodes)
     {
         if (user == null)
         {
@@ -217,7 +217,7 @@ public class AdminAction
             return;
         }
 
-        if (custodianCodes == null || custodianCodes.Length < 1)
+        if (custodianCodes == null || custodianCodes.Count < 1)
         {
             outputProvider.Output("Please specify custodian codes to remove from user");
             return;
@@ -240,7 +240,7 @@ public class AdminAction
         dbOperation.RemoveLasFromUser(user, lasToRemove);
     }
     
-    private void AddConsortia(User? user, string[]? consortiumCodes)
+    private void AddConsortia(User? user, IReadOnlyCollection<string>? consortiumCodes)
     {
         if (user == null)
         {
@@ -248,7 +248,7 @@ public class AdminAction
             return;
         }
 
-        if (consortiumCodes == null || consortiumCodes.Length < 1)
+        if (consortiumCodes == null || consortiumCodes.Count < 1)
         {
             outputProvider.Output("Please specify consortium codes to add to user");
             return;
@@ -279,7 +279,7 @@ public class AdminAction
         return (user, userStatus);
     }
 
-    public void CreateOrUpdateUserWithLas(string? userEmailAddress, string[] custodianCodes)
+    public void CreateOrUpdateUserWithLas(string? userEmailAddress, IReadOnlyCollection<string> custodianCodes)
     {
         if (userEmailAddress == null)
         {
@@ -304,7 +304,7 @@ public class AdminAction
         }
     }
 
-    public void CreateOrUpdateUserWithConsortia(string? userEmailAddress, string[] consortiumCodes)
+    public void CreateOrUpdateUserWithConsortia(string? userEmailAddress, IReadOnlyCollection<string> consortiumCodes)
     {
         if (userEmailAddress == null)
         {
