@@ -27,11 +27,8 @@ public class DatabaseOperation : IDatabaseOperation
 
     public List<LocalAuthority>? GetLas(IReadOnlyCollection<string> custodianCodes)
     {
-        if (custodianCodes.Any(code => !dbContext.LocalAuthorities.Any(la => la.CustodianCode == code)))
-        {
-            return null;
-        }
-        
+        if (custodianCodes.Any(code => !dbContext.LocalAuthorities.Any(la => la.CustodianCode == code))) return null;
+
         return custodianCodes
             .Select(code => dbContext.LocalAuthorities
                 .Single(la => la.CustodianCode == code))
@@ -40,11 +37,8 @@ public class DatabaseOperation : IDatabaseOperation
 
     public List<Consortium>? GetConsortia(IReadOnlyCollection<string> consortiumCodes)
     {
-        if (consortiumCodes.Any(code => !dbContext.Consortia.Any(la => la.ConsortiumCode == code)))
-        {
-            return null;
-        }
-        
+        if (consortiumCodes.Any(code => !dbContext.Consortia.Any(la => la.ConsortiumCode == code))) return null;
+
         return consortiumCodes
             .Select(code => dbContext.Consortia
                 .Single(la => la.ConsortiumCode == code))
@@ -69,7 +63,8 @@ public class DatabaseOperation : IDatabaseOperation
         }
     }
 
-    public void CreateUserOrLogError(string userEmailAddress, List<LocalAuthority> localAuthorities, List<Consortium> consortia)
+    public void CreateUserOrLogError(string userEmailAddress, List<LocalAuthority> localAuthorities,
+        List<Consortium> consortia)
     {
         using var dbContextTransaction = dbContext.Database.BeginTransaction();
         try
@@ -98,10 +93,7 @@ public class DatabaseOperation : IDatabaseOperation
         using var dbContextTransaction = dbContext.Database.BeginTransaction();
         try
         {
-            foreach (var la in lasToRemove)
-            {
-                user?.LocalAuthorities.Remove(la);
-            }
+            foreach (var la in lasToRemove) user?.LocalAuthorities.Remove(la);
 
             dbContext.SaveChanges();
             outputProvider.Output("Operation successful");
@@ -114,19 +106,14 @@ public class DatabaseOperation : IDatabaseOperation
         }
     }
 
-    public void AddConsortiaAndRemoveLasFromUser(User user, List<Consortium> consortia, List<LocalAuthority> localAuthorities)
+    public void AddConsortiaAndRemoveLasFromUser(User user, List<Consortium> consortia,
+        List<LocalAuthority> localAuthorities)
     {
         using var dbContextTransaction = dbContext.Database.BeginTransaction();
         try
         {
-            foreach (var consortium in consortia)
-            {
-                user?.Consortia.Add(consortium);
-            }
-            foreach (var localAuthority in localAuthorities)
-            {
-                user?.LocalAuthorities.Remove(localAuthority);
-            }
+            foreach (var consortium in consortia) user?.Consortia.Add(consortium);
+            foreach (var localAuthority in localAuthorities) user?.LocalAuthorities.Remove(localAuthority);
 
             dbContext.SaveChanges();
             outputProvider.Output("Operation successful");
@@ -144,10 +131,7 @@ public class DatabaseOperation : IDatabaseOperation
         using var dbContextTransaction = dbContext.Database.BeginTransaction();
         try
         {
-            foreach (var consortium in consortia)
-            {
-                user?.Consortia.Remove(consortium);
-            }
+            foreach (var consortium in consortia) user?.Consortia.Remove(consortium);
 
             dbContext.SaveChanges();
             outputProvider.Output("Operation successful");
@@ -166,7 +150,6 @@ public class DatabaseOperation : IDatabaseOperation
         try
         {
             foreach (var la in localAuthorities)
-            {
                 try
                 {
                     user?.LocalAuthorities.Add(la);
@@ -176,7 +159,6 @@ public class DatabaseOperation : IDatabaseOperation
                     outputProvider.Output(e.Message);
                     throw;
                 }
-            }
 
             dbContext.SaveChanges();
             outputProvider.Output("Operation successful");
@@ -195,7 +177,6 @@ public class DatabaseOperation : IDatabaseOperation
         try
         {
             foreach (var consortium in consortia)
-            {
                 try
                 {
                     user?.Consortia.Add(consortium);
@@ -205,7 +186,6 @@ public class DatabaseOperation : IDatabaseOperation
                     outputProvider.Output(e.Message);
                     throw;
                 }
-            }
 
             dbContext.SaveChanges();
             outputProvider.Output("Operation successful");
