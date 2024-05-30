@@ -27,7 +27,10 @@ public class DatabaseOperation : IDatabaseOperation
 
     public List<LocalAuthority>? GetLas(IReadOnlyCollection<string> custodianCodes)
     {
-        if (custodianCodes.Any(code => !dbContext.LocalAuthorities.Any(la => la.CustodianCode == code))) return null;
+        if (custodianCodes.Any(code => !dbContext.LocalAuthorities.Any(la => la.CustodianCode == code)))
+        {
+            return null;
+        }
 
         return custodianCodes
             .Select(code => dbContext.LocalAuthorities
@@ -37,7 +40,10 @@ public class DatabaseOperation : IDatabaseOperation
 
     public List<Consortium>? GetConsortia(IReadOnlyCollection<string> consortiumCodes)
     {
-        if (consortiumCodes.Any(code => !dbContext.Consortia.Any(la => la.ConsortiumCode == code))) return null;
+        if (consortiumCodes.Any(code => !dbContext.Consortia.Any(la => la.ConsortiumCode == code)))
+        {
+            return null;
+        }
 
         return consortiumCodes
             .Select(code => dbContext.Consortia
