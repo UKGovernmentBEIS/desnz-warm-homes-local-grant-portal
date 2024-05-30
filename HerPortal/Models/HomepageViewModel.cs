@@ -64,34 +64,35 @@ public class HomepageViewModel
         User user, 
         PaginatedFileData paginatedFileData, 
         Func<int, string> pageLinkGenerator,
-        Func<CsvFileData, string> downloadLinkGenerator,
-        List<string> consortiumCodes
+        Func<CsvFileData, string> downloadLinkGenerator
         )
     {
-        var checkboxLabels = user.GetAdministratedCustodianCodes()
+        var administeredCustodianCodes = user.GetAdministeredCustodianCodes();
+        var consortiumCodes = user.Consortia.Select(c => c.ConsortiumCode).ToList();
+        var checkboxLabels = administeredCustodianCodes
             .Select(custodianCode => new KeyValuePair<string, LabelViewModel>
                 (
                     custodianCode,
                     new LabelViewModel
                     {
-                        Text = LocalAuthorityData.LocalAuthorityNamesByCustodianCode[custodianCode],
+                        Text = LocalAuthorityData.LocalAuthorityNamesByCustodianCode[custodianCode]
                     }
                 )
             )
             .ToList();
-        
+
         checkboxLabels.AddRange(consortiumCodes.Select(consortiumCode => new KeyValuePair<string, LabelViewModel>(
             consortiumCode,
             new LabelViewModel
             {
                 Text = $"{ConsortiumData.ConsortiumNamesByConsortiumCode[consortiumCode]} (Consortium)"
             }
-            )));
-        
+        )));
+
         ShouldShowBanner = !user.HasLoggedIn;
-        ShouldShowFilters = user.GetAdministratedCustodianCodes().Count >= 2;
+        ShouldShowFilters = administeredCustodianCodes.Count >= 2;
         Codes = new List<string>();
-        Codes.AddRange(user.GetAdministratedCustodianCodes());
+        Codes.AddRange(administeredCustodianCodes);
         Codes.AddRange(consortiumCodes);
         LocalAuthorityCheckboxLabels = new Dictionary<string, LabelViewModel>(checkboxLabels
             .OrderBy(kvp => kvp.Value.Text)

@@ -45,8 +45,6 @@ public class DataAccessProvider : IDataAccessProvider
     {
         return await context.Users
             .Where(u => u.HasLoggedIn)
-            .Include(u => u.LocalAuthorities)
-            .Include(u => u.Consortia)
             .ToListAsync();
     }
 
@@ -103,19 +101,5 @@ public class DataAccessProvider : IDataAccessProvider
         await context.AuditDownloads.AddAsync(auditDownload);
         
         await context.SaveChangesAsync();
-    }
-
-    public List<string> GetConsortiumCodesForUser(User user)
-    {
-        var userLocalAuthorities = user.LocalAuthorities.Select(la => la.CustodianCode);
-        var userConsortia = user.Consortia.Select(consortium => consortium.ConsortiumCode);
-
-        // user is a consortium manager if they are a manager of all LAs in that consortium
-        return ConsortiumData.ConsortiumCustodianCodesIdsByConsortiumCode
-            .Where(pair => pair.Value.All(consortiumLa => userLocalAuthorities.Contains(consortiumLa)))
-            .Select(pair => pair.Key)
-            //Include all explicitly listed consortium codes
-            .Union(userConsortia)
-            .ToList();
     }
 }

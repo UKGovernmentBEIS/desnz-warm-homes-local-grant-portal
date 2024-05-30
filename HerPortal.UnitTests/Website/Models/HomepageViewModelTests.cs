@@ -43,19 +43,42 @@ public class HomepageViewModelTests
         };
         
         // Act
-        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink, new List<string>());
+        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
         
         // Assert
         viewModel.ShouldShowBanner.Should().Be(shouldShowBanner);
     }
 
-    [TestCase(1, 0, false)]
-    [TestCase(2, 0, true)]
-    [TestCase(3, 0, true)]
-    [TestCase(4, 0, true)]
-    [TestCase(100, 0, true)]
-    [TestCase(0, 1, true)]
+    [TestCase(1, false)]
+    [TestCase(2, true)]
+    [TestCase(3, true)]
+    [TestCase(4, true)]
+    [TestCase(100, true)]
     public void HomepageViewModel_OnlyWhenUserHasOneLocalAuthority_ShouldNotShowFilters
+    (
+        int numberOfLas,
+        bool expected
+    ) {
+        // Arrange
+        var user = new User
+        {
+            HasLoggedIn = true,
+            LocalAuthorities = ValidLocalAuthorityGenerator
+                .GetLocalAuthoritiesWithDifferentCodes(numberOfLas)
+                .ToList(),
+            Consortia = ValidConsortiumGenerator.GetConsortiaWithDifferentCodes(0).ToList()
+        };
+        
+        // Act
+        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
+        
+        // Assert
+        viewModel.ShouldShowFilters.Should().Be(expected);
+    }
+    
+    [TestCase(0, 1, true)]
+    [TestCase(1, 1, true)]
+    public void HomepageViewModel_WhenUserHasConsortium_ShouldShowFilters
     (
         int numberOfLas,
         int numberOfConsortia,
@@ -72,7 +95,7 @@ public class HomepageViewModelTests
         };
         
         // Act
-        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink, new List<string>());
+        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
         
         // Assert
         viewModel.ShouldShowFilters.Should().Be(expected);

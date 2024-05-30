@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using HerPortal.BusinessLogic;
 using HerPortal.BusinessLogic.Models;
@@ -62,7 +63,6 @@ public class HomeFileControllerTests
         mockDataAccessProvider
             .Setup(dap => dap.GetUserByEmailAsync(EmailAddress))
             .ReturnsAsync(user);
-        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         mockCsvFileService
             .Setup(cfg => cfg.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string> { "114"}, 1, 20))
             .ReturnsAsync(fileData);
