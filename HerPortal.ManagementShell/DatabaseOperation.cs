@@ -55,27 +55,17 @@ public class DatabaseOperation : IDatabaseOperation
 
     public void RemoveUserOrLogError(User user)
     {
-        using var dbContextTransaction = dbContext.Database.BeginTransaction();
-        try
+        PerformTransaction(() =>
         {
             // removing a user also deletes all associated rows in the LocalAuthorityUser table
             dbContext.Users.Remove(user);
-            dbContext.SaveChanges();
-            dbContextTransaction.Commit();
-            outputProvider.Output($"Operation successful. User {user.EmailAddress} was deleted");
-        }
-        catch (Exception e)
-        {
-            dbContextTransaction.Rollback();
-            outputProvider.Output($"Rollback following error in transaction: {e.InnerException?.Message}");
-        }
+        });
     }
 
     public void CreateUserOrLogError(string userEmailAddress, List<LocalAuthority> localAuthorities,
         List<Consortium> consortia)
     {
-        using var dbContextTransaction = dbContext.Database.BeginTransaction();
-        try
+        PerformTransaction(() =>
         {
             var newLaUser = new User
             {
@@ -85,77 +75,38 @@ public class DatabaseOperation : IDatabaseOperation
                 Consortia = consortia
             };
             dbContext.Add(newLaUser);
-            dbContext.SaveChanges();
-            outputProvider.Output("Operation successful");
-            dbContextTransaction.Commit();
-        }
-        catch (Exception e)
-        {
-            outputProvider.Output($"Rollback following error in transaction: {e.InnerException?.Message}");
-            dbContextTransaction.Rollback();
-        }
+        });
     }
 
     public void RemoveLasFromUser(User user, List<LocalAuthority> lasToRemove)
     {
-        using var dbContextTransaction = dbContext.Database.BeginTransaction();
-        try
+        PerformTransaction(() =>
         {
             foreach (var la in lasToRemove) user?.LocalAuthorities.Remove(la);
-
-            dbContext.SaveChanges();
-            outputProvider.Output("Operation successful");
-            dbContextTransaction.Commit();
-        }
-        catch (Exception e)
-        {
-            outputProvider.Output($"Rollback following error in transaction: {e.InnerException?.Message}");
-            dbContextTransaction.Rollback();
-        }
+        });
     }
 
     public void AddConsortiaAndRemoveLasFromUser(User user, List<Consortium> consortia,
         List<LocalAuthority> localAuthorities)
     {
-        using var dbContextTransaction = dbContext.Database.BeginTransaction();
-        try
+        PerformTransaction(() =>
         {
             foreach (var consortium in consortia) user?.Consortia.Add(consortium);
             foreach (var localAuthority in localAuthorities) user?.LocalAuthorities.Remove(localAuthority);
-
-            dbContext.SaveChanges();
-            outputProvider.Output("Operation successful");
-            dbContextTransaction.Commit();
-        }
-        catch (Exception e)
-        {
-            outputProvider.Output($"Rollback following error in transaction: {e.InnerException?.Message}");
-            dbContextTransaction.Rollback();
-        }
+        });
     }
 
     public void RemoveConsortiaFromUser(User user, List<Consortium> consortia)
     {
-        using var dbContextTransaction = dbContext.Database.BeginTransaction();
-        try
+        PerformTransaction(() =>
         {
             foreach (var consortium in consortia) user?.Consortia.Remove(consortium);
-
-            dbContext.SaveChanges();
-            outputProvider.Output("Operation successful");
-            dbContextTransaction.Commit();
-        }
-        catch (Exception e)
-        {
-            outputProvider.Output($"Rollback following error in transaction: {e.InnerException?.Message}");
-            dbContextTransaction.Rollback();
-        }
+        });
     }
 
     public void AddLasToUser(User user, List<LocalAuthority> localAuthorities)
     {
-        using var dbContextTransaction = dbContext.Database.BeginTransaction();
-        try
+        PerformTransaction(() =>
         {
             foreach (var la in localAuthorities)
                 try
@@ -167,22 +118,12 @@ public class DatabaseOperation : IDatabaseOperation
                     outputProvider.Output(e.Message);
                     throw;
                 }
-
-            dbContext.SaveChanges();
-            outputProvider.Output("Operation successful");
-            dbContextTransaction.Commit();
-        }
-        catch (Exception e)
-        {
-            outputProvider.Output($"Rollback following error in transaction: {e.InnerException?.Message}");
-            dbContextTransaction.Rollback();
-        }
+        });
     }
 
     public void AddConsortiaToUser(User user, List<Consortium> consortia)
     {
-        using var dbContextTransaction = dbContext.Database.BeginTransaction();
-        try
+        PerformTransaction(() =>
         {
             foreach (var consortium in consortia)
                 try
@@ -194,7 +135,16 @@ public class DatabaseOperation : IDatabaseOperation
                     outputProvider.Output(e.Message);
                     throw;
                 }
+        });
+    }
 
+    private void PerformTransaction(Action transaction)
+    {
+        using var dbContextTransaction = dbContext.Database.BeginTransaction();
+        try
+        {
+            transaction();
+            
             dbContext.SaveChanges();
             outputProvider.Output("Operation successful");
             dbContextTransaction.Commit();
