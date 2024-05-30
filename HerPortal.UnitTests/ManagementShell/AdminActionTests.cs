@@ -82,6 +82,7 @@ public class AdminActionTests
             }
         };
         mockDatabaseOperation.Setup(mock => mock.GetLas(custodianCodes)).Returns(las);
+        mockDatabaseOperation.Setup(mock => mock.GetConsortia(It.IsAny<string[]>())).Returns(new List<Consortium>());
 
         // Act
         underTest.CreateOrUpdateUserWithLas(userEmailAddress, custodianCodes);
@@ -470,6 +471,7 @@ public class AdminActionTests
             }
         };
         mockDatabaseOperation.Setup(mock => mock.GetConsortia(consortiumCodes)).Returns(consortia);
+        mockDatabaseOperation.Setup(mock => mock.GetLas(It.IsAny<string[]>())).Returns(new List<LocalAuthority>());
 
         // Act
         underTest.CreateOrUpdateUserWithConsortia(userEmailAddress, consortiumCodes);
@@ -694,7 +696,7 @@ public class AdminActionTests
         underTest.CreateOrUpdateUserWithConsortia(userEmailAddress, consortiumCodes);
 
         // Assert
-        mockOutputProvider.Verify(mock => mock.Output("2372: Blackburn With Darwen"), Times.Once());
+        mockOutputProvider.Verify(mock => mock.Output("2372: Blackburn With Darwen (Blackpool)"), Times.Once());
     }
 
     [Test]
