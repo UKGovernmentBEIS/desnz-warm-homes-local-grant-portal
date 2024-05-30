@@ -442,6 +442,7 @@ public class AdminActionTests
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
         var custodianCodes = new[] { "C_0002", "C_0003" };
         mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
+        mockDatabaseOperation.Setup(mock => mock.GetLas(It.IsAny<List<string>>())).Returns(new List<LocalAuthority>());
 
         // Act
         underTest.CreateOrUpdateUserWithConsortia(userEmailAddress, custodianCodes);
@@ -513,6 +514,7 @@ public class AdminActionTests
                 ConsortiumCode = "C_0003"
             }
         };
+        mockDatabaseOperation.Setup(mock => mock.GetLas(It.IsAny<List<string>>())).Returns(new List<LocalAuthority>());
         mockDatabaseOperation.Setup(mock => mock.GetConsortia(consortiumCodes)).Returns(consortiaToAdd);
 
         // Act
