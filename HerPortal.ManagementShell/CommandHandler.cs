@@ -4,6 +4,8 @@ namespace HerPortal.ManagementShell;
 
 public class CommandHandler
 {
+    private readonly AdminAction adminAction;
+
     private readonly Dictionary<string, string> consortiumCodeToConsortiumNameDict =
         ConsortiumData.ConsortiumNamesByConsortiumCode;
 
@@ -16,7 +18,6 @@ public class CommandHandler
     private readonly Dictionary<string, string> custodianCodeToLaNameDict =
         LocalAuthorityData.LocalAuthorityNamesByCustodianCode;
 
-    private readonly AdminAction adminAction;
     private readonly IOutputProvider outputProvider;
 
     public CommandHandler(AdminAction adminAction, IOutputProvider outputProvider)
@@ -76,6 +77,7 @@ public class CommandHandler
             outputProvider.Output("Please specify custodian codes to remove from user");
             return;
         }
+
         var userConfirmation = ConfirmRemoveCustodianCodes(user.EmailAddress, custodianCodes);
         if (!userConfirmation) return;
 
@@ -145,7 +147,8 @@ public class CommandHandler
         }
     }
 
-    private bool ConfirmAddCustodianCodes(string userEmailAddress, IReadOnlyCollection<string> custodianCodes, User? user)
+    private bool ConfirmAddCustodianCodes(string userEmailAddress, IReadOnlyCollection<string> custodianCodes,
+        User? user)
     {
         return ConfirmChangesToDatabase(userEmailAddress, () =>
         {
@@ -191,7 +194,8 @@ public class CommandHandler
                 PrintCodes(consortiumCodes, code => consortiumCodeToConsortiumNameDict[code]);
 
                 // flag the need to remove access for any LAs in the new consortia
-                var ownedCustodianCodesInConsortia = adminAction.GetOwnedCustodianCodesInConsortia(user, consortiumCodes);
+                var ownedCustodianCodesInConsortia =
+                    adminAction.GetOwnedCustodianCodesInConsortia(user, consortiumCodes);
 
                 outputProvider.Output("Remove the following Local Authorities in these Consortia:");
                 PrintCodes(ownedCustodianCodesInConsortia, code =>

@@ -274,7 +274,9 @@ public class CommandHandlerTests
         underTest.TryRemoveLas(user, custodianCodes);
 
         // Assert
-        mockOutputProvider.Verify(mock => mock.Output("Could not remove LAs from user: Could not find LAs attached to existinguser@email.com for the following codes: 9052. Please check your inputs and try again."));
+        mockOutputProvider.Verify(mock =>
+            mock.Output(
+                "Could not remove LAs from user: Could not find LAs attached to existinguser@email.com for the following codes: 9052. Please check your inputs and try again."));
     }
 
     [Test]
@@ -741,9 +743,10 @@ public class CommandHandlerTests
         underTest.CreateOrUpdateUserWithConsortia(userEmailAddress, consortiumCodes);
 
         // Assert
-        mockDatabaseOperation.Verify(mock => mock.AddConsortiaAndRemoveLasFromUser(users[0], consortiaToAdd, currentLa));
+        mockDatabaseOperation.Verify(mock =>
+            mock.AddConsortiaAndRemoveLasFromUser(users[0], consortiaToAdd, currentLa));
     }
-    
+
     [Test]
     public void RemoveConsortia_RemovesLasFromExistingUser_IfUserFoundByDbOperation()
     {
@@ -773,7 +776,8 @@ public class CommandHandlerTests
         underTest.TryRemoveConsortia(user, custodianCodes);
 
         // Assert
-        mockDatabaseOperation.Verify(mock => mock.RemoveConsortiaFromUser(user, new List<Consortium> { consortiumToRemove }),
+        mockDatabaseOperation.Verify(
+            mock => mock.RemoveConsortiaFromUser(user, new List<Consortium> { consortiumToRemove }),
             Times.Once());
     }
 
