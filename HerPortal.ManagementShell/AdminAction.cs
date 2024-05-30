@@ -51,10 +51,7 @@ public class AdminAction
 
     private void PrintCodes(IReadOnlyCollection<string> codes, Func<string, string> codeToName)
     {
-        if (codes.Count < 1)
-        {
-            outputProvider.Output("(None)");
-        }
+        if (codes.Count < 1) outputProvider.Output("(None)");
 
         foreach (var code in codes)
         {
@@ -103,10 +100,7 @@ public class AdminAction
         }
 
         var hasUserConfirmed = outputProvider.Confirm("Please confirm (y/n)");
-        if (!hasUserConfirmed)
-        {
-            outputProvider.Output("Process cancelled, no changes were made to the database");
-        }
+        if (!hasUserConfirmed) outputProvider.Output("Process cancelled, no changes were made to the database");
 
         return hasUserConfirmed;
     }
@@ -157,10 +151,7 @@ public class AdminAction
         }
 
         var hasUserConfirmed = outputProvider.Confirm("Please confirm (y/n)");
-        if (!hasUserConfirmed)
-        {
-            outputProvider.Output("Process cancelled, no changes were made to the database");
-        }
+        if (!hasUserConfirmed) outputProvider.Output("Process cancelled, no changes were made to the database");
 
         return hasUserConfirmed;
     }
@@ -199,7 +190,7 @@ public class AdminAction
         {
             var lasToAdd = dbOperation.GetLas(custodianCodes ?? Array.Empty<string>());
             var consortiaToAdd = dbOperation.GetConsortia(consortiumCodes ?? Array.Empty<string>());
-            
+
             dbOperation.CreateUserOrLogError(userEmailAddress, lasToAdd, consortiaToAdd);
         }
         catch (KeyNotFoundException keyNotFoundException)
@@ -218,10 +209,7 @@ public class AdminAction
 
         var deletionConfirmation = outputProvider.Confirm(
             $"Attention! This will delete user {user.EmailAddress} and all associated rows from the database. Are you sure you want to commit this transaction? (y/n)");
-        if (!deletionConfirmation)
-        {
-            return;
-        }
+        if (!deletionConfirmation) return;
 
         dbOperation.RemoveUserOrLogError(user);
     }
@@ -271,10 +259,7 @@ public class AdminAction
         }
 
         var userConfirmation = ConfirmCustodianCodes(user.EmailAddress, custodianCodes, user, true);
-        if (!userConfirmation)
-        {
-            return;
-        }
+        if (!userConfirmation) return;
 
         var lasToRemove = user.LocalAuthorities.Where(la => custodianCodes.Contains(la.CustodianCode)).ToList();
         var missingCodes = custodianCodes.Where(code => !lasToRemove.Any(la => la.CustodianCode.Equals(code))).ToList();
@@ -310,13 +295,9 @@ public class AdminAction
             var lasToRemove = dbOperation.GetLas(ownedCustodianCodesInConsortia);
 
             if (lasToRemove.Count > 0)
-            {
                 dbOperation.AddConsortiaAndRemoveLasFromUser(user, consortiaToAdd, lasToRemove);
-            }
             else
-            {
                 dbOperation.AddConsortiaToUser(user, consortiaToAdd);
-            }
         }
         catch (KeyNotFoundException keyNotFoundException)
         {
@@ -357,7 +338,6 @@ public class AdminAction
         var confirmation = ConfirmCustodianCodes(userEmailAddress, custodianCodes, user, false);
 
         if (confirmation)
-        {
             switch (userStatus)
             {
                 case UserStatus.Active:
@@ -367,7 +347,6 @@ public class AdminAction
                     TryCreateUser(userEmailAddress, custodianCodes, null);
                     break;
             }
-        }
     }
 
     public void CreateOrUpdateUserWithConsortia(string? userEmailAddress, IReadOnlyCollection<string> consortiumCodes)
@@ -383,7 +362,6 @@ public class AdminAction
         var confirmation = ConfirmConsortiumCodes(userEmailAddress, consortiumCodes, user, false);
 
         if (confirmation)
-        {
             switch (userStatus)
             {
                 case UserStatus.Active:
@@ -393,7 +371,6 @@ public class AdminAction
                     TryCreateUser(userEmailAddress, null, consortiumCodes);
                     break;
             }
-        }
     }
 
     public void RemoveConsortia(User? user, IReadOnlyCollection<string> consortiumCodes)
@@ -411,10 +388,7 @@ public class AdminAction
         }
 
         var userConfirmation = ConfirmConsortiumCodes(user.EmailAddress, consortiumCodes, user, true);
-        if (!userConfirmation)
-        {
-            return;
-        }
+        if (!userConfirmation) return;
 
         var consortiaToRemove = user.Consortia.Where(consortium => consortiumCodes.Contains(consortium.ConsortiumCode))
             .ToList();

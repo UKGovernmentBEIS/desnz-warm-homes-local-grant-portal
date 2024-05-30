@@ -27,11 +27,11 @@ public class DatabaseOperation : IDatabaseOperation
 
     public List<LocalAuthority> GetLas(IReadOnlyCollection<string> custodianCodes)
     {
-        var missingCustodianCode = custodianCodes.SingleOrDefault(code => !dbContext.LocalAuthorities.Any(la => la.CustodianCode == code), null);
+        var missingCustodianCode =
+            custodianCodes.SingleOrDefault(code => !dbContext.LocalAuthorities.Any(la => la.CustodianCode == code),
+                null);
         if (missingCustodianCode != null)
-        {
             throw new KeyNotFoundException($"Custodian Code {missingCustodianCode} not found.");
-        }
 
         return custodianCodes
             .Select(code => dbContext.LocalAuthorities
@@ -41,11 +41,10 @@ public class DatabaseOperation : IDatabaseOperation
 
     public List<Consortium> GetConsortia(IReadOnlyCollection<string> consortiumCodes)
     {
-        var missingConsortiumCode = consortiumCodes.SingleOrDefault(code => !dbContext.Consortia.Any(la => la.ConsortiumCode == code), null);
+        var missingConsortiumCode =
+            consortiumCodes.SingleOrDefault(code => !dbContext.Consortia.Any(la => la.ConsortiumCode == code), null);
         if (missingConsortiumCode != null)
-        {
             throw new KeyNotFoundException($"Consortium Code {missingConsortiumCode} not found.");
-        }
 
         return consortiumCodes
             .Select(code => dbContext.Consortia
@@ -144,7 +143,7 @@ public class DatabaseOperation : IDatabaseOperation
         try
         {
             transaction();
-            
+
             dbContext.SaveChanges();
             outputProvider.Output("Operation successful");
             dbContextTransaction.Commit();
