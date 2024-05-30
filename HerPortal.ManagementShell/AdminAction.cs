@@ -327,14 +327,8 @@ public class AdminAction
         return (user, userStatus);
     }
 
-    public void CreateOrUpdateUserWithLas(string? userEmailAddress, IReadOnlyCollection<string> custodianCodes)
+    public void CreateOrUpdateUserWithLas(string userEmailAddress, IReadOnlyCollection<string> custodianCodes)
     {
-        if (userEmailAddress == null)
-        {
-            outputProvider.Output("Please specify user E-mail address to create or update");
-            return;
-        }
-
         var (user, userStatus) = CheckUserStatus(userEmailAddress);
 
         var confirmation = ConfirmAddCustodianCodes(userEmailAddress, custodianCodes, user);
@@ -351,14 +345,8 @@ public class AdminAction
             }
     }
 
-    public void CreateOrUpdateUserWithConsortia(string? userEmailAddress, IReadOnlyCollection<string> consortiumCodes)
+    public void CreateOrUpdateUserWithConsortia(string userEmailAddress, IReadOnlyCollection<string> consortiumCodes)
     {
-        if (userEmailAddress == null)
-        {
-            outputProvider.Output("Please specify user E-mail address to create or update");
-            return;
-        }
-
         var (user, userStatus) = CheckUserStatus(userEmailAddress);
 
         var confirmation = ConfirmAddConsortiumCodes(userEmailAddress, consortiumCodes, user);
