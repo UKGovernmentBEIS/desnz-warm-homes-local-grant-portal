@@ -19,6 +19,12 @@ public class AdminAction
     private readonly Dictionary<string, string> custodianCodeToConsortiumCodeDict =
         LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode;
 
+    private readonly Dictionary<string, string> custodianCodeToConsortiumNameDict =
+        LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => ConsortiumData.ConsortiumNamesByConsortiumCode[kvp.Value]);
+
     private readonly Dictionary<string, string> custodianCodeToLaNameDict =
         LocalAuthorityData.LocalAuthorityNamesByCustodianCode;
 
@@ -43,7 +49,7 @@ public class AdminAction
             ));
     }
 
-    private void PrintCodes(IReadOnlyCollection<string> codes, IReadOnlyDictionary<string, string> codeToNameDict)
+    private void PrintCodes(IReadOnlyCollection<string> codes, Func<string, string> codeToName)
     {
         if (codes.Count < 1)
         {
@@ -52,7 +58,7 @@ public class AdminAction
 
         foreach (var code in codes)
         {
-            var name = codeToNameDict[code];
+            var name = codeToName(code);
             outputProvider.Output($"{code}: {name}");
         }
     }
@@ -68,7 +74,7 @@ public class AdminAction
             if (remove)
             {
                 outputProvider.Output("Remove the following Local Authorities:");
-                PrintCodes(custodianCodes, custodianCodeToLaNameDict);
+                PrintCodes(custodianCodes, code => custodianCodeToLaNameDict[code]);
             }
             else if (user != null)
             {
@@ -79,14 +85,15 @@ public class AdminAction
                 var custodianCodesInOwnedConsortium = custodianCodeInOwnedConsortiumGrouping[true].ToList();
 
                 outputProvider.Output("Add the following Local Authorities:");
-                PrintCodes(custodianCodesNotInOwnedConsortium, custodianCodeToLaNameDict);
+                PrintCodes(custodianCodesNotInOwnedConsortium, code => custodianCodeToLaNameDict[code]);
                 outputProvider.Output("Ignore the following Local Authorities already in owned Consortia:");
-                PrintCodes(custodianCodesInOwnedConsortium, custodianCodeToLaNameDict);
+                PrintCodes(custodianCodesInOwnedConsortium, code =>
+                    $"{custodianCodeToLaNameDict[code]} ({custodianCodeToConsortiumNameDict[code]})");
             }
             else
             {
                 outputProvider.Output("Add the following Local Authorities:");
-                PrintCodes(custodianCodes, custodianCodeToLaNameDict);
+                PrintCodes(custodianCodes, code => custodianCodeToLaNameDict[code]);
             }
         }
         catch (Exception e)
@@ -123,23 +130,24 @@ public class AdminAction
             if (remove)
             {
                 outputProvider.Output("Remove the following Consortia:");
-                PrintCodes(consortiumCodes, consortiumCodeToConsortiumNameDict);
+                PrintCodes(consortiumCodes, code => consortiumCodeToConsortiumNameDict[code]);
             }
             else if (user != null)
             {
                 outputProvider.Output("Add the following Consortia:");
-                PrintCodes(consortiumCodes, consortiumCodeToConsortiumNameDict);
+                PrintCodes(consortiumCodes, code => consortiumCodeToConsortiumNameDict[code]);
 
                 // flag the need to remove access for any LAs in the new consortia
                 var ownedCustodianCodesInConsortia = GetOwnedCustodianCodesInConsortia(user, consortiumCodes);
 
                 outputProvider.Output("Remove the following Local Authorities in these Consortia:");
-                PrintCodes(ownedCustodianCodesInConsortia, custodianCodeToLaNameDict);
+                PrintCodes(ownedCustodianCodesInConsortia, code =>
+                    $"{custodianCodeToLaNameDict[code]} ({custodianCodeToConsortiumNameDict[code]})");
             }
             else
             {
                 outputProvider.Output("Add the following Consortia:");
-                PrintCodes(consortiumCodes, consortiumCodeToConsortiumNameDict);
+                PrintCodes(consortiumCodes, code => consortiumCodeToConsortiumNameDict[code]);
             }
         }
         catch (Exception e)
