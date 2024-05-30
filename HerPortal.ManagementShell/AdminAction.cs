@@ -260,7 +260,7 @@ public class AdminAction
         dbOperation.AddLasToUser(user, lasToAdd);
     }
 
-    public void RemoveLas(User? user, IReadOnlyCollection<string>? custodianCodes)
+    public void RemoveLas(User? user, IReadOnlyCollection<string> custodianCodes)
     {
         if (user == null)
         {
@@ -268,7 +268,7 @@ public class AdminAction
             return;
         }
 
-        if (custodianCodes == null || custodianCodes.Count < 1)
+        if (custodianCodes.Count == 0)
         {
             outputProvider.Output("Please specify custodian codes to remove from user");
             return;
@@ -399,7 +399,7 @@ public class AdminAction
         }
     }
 
-    public void RemoveConsortia(User? user, IReadOnlyCollection<string>? consortiumCodes)
+    public void RemoveConsortia(User? user, IReadOnlyCollection<string> consortiumCodes)
     {
         if (user == null)
         {
@@ -407,7 +407,7 @@ public class AdminAction
             return;
         }
 
-        if (consortiumCodes == null || consortiumCodes.Count < 1)
+        if (consortiumCodes.Count == 0)
         {
             outputProvider.Output("Please specify consortium codes to remove from user");
             return;
