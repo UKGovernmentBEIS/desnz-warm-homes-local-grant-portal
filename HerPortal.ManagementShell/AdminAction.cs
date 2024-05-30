@@ -317,7 +317,14 @@ public class AdminAction
             return;
         }
 
-        dbOperation.AddConsortiaAndRemoveLasFromUser(user, consortiaToAdd, lasToRemove);
+        if (lasToRemove.Count > 0)
+        {
+            dbOperation.AddConsortiaAndRemoveLasFromUser(user, consortiaToAdd, lasToRemove);
+        }
+        else
+        {
+            dbOperation.AddConsortiaToUser(user, consortiaToAdd);
+        }
     }
 
     private (User? user, UserStatus userStatus) CheckUserStatus(string userEmailAddress)
