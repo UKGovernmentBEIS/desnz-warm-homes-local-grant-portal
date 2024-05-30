@@ -60,20 +60,11 @@ public class AdminAction
         }
     }
 
-    private bool ConfirmCustodianCodes(string userEmailAddress, IReadOnlyCollection<string> custodianCodes, User? user,
-        bool remove)
+    private bool ConfirmAddCustodianCodes(string userEmailAddress, IReadOnlyCollection<string> custodianCodes, User? user)
     {
-        outputProvider.Output(
-            $"You are changing permissions for user {userEmailAddress} for the following Local Authorities:");
-
-        try
+        return ConfirmChangesToDatabase(userEmailAddress, () =>
         {
-            if (remove)
-            {
-                outputProvider.Output("Remove the following Local Authorities:");
-                PrintCodes(custodianCodes, code => custodianCodeToLaNameDict[code]);
-            }
-            else if (user != null)
+            if (user != null)
             {
                 // flag the need to not add LAs that are in consortia the user owns
                 var custodianCodeInOwnedConsortiumGrouping = custodianCodes.ToLookup(custodianCode =>
@@ -92,17 +83,16 @@ public class AdminAction
                 outputProvider.Output("Add the following Local Authorities:");
                 PrintCodes(custodianCodes, code => custodianCodeToLaNameDict[code]);
             }
-        }
-        catch (Exception e)
+        });
+    }
+
+    private bool ConfirmRemoveCustodianCodes(string userEmailAddress, IReadOnlyCollection<string> custodianCodes)
+    {
+        return ConfirmChangesToDatabase(userEmailAddress, () =>
         {
-            outputProvider.Output($"{e.Message} Process terminated");
-            return false;
-        }
-
-        var hasUserConfirmed = outputProvider.Confirm("Please confirm (y/n)");
-        if (!hasUserConfirmed) outputProvider.Output("Process cancelled, no changes were made to the database");
-
-        return hasUserConfirmed;
+            outputProvider.Output("Remove the following Local Authorities:");
+            PrintCodes(custodianCodes, code => custodianCodeToLaNameDict[code]);
+        });
     }
 
     private bool CustodianCodeIsInOwnedConsortium(User user, string custodianCode)
@@ -113,20 +103,12 @@ public class AdminAction
         return custodianCodesOfConsortia.Contains(custodianCode);
     }
 
-    private bool ConfirmConsortiumCodes(string? userEmailAddress, IReadOnlyCollection<string> consortiumCodes,
-        User? user, bool remove)
+    private bool ConfirmAddConsortiumCodes(string? userEmailAddress, IReadOnlyCollection<string> consortiumCodes,
+        User? user)
     {
-        outputProvider.Output(
-            $"You are changing permissions for user {userEmailAddress} for the following Consortia:");
-
-        try
+        return ConfirmChangesToDatabase(userEmailAddress, () =>
         {
-            if (remove)
-            {
-                outputProvider.Output("Remove the following Consortia:");
-                PrintCodes(consortiumCodes, code => consortiumCodeToConsortiumNameDict[code]);
-            }
-            else if (user != null)
+            if (user != null)
             {
                 outputProvider.Output("Add the following Consortia:");
                 PrintCodes(consortiumCodes, code => consortiumCodeToConsortiumNameDict[code]);
@@ -143,6 +125,26 @@ public class AdminAction
                 outputProvider.Output("Add the following Consortia:");
                 PrintCodes(consortiumCodes, code => consortiumCodeToConsortiumNameDict[code]);
             }
+        });
+    }
+
+    private bool ConfirmRemoveConsortiumCodes(string? userEmailAddress, IReadOnlyCollection<string> consortiumCodes)
+    {
+        return ConfirmChangesToDatabase(userEmailAddress, () =>
+        {
+            outputProvider.Output("Remove the following Consortia:");
+            PrintCodes(consortiumCodes, code => consortiumCodeToConsortiumNameDict[code]);
+        });
+    }
+
+    private bool ConfirmChangesToDatabase(string? userEmailAddress, Action printAction)
+    {
+        outputProvider.Output(
+            $"You are changing permissions for user {userEmailAddress}:");
+
+        try
+        {
+            printAction();
         }
         catch (Exception e)
         {
@@ -258,7 +260,7 @@ public class AdminAction
             return;
         }
 
-        var userConfirmation = ConfirmCustodianCodes(user.EmailAddress, custodianCodes, user, true);
+        var userConfirmation = ConfirmRemoveCustodianCodes(user.EmailAddress, custodianCodes);
         if (!userConfirmation) return;
 
         var lasToRemove = user.LocalAuthorities.Where(la => custodianCodes.Contains(la.CustodianCode)).ToList();
@@ -335,7 +337,7 @@ public class AdminAction
 
         var (user, userStatus) = CheckUserStatus(userEmailAddress);
 
-        var confirmation = ConfirmCustodianCodes(userEmailAddress, custodianCodes, user, false);
+        var confirmation = ConfirmAddCustodianCodes(userEmailAddress, custodianCodes, user);
 
         if (confirmation)
             switch (userStatus)
@@ -359,7 +361,7 @@ public class AdminAction
 
         var (user, userStatus) = CheckUserStatus(userEmailAddress);
 
-        var confirmation = ConfirmConsortiumCodes(userEmailAddress, consortiumCodes, user, false);
+        var confirmation = ConfirmAddConsortiumCodes(userEmailAddress, consortiumCodes, user);
 
         if (confirmation)
             switch (userStatus)
@@ -387,7 +389,7 @@ public class AdminAction
             return;
         }
 
-        var userConfirmation = ConfirmConsortiumCodes(user.EmailAddress, consortiumCodes, user, true);
+        var userConfirmation = ConfirmRemoveConsortiumCodes(user.EmailAddress, consortiumCodes);
         if (!userConfirmation) return;
 
         var consortiaToRemove = user.Consortia.Where(consortium => consortiumCodes.Contains(consortium.ConsortiumCode))
