@@ -261,7 +261,7 @@ public class CommandHandler
         }
     }
 
-    private void TryAddLas(User? user, IReadOnlyCollection<string>? custodianCodes)
+    private void TryAddLas(User? user, IReadOnlyCollection<string> custodianCodes)
     {
         if (user == null)
         {
@@ -269,7 +269,7 @@ public class CommandHandler
             return;
         }
 
-        if (custodianCodes == null || custodianCodes.Count < 1)
+        if (custodianCodes.Count < 1)
         {
             outputProvider.Output("Please specify custodian codes to add to user");
             return;
@@ -285,7 +285,7 @@ public class CommandHandler
         }
     }
 
-    private void TryAddConsortia(User? user, IReadOnlyCollection<string>? consortiumCodes)
+    private void TryAddConsortia(User? user, IReadOnlyCollection<string> consortiumCodes)
     {
         if (user == null)
         {
@@ -293,7 +293,7 @@ public class CommandHandler
             return;
         }
 
-        if (consortiumCodes == null || consortiumCodes.Count < 1)
+        if (consortiumCodes.Count < 1)
         {
             outputProvider.Output("Please specify consortium codes to add to user");
             return;
