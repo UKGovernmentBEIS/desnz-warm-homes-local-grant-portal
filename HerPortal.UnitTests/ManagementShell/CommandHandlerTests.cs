@@ -8,18 +8,19 @@ using Tests.Builders;
 
 namespace Tests.ManagementShell;
 
-public class AdminActionTests
+public class CommandHandlerTests
 {
     private Mock<IDatabaseOperation> mockDatabaseOperation;
     private Mock<IOutputProvider> mockOutputProvider;
-    private AdminAction underTest;
+    private CommandHandler underTest;
 
     [SetUp]
     public void Setup()
     {
         mockOutputProvider = new Mock<IOutputProvider>();
         mockDatabaseOperation = new Mock<IDatabaseOperation>();
-        underTest = new AdminAction(mockDatabaseOperation.Object, mockOutputProvider.Object);
+        var adminAction = new AdminAction(mockDatabaseOperation.Object);
+        underTest = new CommandHandler(adminAction, mockOutputProvider.Object);
     }
 
     [Test]
@@ -200,7 +201,7 @@ public class AdminActionTests
         mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         // Act
-        underTest.RemoveLas(user, custodianCodes);
+        underTest.TryRemoveLas(user, custodianCodes);
 
         // Assert
         mockDatabaseOperation.Verify(mock => mock.RemoveLasFromUser(user, new List<LocalAuthority> { laToRemove }),
@@ -241,7 +242,7 @@ public class AdminActionTests
         underTest.CreateOrUpdateUserWithLas(userEmailAddress, Array.Empty<string>());
 
         // Assert
-        mockOutputProvider.Verify(mock => mock.Output(It.IsAny<string>()));
+        mockOutputProvider.Verify(mock => mock.Output("Please specify custodian codes to add to user"));
     }
 
     [Test]
@@ -270,10 +271,10 @@ public class AdminActionTests
         mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         // Act
-        underTest.RemoveLas(user, custodianCodes);
+        underTest.TryRemoveLas(user, custodianCodes);
 
         // Assert
-        mockOutputProvider.Verify(mock => mock.Output(It.IsAny<string>()));
+        mockOutputProvider.Verify(mock => mock.Output("Could not remove LAs from user: Could not find LAs attached to existinguser@email.com for the following codes: 9052. Please check your inputs and try again."));
     }
 
     [Test]
@@ -318,7 +319,7 @@ public class AdminActionTests
         };
 
         // Act
-        underTest.RemoveLas(null, custodianCodes);
+        underTest.TryRemoveLas(null, custodianCodes);
 
         // Assert
         mockOutputProvider.Verify(mock => mock.Output("User not found"));
@@ -541,7 +542,7 @@ public class AdminActionTests
         underTest.CreateOrUpdateUserWithConsortia(userEmailAddress, Array.Empty<string>());
 
         // Assert
-        mockOutputProvider.Verify(mock => mock.Output(It.IsAny<string>()));
+        mockOutputProvider.Verify(mock => mock.Output("Please specify consortium codes to add to user"));
     }
 
 
@@ -769,7 +770,7 @@ public class AdminActionTests
         mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         // Act
-        underTest.RemoveConsortia(user, custodianCodes);
+        underTest.TryRemoveConsortia(user, custodianCodes);
 
         // Assert
         mockDatabaseOperation.Verify(mock => mock.RemoveConsortiaFromUser(user, new List<Consortium> { consortiumToRemove }),
@@ -802,12 +803,12 @@ public class AdminActionTests
         mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         // Act
-        underTest.RemoveConsortia(user, consortiumCodes);
+        underTest.TryRemoveConsortia(user, consortiumCodes);
 
         // Assert
         mockOutputProvider.Verify(mock =>
             mock.Output(
-                "Could not find Consortia attached to existinguser@email.com for the following codes: C_0002. Please check your inputs and try again."));
+                "Could not remove Consortia from user: Could not find Consortia attached to existinguser@email.com for the following codes: C_0002. Please check your inputs and try again."));
     }
 
     [Test]
@@ -824,7 +825,7 @@ public class AdminActionTests
         mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
         // Act
-        underTest.RemoveConsortia(null, consortiumCodes);
+        underTest.TryRemoveConsortia(null, consortiumCodes);
 
         // Assert
         mockOutputProvider.Verify(mock => mock.Output("User not found"));

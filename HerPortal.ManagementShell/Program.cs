@@ -26,7 +26,8 @@ namespace HerPortal.ManagementShell
             using var context = new HerDbContext(contextOptions);
             var outputProvider = new OutputProvider();
             var dbOperation = new DatabaseOperation(context, outputProvider);
-            var adminAction = new AdminAction(dbOperation, outputProvider);
+            var adminAction = new AdminAction(dbOperation);
+            var commandHandler = new CommandHandler(adminAction, outputProvider);
 
             Subcommand command;
             var userEmailAddress = "";
@@ -49,19 +50,19 @@ namespace HerPortal.ManagementShell
             switch (command)
             {
                 case Subcommand.RemoveUser:
-                    adminAction.TryRemoveUser(adminAction.GetUser(userEmailAddress));
-                    return;
-                case Subcommand.RemoveLas:
-                    adminAction.RemoveLas(adminAction.GetUser(userEmailAddress), codes);
+                    commandHandler.TryRemoveUser(commandHandler.GetUser(userEmailAddress));
                     return;
                 case Subcommand.AddLas:
-                    adminAction.CreateOrUpdateUserWithLas(userEmailAddress, codes);
+                    commandHandler.CreateOrUpdateUserWithLas(userEmailAddress, codes);
                     return;
                 case Subcommand.AddConsortia:
-                    adminAction.CreateOrUpdateUserWithConsortia(userEmailAddress, codes);
+                    commandHandler.CreateOrUpdateUserWithConsortia(userEmailAddress, codes);
                     break;
+                case Subcommand.RemoveLas:
+                    commandHandler.TryRemoveLas(commandHandler.GetUser(userEmailAddress), codes);
+                    return;
                 case Subcommand.RemoveConsortia:
-                    adminAction.RemoveConsortia(adminAction.GetUser(userEmailAddress), codes);
+                    commandHandler.TryRemoveConsortia(commandHandler.GetUser(userEmailAddress), codes);
                     break;
                 default:
                     outputProvider.Output("Invalid terminal command entered. Please refer to the documentation");
