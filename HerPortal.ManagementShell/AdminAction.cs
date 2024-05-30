@@ -195,22 +195,17 @@ public class AdminAction
     private void TryCreateUser(string userEmailAddress, IReadOnlyCollection<string>? custodianCodes,
         IReadOnlyCollection<string>? consortiumCodes)
     {
-        var lasToAdd = dbOperation.GetLas(custodianCodes ?? Array.Empty<string>());
-        var consortiaToAdd = dbOperation.GetConsortia(consortiumCodes ?? Array.Empty<string>());
-
-        if (lasToAdd == null)
+        try
         {
-            outputProvider.Output("Unrecognised LA. Make sure all codes are present in the database.");
-            return;
+            var lasToAdd = dbOperation.GetLas(custodianCodes ?? Array.Empty<string>());
+            var consortiaToAdd = dbOperation.GetConsortia(consortiumCodes ?? Array.Empty<string>());
+            
+            dbOperation.CreateUserOrLogError(userEmailAddress, lasToAdd, consortiaToAdd);
         }
-
-        if (consortiaToAdd == null)
+        catch (KeyNotFoundException keyNotFoundException)
         {
-            outputProvider.Output("Unrecognised Consortium. Make sure all codes are present in the database.");
-            return;
+            outputProvider.Output($"Could not create user: {keyNotFoundException.Message}");
         }
-
-        dbOperation.CreateUserOrLogError(userEmailAddress, lasToAdd, consortiaToAdd);
     }
 
     public void TryRemoveUser(User? user)
@@ -245,19 +240,20 @@ public class AdminAction
             return;
         }
 
-        var filteredCustodianCodes = custodianCodes
-            .Where(custodianCode => !CustodianCodeIsInOwnedConsortium(user, custodianCode))
-            .ToList();
-
-        var lasToAdd = dbOperation.GetLas(filteredCustodianCodes);
-
-        if (lasToAdd == null)
+        try
         {
-            outputProvider.Output("Unrecognised LA. Make sure all codes are present in the database.");
-            return;
-        }
+            var filteredCustodianCodes = custodianCodes
+                .Where(custodianCode => !CustodianCodeIsInOwnedConsortium(user, custodianCode))
+                .ToList();
 
-        dbOperation.AddLasToUser(user, lasToAdd);
+            var lasToAdd = dbOperation.GetLas(filteredCustodianCodes);
+
+            dbOperation.AddLasToUser(user, lasToAdd);
+        }
+        catch (KeyNotFoundException keyNotFoundException)
+        {
+            outputProvider.Output($"Could not add LAs to user: {keyNotFoundException.Message}");
+        }
     }
 
     public void RemoveLas(User? user, IReadOnlyCollection<string> custodianCodes)
@@ -306,24 +302,25 @@ public class AdminAction
             return;
         }
 
-        var consortiaToAdd = dbOperation.GetConsortia(consortiumCodes);
-
-        var ownedCustodianCodesInConsortia = GetOwnedCustodianCodesInConsortia(user, consortiumCodes);
-        var lasToRemove = dbOperation.GetLas(ownedCustodianCodesInConsortia) ?? new List<LocalAuthority>();
-
-        if (consortiaToAdd == null)
+        try
         {
-            outputProvider.Output("Unrecognised Consortium. Make sure all codes are present in the database.");
-            return;
+            var consortiaToAdd = dbOperation.GetConsortia(consortiumCodes);
+
+            var ownedCustodianCodesInConsortia = GetOwnedCustodianCodesInConsortia(user, consortiumCodes);
+            var lasToRemove = dbOperation.GetLas(ownedCustodianCodesInConsortia);
+
+            if (lasToRemove.Count > 0)
+            {
+                dbOperation.AddConsortiaAndRemoveLasFromUser(user, consortiaToAdd, lasToRemove);
+            }
+            else
+            {
+                dbOperation.AddConsortiaToUser(user, consortiaToAdd);
+            }
         }
-
-        if (lasToRemove.Count > 0)
+        catch (KeyNotFoundException keyNotFoundException)
         {
-            dbOperation.AddConsortiaAndRemoveLasFromUser(user, consortiaToAdd, lasToRemove);
-        }
-        else
-        {
-            dbOperation.AddConsortiaToUser(user, consortiaToAdd);
+            outputProvider.Output($"Could not add Consortia to user: {keyNotFoundException.Message}");
         }
     }
 

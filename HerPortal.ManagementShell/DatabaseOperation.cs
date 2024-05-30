@@ -25,11 +25,12 @@ public class DatabaseOperation : IDatabaseOperation
             .ToList();
     }
 
-    public List<LocalAuthority>? GetLas(IReadOnlyCollection<string> custodianCodes)
+    public List<LocalAuthority> GetLas(IReadOnlyCollection<string> custodianCodes)
     {
-        if (custodianCodes.Any(code => !dbContext.LocalAuthorities.Any(la => la.CustodianCode == code)))
+        var missingCustodianCode = custodianCodes.SingleOrDefault(code => !dbContext.LocalAuthorities.Any(la => la.CustodianCode == code), null);
+        if (missingCustodianCode != null)
         {
-            return null;
+            throw new KeyNotFoundException($"Custodian Code {missingCustodianCode} not found.");
         }
 
         return custodianCodes
@@ -38,11 +39,12 @@ public class DatabaseOperation : IDatabaseOperation
             .ToList();
     }
 
-    public List<Consortium>? GetConsortia(IReadOnlyCollection<string> consortiumCodes)
+    public List<Consortium> GetConsortia(IReadOnlyCollection<string> consortiumCodes)
     {
-        if (consortiumCodes.Any(code => !dbContext.Consortia.Any(la => la.ConsortiumCode == code)))
+        var missingConsortiumCode = consortiumCodes.SingleOrDefault(code => !dbContext.Consortia.Any(la => la.ConsortiumCode == code), null);
+        if (missingConsortiumCode != null)
         {
-            return null;
+            throw new KeyNotFoundException($"Consortium Code {missingConsortiumCode} not found.");
         }
 
         return consortiumCodes
