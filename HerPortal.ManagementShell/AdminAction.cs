@@ -87,7 +87,7 @@ public class AdminAction
         var lasToRemove = user.LocalAuthorities.Where(la => custodianCodes.Contains(la.CustodianCode)).ToList();
         var missingCodes = custodianCodes.Where(code => !lasToRemove.Any(la => la.CustodianCode.Equals(code))).ToList();
         if (missingCodes.Count > 0)
-            throw new KeyNotFoundException(
+            throw new CommandException(
                 $"Could not find LAs attached to {user.EmailAddress} for the following codes: {string.Join(", ", missingCodes)}. Please check your inputs and try again.");
 
         dbOperation.RemoveLasFromUser(user, lasToRemove);
@@ -113,7 +113,7 @@ public class AdminAction
         var missingCodes = consortiumCodes
             .Where(code => !consortiaToRemove.Any(consortium => consortium.ConsortiumCode.Equals(code))).ToList();
         if (missingCodes.Count > 0)
-            throw new KeyNotFoundException(
+            throw new CommandException(
                 $"Could not find Consortia attached to {user.EmailAddress} for the following codes: {string.Join(", ", missingCodes)}. Please check your inputs and try again.");
 
         dbOperation.RemoveConsortiaFromUser(user, consortiaToRemove);

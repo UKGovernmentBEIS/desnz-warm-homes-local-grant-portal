@@ -85,9 +85,9 @@ public class CommandHandler
         {
             adminAction.RemoveLas(user, custodianCodes);
         }
-        catch (KeyNotFoundException keyNotFoundException)
+        catch (CommandException commandException)
         {
-            outputProvider.Output($"Could not remove LAs from user: {keyNotFoundException.Message}");
+            outputProvider.Output($"Could not remove LAs from user: {commandException.Message}");
         }
     }
 
@@ -130,9 +130,9 @@ public class CommandHandler
         {
             adminAction.RemoveConsortia(user, consortiumCodes);
         }
-        catch (KeyNotFoundException keyNotFoundException)
+        catch (CommandException commandException)
         {
-            outputProvider.Output($"Could not remove Consortia from user: {keyNotFoundException.Message}");
+            outputProvider.Output($"Could not remove Consortia from user: {commandException.Message}");
         }
     }
 
@@ -259,9 +259,9 @@ public class CommandHandler
         {
             adminAction.CreateUser(userEmailAddress, custodianCodes, consortiumCodes);
         }
-        catch (KeyNotFoundException keyNotFoundException)
+        catch (CommandException commandException)
         {
-            outputProvider.Output($"Could not create user: {keyNotFoundException.Message}");
+            outputProvider.Output($"Could not create user: {commandException.Message}");
         }
     }
 
@@ -283,9 +283,9 @@ public class CommandHandler
         {
             adminAction.AddLas(user, custodianCodes);
         }
-        catch (KeyNotFoundException keyNotFoundException)
+        catch (CommandException commandException)
         {
-            outputProvider.Output($"Could not add LAs to user: {keyNotFoundException.Message}");
+            outputProvider.Output($"Could not add LAs to user: {commandException.Message}");
         }
     }
 
@@ -307,9 +307,9 @@ public class CommandHandler
         {
             adminAction.AddConsortia(user, consortiumCodes);
         }
-        catch (KeyNotFoundException keyNotFoundException)
+        catch (CommandException commandException)
         {
-            outputProvider.Output($"Could not add Consortia to user: {keyNotFoundException.Message}");
+            outputProvider.Output($"Could not add Consortia to user: {commandException.Message}");
         }
     }
 

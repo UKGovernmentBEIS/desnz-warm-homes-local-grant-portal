@@ -1,0 +1,8 @@
+﻿namespace HerPortal.ManagementShell;
+
+public class CommandException : Exception
+{
+    public CommandException(string message) : base(message)
+    {
+    }
+}
