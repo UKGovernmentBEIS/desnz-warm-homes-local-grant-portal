@@ -55,10 +55,10 @@ public class CommandHandler
         if (confirmation)
             switch (userStatus)
             {
-                case AdminAction.UserStatus.Active:
+                case UserAccountStatus.Active:
                     TryAddLas(user, custodianCodes);
                     break;
-                case AdminAction.UserStatus.New:
+                case UserAccountStatus.New:
                     TryCreateUser(userEmailAddress, custodianCodes, null);
                     break;
             }
@@ -100,10 +100,10 @@ public class CommandHandler
         if (confirmation)
             switch (userStatus)
             {
-                case AdminAction.UserStatus.Active:
+                case UserAccountStatus.Active:
                     TryAddConsortia(user, consortiumCodes);
                     break;
-                case AdminAction.UserStatus.New:
+                case UserAccountStatus.New:
                     TryCreateUser(userEmailAddress, null, consortiumCodes);
                     break;
             }
@@ -239,14 +239,14 @@ public class CommandHandler
         return hasUserConfirmed;
     }
 
-    private void DisplayUserStatus(Enum status)
+    private void DisplayUserStatus(UserAccountStatus userAccountStatus)
     {
-        switch (status)
+        switch (userAccountStatus)
         {
-            case AdminAction.UserStatus.New:
+            case UserAccountStatus.New:
                 outputProvider.Output("User not found in database. A new user will be created");
                 break;
-            case AdminAction.UserStatus.Active:
+            case UserAccountStatus.Active:
                 outputProvider.Output("User found in database. LAs will be added to their account");
                 break;
         }
@@ -313,7 +313,7 @@ public class CommandHandler
         }
     }
 
-    private (User? user, AdminAction.UserStatus userStatus) CheckUserStatus(string userEmailAddress)
+    private (User? user, UserAccountStatus userStatus) CheckUserStatus(string userEmailAddress)
     {
         var user = adminAction.GetUser(userEmailAddress);
         var userStatus = adminAction.GetUserStatus(user);

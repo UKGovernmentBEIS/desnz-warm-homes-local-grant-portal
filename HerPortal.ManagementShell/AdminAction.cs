@@ -2,14 +2,8 @@ using HerPortal.BusinessLogic.Models;
 
 namespace HerPortal.ManagementShell;
 
-public class AdminAction
+public partial class AdminAction
 {
-    public enum UserStatus
-    {
-        New,
-        Active
-    }
-
     private readonly Dictionary<string, List<string>> consortiumCodeToCustodianCodesDict =
         ConsortiumData.ConsortiumCustodianCodesIdsByConsortiumCode;
 
@@ -52,9 +46,9 @@ public class AdminAction
             .ToList();
     }
 
-    public UserStatus GetUserStatus(User? userOrNull)
+    public UserAccountStatus GetUserStatus(User? userOrNull)
     {
-        return userOrNull == null ? UserStatus.New : UserStatus.Active;
+        return userOrNull == null ? UserAccountStatus.New : UserAccountStatus.Active;
     }
 
     public void CreateUser(string userEmailAddress, IReadOnlyCollection<string>? custodianCodes,
@@ -85,7 +79,10 @@ public class AdminAction
     public void RemoveLas(User user, IReadOnlyCollection<string> custodianCodes)
     {
         var lasToRemove = user.LocalAuthorities.Where(la => custodianCodes.Contains(la.CustodianCode)).ToList();
-        var missingCodes = custodianCodes.Where(code => !lasToRemove.Any(la => la.CustodianCode.Equals(code))).ToList();
+        var missingCodes = custodianCodes.Where(code => 
+            !lasToRemove
+                .Any(la => la.CustodianCode.Equals(code)))
+            .ToList();
         if (missingCodes.Count > 0)
             throw new CommandException(
                 $"Could not find LAs attached to {user.EmailAddress} for the following codes: {string.Join(", ", missingCodes)}. Please check your inputs and try again.");
