@@ -11,13 +11,17 @@ public class User
 
     public List<string> GetAdministeredCustodianCodes()
     {
-        var consortiumCodes = Consortia.Select(consortium => consortium.ConsortiumCode).ToList();
-        var custodianCodes = LocalAuthorities.Select(la => la.CustodianCode).ToList();
+        var consortiumCodes = Consortia.Select(consortium => consortium.ConsortiumCode);
+        var custodianCodes = LocalAuthorities.Select(la => la.CustodianCode);
 
-        return consortiumCodes.SelectMany(consortiumCode => 
+        return consortiumCodes.SelectMany(consortiumCode =>
                 ConsortiumData.ConsortiumCustodianCodesIdsByConsortiumCode[consortiumCode])
-            .Distinct()
             .Union(custodianCodes)
             .ToList();
+    }
+
+    public List<string> GetAdministeredConsortiumCodes()
+    {
+        return Consortia.Select(c => c.ConsortiumCode).ToList();
     }
 }

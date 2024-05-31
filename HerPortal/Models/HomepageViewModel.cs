@@ -61,15 +61,15 @@ public class HomepageViewModel
     public string[] PageUrls { get; }
 
     public HomepageViewModel(
-        User user, 
-        PaginatedFileData paginatedFileData, 
+        User user,
+        PaginatedFileData paginatedFileData,
         Func<int, string> pageLinkGenerator,
         Func<CsvFileData, string> downloadLinkGenerator
-        )
+    )
     {
-        var administeredCustodianCodes = user.GetAdministeredCustodianCodes();
-        var consortiumCodes = user.Consortia.Select(c => c.ConsortiumCode).ToList();
-        var checkboxLabels = administeredCustodianCodes
+        var custodianCodes = user.GetAdministeredCustodianCodes();
+        var consortiumCodes = user.GetAdministeredConsortiumCodes();
+        var checkboxLabels = custodianCodes
             .Select(custodianCode => new KeyValuePair<string, LabelViewModel>
                 (
                     custodianCode,
@@ -90,9 +90,9 @@ public class HomepageViewModel
         )));
 
         ShouldShowBanner = !user.HasLoggedIn;
-        ShouldShowFilters = administeredCustodianCodes.Count >= 2;
+        ShouldShowFilters = custodianCodes.Count >= 2;
         Codes = new List<string>();
-        Codes.AddRange(administeredCustodianCodes);
+        Codes.AddRange(custodianCodes);
         Codes.AddRange(consortiumCodes);
         LocalAuthorityCheckboxLabels = new Dictionary<string, LabelViewModel>(checkboxLabels
             .OrderBy(kvp => kvp.Value.Text)

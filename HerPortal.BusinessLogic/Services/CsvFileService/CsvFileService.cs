@@ -84,7 +84,7 @@ public class CsvFileService : ICsvFileService
         // Make sure that we only return file data for files that the user currently has access to
         var user = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
         var custodianCodes = user.GetAdministeredCustodianCodes();
-        var consortiumCodes = user.Consortia.Select(c => c.ConsortiumCode).ToList();
+        var consortiumCodes = user.GetAdministeredConsortiumCodes();
         
         var localAuthoritiesFileData = await BuildCsvFileDataForLocalAuthorities(user, custodianCodes);
         var consortiaTransformedFileData = TransformFileDataForConsortia(consortiumCodes, localAuthoritiesFileData);
@@ -204,7 +204,7 @@ public class CsvFileService : ICsvFileService
     {
         // Important! First ensure the logged-in user is allowed to access this data
         var userData = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
-        var consortiumCodes = userData.Consortia.Select(c => c.ConsortiumCode).ToList();
+        var consortiumCodes = userData.GetAdministeredConsortiumCodes();
 
         if (!consortiumCodes.Contains(consortiumCode))
         {
