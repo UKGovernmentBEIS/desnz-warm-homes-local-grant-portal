@@ -9,19 +9,18 @@ public class User
     public List<LocalAuthority> LocalAuthorities { get; set; }
     public List<Consortium> Consortia { get; set; }
 
-    public List<string> GetAdministeredCustodianCodes()
+    public IEnumerable<string> GetAdministeredCustodianCodes()
     {
         var consortiumCodes = Consortia.Select(consortium => consortium.ConsortiumCode);
         var custodianCodes = LocalAuthorities.Select(la => la.CustodianCode);
 
         return consortiumCodes.SelectMany(consortiumCode =>
                 ConsortiumData.ConsortiumCustodianCodesIdsByConsortiumCode[consortiumCode])
-            .Union(custodianCodes)
-            .ToList();
+            .Union(custodianCodes);
     }
 
-    public List<string> GetAdministeredConsortiumCodes()
+    public IEnumerable<string> GetAdministeredConsortiumCodes()
     {
-        return Consortia.Select(c => c.ConsortiumCode).ToList();
+        return Consortia.Select(c => c.ConsortiumCode);
     }
 }

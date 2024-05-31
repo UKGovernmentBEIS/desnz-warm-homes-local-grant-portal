@@ -67,8 +67,8 @@ public class HomepageViewModel
         Func<CsvFileData, string> downloadLinkGenerator
     )
     {
-        var custodianCodes = user.GetAdministeredCustodianCodes();
-        var consortiumCodes = user.GetAdministeredConsortiumCodes();
+        var custodianCodes = user.GetAdministeredCustodianCodes().ToList();
+        var consortiumCodes = user.GetAdministeredConsortiumCodes().ToList();
         var checkboxLabels = custodianCodes
             .Select(custodianCode => new KeyValuePair<string, LabelViewModel>
                 (
