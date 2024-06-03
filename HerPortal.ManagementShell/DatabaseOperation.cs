@@ -31,7 +31,7 @@ public class DatabaseOperation : IDatabaseOperation
             custodianCodes.SingleOrDefault(code => !dbContext.LocalAuthorities.Any(la => la.CustodianCode == code),
                 null);
         if (missingCustodianCode != null)
-            throw new CommandException($"Custodian Code {missingCustodianCode} not found.");
+            throw new CouldNotFindAuthorityException("Could not find Custodian Code in database.", new List<string> {missingCustodianCode});
 
         return custodianCodes
             .Select(code => dbContext.LocalAuthorities
@@ -44,7 +44,7 @@ public class DatabaseOperation : IDatabaseOperation
         var missingConsortiumCode =
             consortiumCodes.SingleOrDefault(code => !dbContext.Consortia.Any(la => la.ConsortiumCode == code), null);
         if (missingConsortiumCode != null)
-            throw new CommandException($"Consortium Code {missingConsortiumCode} not found.");
+            throw new CouldNotFindAuthorityException("Could not find Consortium Code in database.", new List<string> {missingConsortiumCode});
 
         return consortiumCodes
             .Select(code => dbContext.Consortia

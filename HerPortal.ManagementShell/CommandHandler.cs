@@ -85,9 +85,9 @@ public class CommandHandler
         {
             adminAction.RemoveLas(user, custodianCodes);
         }
-        catch (CommandException commandException)
+        catch (CouldNotFindAuthorityException couldNotFindAuthorityException)
         {
-            outputProvider.Output($"Could not remove LAs from user: {commandException.Message}");
+            OutputCouldNotFindAuthorityException($"Could not remove Custodian Codes from {user.EmailAddress}.", couldNotFindAuthorityException);
         }
     }
 
@@ -130,10 +130,19 @@ public class CommandHandler
         {
             adminAction.RemoveConsortia(user, consortiumCodes);
         }
-        catch (CommandException commandException)
+        catch (CouldNotFindAuthorityException couldNotFindAuthorityException)
         {
-            outputProvider.Output($"Could not remove Consortia from user: {commandException.Message}");
+            OutputCouldNotFindAuthorityException($"Could not remove Consortium Codes from {user.EmailAddress}.", couldNotFindAuthorityException);
         }
+    }
+
+    private void OutputCouldNotFindAuthorityException(string wrapperMessage, CouldNotFindAuthorityException couldNotFindAuthorityException)
+    {
+        outputProvider.Output("!!! Error occured during operation !!!");
+        outputProvider.Output($"{wrapperMessage}");
+        outputProvider.Output($"Invalid Codes: {string.Join(", ", couldNotFindAuthorityException.InvalidCodes)}");
+        outputProvider.Output($"{couldNotFindAuthorityException.Message}");
+        outputProvider.Output("No data has been changed.");
     }
 
     private void PrintCodes(IReadOnlyCollection<string> codes, Func<string, string> codeToName)
@@ -259,9 +268,9 @@ public class CommandHandler
         {
             adminAction.CreateUser(userEmailAddress, custodianCodes, consortiumCodes);
         }
-        catch (CommandException commandException)
+        catch (CouldNotFindAuthorityException couldNotFindAuthorityException)
         {
-            outputProvider.Output($"Could not create user: {commandException.Message}");
+            OutputCouldNotFindAuthorityException($"Could not create user {userEmailAddress}.", couldNotFindAuthorityException);
         }
     }
 
@@ -283,9 +292,9 @@ public class CommandHandler
         {
             adminAction.AddLas(user, custodianCodes);
         }
-        catch (CommandException commandException)
+        catch (CouldNotFindAuthorityException couldNotFindAuthorityException)
         {
-            outputProvider.Output($"Could not add LAs to user: {commandException.Message}");
+            OutputCouldNotFindAuthorityException($"Could not add Custodian Codes to {user.EmailAddress}.", couldNotFindAuthorityException);
         }
     }
 
@@ -307,9 +316,9 @@ public class CommandHandler
         {
             adminAction.AddConsortia(user, consortiumCodes);
         }
-        catch (CommandException commandException)
+        catch (CouldNotFindAuthorityException couldNotFindAuthorityException)
         {
-            outputProvider.Output($"Could not add Consortia to user: {commandException.Message}");
+            OutputCouldNotFindAuthorityException($"Could not add Consortium Codes to {user.EmailAddress}.", couldNotFindAuthorityException);
         }
     }
 

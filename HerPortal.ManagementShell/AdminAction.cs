@@ -85,8 +85,7 @@ public partial class AdminAction
                 .Contains(code))
             .ToList();
         if (missingCodes.Count > 0)
-            throw new CommandException(
-                $"Could not find LAs attached to {user.EmailAddress} for the following codes: {string.Join(", ", missingCodes)}. Please check your inputs and try again.");
+            throw new CouldNotFindAuthorityException("Custodian Codes are not associated with this user.", missingCodes);
 
         dbOperation.RemoveLasFromUser(user, lasToRemove);
     }
@@ -114,8 +113,7 @@ public partial class AdminAction
                 .Contains(code)
             ).ToList();
         if (missingCodes.Count > 0)
-            throw new CommandException(
-                $"Could not find Consortia attached to {user.EmailAddress} for the following codes: {string.Join(", ", missingCodes)}. Please check your inputs and try again.");
+            throw new CouldNotFindAuthorityException("Consortium Codes are not associated with this user.", missingCodes);
 
         dbOperation.RemoveConsortiaFromUser(user, consortiaToRemove);
     }
