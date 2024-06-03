@@ -57,7 +57,6 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114", "910");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
-        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -98,7 +97,6 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
-        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -139,7 +137,6 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
-        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -193,7 +190,6 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114", "910");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
-        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -248,7 +244,6 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114", "910");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
-        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -302,7 +297,6 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
-        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -352,7 +346,6 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
-        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -389,7 +382,6 @@ public class CsvFileServiceTests
         var user = GetUserWithLas("114");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
-        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>());
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -423,10 +415,9 @@ public class CsvFileServiceTests
     public async Task GetFileDataForUserAsync_WhenCalledWithConsortium_ReturnsFileData()
     {
         // Arrange
-        var user = GetUserWithLas("660", "665");
+        var user = GetUserWithConsortia("C_0008");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
-        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>{"C_0008"});
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -481,10 +472,9 @@ public class CsvFileServiceTests
     public async Task GetFileDataForUserAsync_WhenCalledWithConsortium_ReturnsFileData_WithCorrectConsortiumDates()
     {
         // Arrange
-        var user = GetUserWithLas("660", "665");
+        var user = GetUserWithConsortia("C_0008");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
-        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>{"C_0008"});
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -539,10 +529,9 @@ public class CsvFileServiceTests
     public async Task GetFileDataForUserAsync_WhenCalledWithConsortium_ReturnsFileData_EvenIfNotAllLasReportInTheMonth()
     {
         // Arrange
-        var user = GetUserWithLas("660", "665");
-        
+        var user = GetUserWithConsortia("C_0008");
+
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
-        mockDataAccessProvider.Setup(dap => dap.GetConsortiumCodesForUser(user)).Returns(new List<string>{"C_0008"});
         
         mockDataAccessProvider
             .Setup(dap => dap.GetCsvFileDownloadDataForUserAsync(user.Id))
@@ -577,12 +566,22 @@ public class CsvFileServiceTests
         result.Should().BeEquivalentTo(expectedResult);
     }
 
+    private User GetUserWithConsortia(params string[] consortia)
+    {
+        return new UserBuilder("test@example.com")
+            .WithConsortia(
+                consortia.Select(consortium => new Consortium
+                {
+                    ConsortiumCode = consortium
+                }).ToList())
+            .Build();
+    }
     
     private User GetUserWithLas(params string[] las)
     {
         return new UserBuilder("test@example.com")
             .WithLocalAuthorities(
-                las.Select(la => new LocalAuthority()
+                las.Select(la => new LocalAuthority
                 {
                     CustodianCode = la
                 }).ToList())

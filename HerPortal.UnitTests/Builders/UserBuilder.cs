@@ -14,7 +14,8 @@ public class UserBuilder
             Id = 13,
             EmailAddress = emailAddress,
             HasLoggedIn = true,
-            LocalAuthorities = new List<LocalAuthority>()
+            LocalAuthorities = new List<LocalAuthority>(),
+            Consortia = new List<Consortium>()
         };
     }
 
@@ -26,6 +27,12 @@ public class UserBuilder
     public UserBuilder WithLocalAuthorities(List<LocalAuthority> localAuthorities)
     {
         user.LocalAuthorities = localAuthorities;
+        return this;
+    }
+    
+    public UserBuilder WithConsortia(List<Consortium> consortia)
+    {
+        user.Consortia = consortia;
         return this;
     }
 
