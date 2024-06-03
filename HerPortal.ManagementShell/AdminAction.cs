@@ -2,27 +2,24 @@ using HerPortal.BusinessLogic.Models;
 
 namespace HerPortal.ManagementShell;
 
-public class AdminAction
+public partial class AdminAction
 {
-    public enum UserStatus
-    {
-        New,
-        Active
-    }
+    private readonly Dictionary<string, List<string>> consortiumCodeToCustodianCodesDict =
+        ConsortiumData.ConsortiumCustodianCodesIdsByConsortiumCode;
+
+    private readonly Dictionary<string, string> custodianCodeToConsortiumCodeDict =
+        LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode;
 
     private readonly IDatabaseOperation dbOperation;
-    private readonly IOutputProvider outputProvider;
-    private readonly Dictionary<string, string> custodianCodeToLaDict = LocalAuthorityData.LocalAuthorityNamesByCustodianCode;
 
-    public AdminAction(IDatabaseOperation dbOperation, IOutputProvider outputProvider)
+    public AdminAction(IDatabaseOperation dbOperation)
     {
         this.dbOperation = dbOperation;
-        this.outputProvider = outputProvider;
     }
 
     public User? GetUser(string emailAddress)
     {
-        var portalUsers = dbOperation.GetUsersWithLocalAuthorities();
+        var portalUsers = dbOperation.GetUsersWithLocalAuthoritiesAndConsortia();
         return
             portalUsers.SingleOrDefault(user => string.Equals
             (
@@ -32,161 +29,92 @@ public class AdminAction
             ));
     }
 
-    private bool ConfirmCustodianCodes(string userEmailAddress, string[] codes)
+    public bool CustodianCodeIsInOwnedConsortium(User user, string custodianCode)
     {
-        outputProvider.Output(
-            $"You are changing permissions for user {userEmailAddress} for the following local authorities:");
-
-        if (codes.Length < 1)
-        {
-            outputProvider.Output("(No LAs specified)");
-        }
-
-        foreach (var code in codes)
-        {
-            try
-            {
-                var localAuthority = custodianCodeToLaDict[code];
-                outputProvider.Output($"{code}: {localAuthority}");
-            }
-            catch (Exception e)
-            {
-                outputProvider.Output($"{e.Message} Process terminated");
-                return false;
-            }
-        }
-
-        var hasUserConfirmed = outputProvider.Confirm("Please confirm (y/n)");
-        if (!hasUserConfirmed)
-        {
-            outputProvider.Output("Process cancelled, no changes were made to the database");
-        }
-
-        return hasUserConfirmed;
+        var custodianCodesOfConsortia = user.Consortia
+            .SelectMany(consortium =>
+                consortiumCodeToCustodianCodesDict[consortium.ConsortiumCode]);
+        return custodianCodesOfConsortia.Contains(custodianCode);
     }
 
-    private void DisplayUserStatus(Enum status)
+    public List<string> GetOwnedCustodianCodesInConsortia(User user, IEnumerable<string> consortiumCodes)
     {
-        switch (status)
-        {
-            case UserStatus.New:
-                outputProvider.Output("User not found in database. A new user will be created");
-                break;
-            case UserStatus.Active:
-                outputProvider.Output("User found in database. LAs will be added to their account");
-                break;
-        }
+        return user.LocalAuthorities
+            .Where(localAuthority =>
+                consortiumCodes.Contains(custodianCodeToConsortiumCodeDict[localAuthority.CustodianCode]))
+            .Select(localAuthority => localAuthority.CustodianCode)
+            .ToList();
     }
 
-    private Enum GetUserStatus(User? userOrNull)
+    public UserAccountStatus GetUserStatus(User? userOrNull)
     {
-        return userOrNull == null ? UserStatus.New : UserStatus.Active;
+        return userOrNull == null ? UserAccountStatus.New : UserAccountStatus.Active;
     }
 
-    private void TryCreateUser(string userEmailAddress, string[]? custodianCodes)
+    public void CreateUser(string userEmailAddress, IReadOnlyCollection<string>? custodianCodes,
+        IReadOnlyCollection<string>? consortiumCodes)
     {
         var lasToAdd = dbOperation.GetLas(custodianCodes ?? Array.Empty<string>());
-        dbOperation.CreateUserOrLogError(userEmailAddress, lasToAdd);
+        var consortiaToAdd = dbOperation.GetConsortia(consortiumCodes ?? Array.Empty<string>());
+
+        dbOperation.CreateUserOrLogError(userEmailAddress, lasToAdd, consortiaToAdd);
     }
 
-    public void TryRemoveUser(User? user)
+    public void RemoveUser(User user)
     {
-        if (user == null)
-        {
-            outputProvider.Output("User not found");
-            return;
-        }
-
-        var deletionConfirmation = outputProvider.Confirm(
-            $"Attention! This will delete user {user.EmailAddress} and all associated rows from the database. Are you sure you want to commit this transaction? (y/n)");
-        if (!deletionConfirmation)
-        {
-            return;
-        }
-
         dbOperation.RemoveUserOrLogError(user);
     }
-    private void AddLas(User? user, string[]? custodianCodes)
+
+    public void AddLas(User user, IEnumerable<string> custodianCodes)
     {
-        if (user == null)
-        {
-            outputProvider.Output("User not found");
-            return;
-        }
+        var filteredCustodianCodes = custodianCodes
+            .Where(custodianCode => !CustodianCodeIsInOwnedConsortium(user, custodianCode))
+            .ToList();
 
-        if (custodianCodes == null || custodianCodes.Length < 1)
-        {
-            outputProvider.Output("Please specify custodian codes to add to user");
-            return;
-        }
+        var lasToAdd = dbOperation.GetLas(filteredCustodianCodes);
 
-        var lasToAdd = dbOperation.GetLas(custodianCodes);
         dbOperation.AddLasToUser(user, lasToAdd);
     }
 
-    public void RemoveLas(User? user, string[]? custodianCodes)
+    public void RemoveLas(User user, IReadOnlyCollection<string> custodianCodes)
     {
-        if (user == null)
-        {
-            outputProvider.Output("User not found");
-            return;
-        }
-
-        if (custodianCodes == null || custodianCodes.Length < 1)
-        {
-            outputProvider.Output("Please specify custodian codes to remove from user");
-            return;
-        }
-
-        var userConfirmation = ConfirmCustodianCodes(user.EmailAddress, custodianCodes);
-        if (!userConfirmation)
-        {
-            return;
-        }
-
         var lasToRemove = user.LocalAuthorities.Where(la => custodianCodes.Contains(la.CustodianCode)).ToList();
-        var missingCodes = custodianCodes.Where(code => !lasToRemove.Any(la => la.CustodianCode.Equals(code))).ToList();
+        var missingCodes = custodianCodes.Where(code => 
+            !lasToRemove
+                .Select(la => la.CustodianCode)
+                .Contains(code))
+            .ToList();
         if (missingCodes.Count > 0)
-        {
-            outputProvider.Output($"Could not find LAs attached to {user.EmailAddress} for the following codes: {string.Join(", ", missingCodes)}. Please check your inputs and try again.");
-            return;
-        }
+            throw new CouldNotFindAuthorityException("Custodian Codes are not associated with this user.", missingCodes);
 
         dbOperation.RemoveLasFromUser(user, lasToRemove);
     }
 
-    public void CreateOrUpdateUser(string? userEmailAddress, string[] custodianCodes)
+    public void AddConsortia(User user, IReadOnlyCollection<string> consortiumCodes)
     {
-        if (userEmailAddress == null)
-        {
-            outputProvider.Output("Please specify user E-mail address to create or update");
-            return;
-        }
+        var consortiaToAdd = dbOperation.GetConsortia(consortiumCodes);
 
-        var user = GetUser(userEmailAddress);
-        var userStatus = GetUserStatus(user);
-        DisplayUserStatus(userStatus);
-        outputProvider.Output("");
+        var ownedCustodianCodesInConsortia = GetOwnedCustodianCodesInConsortia(user, consortiumCodes);
+        var lasToRemove = dbOperation.GetLas(ownedCustodianCodesInConsortia);
 
-        outputProvider.Output("!!! ATTENTION! READ CAREFULLY OR RISK A DATA BREACH !!!");
-        outputProvider.Output("");
-        outputProvider.Output("You are about to grant a user permission to read PERSONALLY IDENTIFIABLE INFORMATION submitted to LAs.");
-        outputProvider.Output("Take a moment to double check the following list and only continue if you are certain this user should have access to these LAs.");
-        outputProvider.Output("NB: in particular, you should only do this for LAs that have signed their DSA contracts!");
-        outputProvider.Output("");
+        if (lasToRemove.Count > 0)
+            dbOperation.AddConsortiaAndRemoveLasFromUser(user, consortiaToAdd, lasToRemove);
+        else
+            dbOperation.AddConsortiaToUser(user, consortiaToAdd);
+    }
 
-        var confirmation = ConfirmCustodianCodes(userEmailAddress, custodianCodes);
+    public void RemoveConsortia(User user, IReadOnlyCollection<string> consortiumCodes)
+    {
+        var consortiaToRemove = user.Consortia.Where(consortium => consortiumCodes.Contains(consortium.ConsortiumCode))
+            .ToList();
+        var missingCodes = consortiumCodes
+            .Where(code => !consortiaToRemove
+                .Select(consortium => consortium.ConsortiumCode)
+                .Contains(code)
+            ).ToList();
+        if (missingCodes.Count > 0)
+            throw new CouldNotFindAuthorityException("Consortium Codes are not associated with this user.", missingCodes);
 
-        if (confirmation)
-        {
-            if (userStatus.Equals(UserStatus.Active))
-            {
-                AddLas(user, custodianCodes);
-            }
-            else if (userStatus.Equals(UserStatus.New))
-            {
-                TryCreateUser(userEmailAddress, custodianCodes);
-            }
-        }
+        dbOperation.RemoveConsortiaFromUser(user, consortiaToRemove);
     }
 }
