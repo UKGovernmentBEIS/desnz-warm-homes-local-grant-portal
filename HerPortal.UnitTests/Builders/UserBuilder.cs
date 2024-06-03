@@ -29,6 +29,12 @@ public class UserBuilder
         user.LocalAuthorities = localAuthorities;
         return this;
     }
+    
+    public UserBuilder WithConsortia(List<Consortium> consortia)
+    {
+        user.Consortia = consortia;
+        return this;
+    }
 
     public UserBuilder WithConsortia(List<Consortium> consortia)
     {

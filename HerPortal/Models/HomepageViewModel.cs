@@ -61,37 +61,38 @@ public class HomepageViewModel
     public string[] PageUrls { get; }
 
     public HomepageViewModel(
-        User user, 
-        PaginatedFileData paginatedFileData, 
+        User user,
+        PaginatedFileData paginatedFileData,
         Func<int, string> pageLinkGenerator,
-        Func<CsvFileData, string> downloadLinkGenerator,
-        List<string> consortiumCodes
-        )
+        Func<CsvFileData, string> downloadLinkGenerator
+    )
     {
-        var checkboxLabels = user.LocalAuthorities
-            .Select(la => new KeyValuePair<string, LabelViewModel>
+        var custodianCodes = user.GetAdministeredCustodianCodes().ToList();
+        var consortiumCodes = user.GetAdministeredConsortiumCodes().ToList();
+        var checkboxLabels = custodianCodes
+            .Select(custodianCode => new KeyValuePair<string, LabelViewModel>
                 (
-                    la.CustodianCode,
+                    custodianCode,
                     new LabelViewModel
                     {
-                        Text = LocalAuthorityData.LocalAuthorityNamesByCustodianCode[la.CustodianCode],
+                        Text = LocalAuthorityData.LocalAuthorityNamesByCustodianCode[custodianCode]
                     }
                 )
             )
             .ToList();
-        
+
         checkboxLabels.AddRange(consortiumCodes.Select(consortiumCode => new KeyValuePair<string, LabelViewModel>(
             consortiumCode,
             new LabelViewModel
             {
                 Text = $"{ConsortiumData.ConsortiumNamesByConsortiumCode[consortiumCode]} (Consortium)"
             }
-            )));
-        
+        )));
+
         ShouldShowBanner = !user.HasLoggedIn;
-        ShouldShowFilters = user.LocalAuthorities.Count >= 2;
+        ShouldShowFilters = custodianCodes.Count >= 2;
         Codes = new List<string>();
-        Codes.AddRange(user.LocalAuthorities.Select(la => la.CustodianCode));
+        Codes.AddRange(custodianCodes);
         Codes.AddRange(consortiumCodes);
         LocalAuthorityCheckboxLabels = new Dictionary<string, LabelViewModel>(checkboxLabels
             .OrderBy(kvp => kvp.Value.Text)
