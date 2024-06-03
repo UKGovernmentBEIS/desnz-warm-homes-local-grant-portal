@@ -139,9 +139,9 @@ public class CommandHandler
     private void OutputCouldNotFindAuthorityException(string wrapperMessage, CouldNotFindAuthorityException couldNotFindAuthorityException)
     {
         outputProvider.Output("!!! Error occured during operation !!!");
-        outputProvider.Output($"{wrapperMessage}");
+        outputProvider.Output(wrapperMessage);
         outputProvider.Output($"Invalid Codes: {string.Join(", ", couldNotFindAuthorityException.InvalidCodes)}");
-        outputProvider.Output($"{couldNotFindAuthorityException.Message}");
+        outputProvider.Output(couldNotFindAuthorityException.Message);
         outputProvider.Output("No data has been changed.");
     }
 
