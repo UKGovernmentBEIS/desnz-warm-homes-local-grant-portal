@@ -1,16 +1,8 @@
 name: Run automated tests
 
 on:
-  pull_request:
-    branches:
-      - develop
-      - staging
-      - main
-  push:
-    branches:
-      - develop
-      - staging
-      - main
+- pull_request
+- push
 
 jobs:
   build-and-run-tests:
