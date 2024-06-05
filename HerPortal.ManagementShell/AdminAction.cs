@@ -132,7 +132,7 @@ public class AdminAction
 
         var consortiaToAdd = dbOperation.GetConsortia(consortiumCodesToAdd);
         var lasToRemove = dbOperation.GetLas(custodianCodesToRemove);
-        
+
         dbOperation.AddConsortiaAndRemoveLasFromUser(user, consortiaToAdd, lasToRemove);
     }
 

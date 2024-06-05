@@ -87,7 +87,8 @@ public class CommandHandler
         }
         catch (CouldNotFindAuthorityException couldNotFindAuthorityException)
         {
-            OutputCouldNotFindAuthorityException($"Could not remove Custodian Codes from {user.EmailAddress}.", couldNotFindAuthorityException);
+            OutputCouldNotFindAuthorityException($"Could not remove Custodian Codes from {user.EmailAddress}.",
+                couldNotFindAuthorityException);
         }
     }
 
@@ -132,7 +133,8 @@ public class CommandHandler
         }
         catch (CouldNotFindAuthorityException couldNotFindAuthorityException)
         {
-            OutputCouldNotFindAuthorityException($"Could not remove Consortium Codes from {user.EmailAddress}.", couldNotFindAuthorityException);
+            OutputCouldNotFindAuthorityException($"Could not remove Consortium Codes from {user.EmailAddress}.",
+                couldNotFindAuthorityException);
         }
     }
 
@@ -144,16 +146,17 @@ public class CommandHandler
         outputProvider.Output("If a user owns an LA in an owned Consortium, they will be removed.");
 
         var users = adminAction.GetUsers();
-        
+
         foreach (var user in users)
         {
             outputProvider.Output($"Processing user {user.EmailAddress}...");
             var consortiumCodesUserShouldOwn = adminAction.GetConsortiumCodesUserShouldOwn(user).ToList();
 
             if (consortiumCodesUserShouldOwn.Count == 0) continue;
-            
+
             outputProvider.Output("This user should own the following Consortia:");
-            PrintCodes(consortiumCodesUserShouldOwn, consortiumCode => consortiumCodeToConsortiumNameDict[consortiumCode]);
+            PrintCodes(consortiumCodesUserShouldOwn,
+                consortiumCode => consortiumCodeToConsortiumNameDict[consortiumCode]);
 
             var custodianCodesToRemove =
                 adminAction.GetOwnedCustodianCodesInConsortia(user, consortiumCodesUserShouldOwn);
@@ -161,12 +164,13 @@ public class CommandHandler
             PrintCodes(custodianCodesToRemove, custodianCode => custodianCodeToLaNameDict[custodianCode]);
 
             var confirmation = outputProvider.Confirm("Okay to proceed? (Y/N)");
-                
+
             if (confirmation) adminAction.MigrateAdmin(user);
         }
     }
 
-    private void OutputCouldNotFindAuthorityException(string wrapperMessage, CouldNotFindAuthorityException couldNotFindAuthorityException)
+    private void OutputCouldNotFindAuthorityException(string wrapperMessage,
+        CouldNotFindAuthorityException couldNotFindAuthorityException)
     {
         outputProvider.Output("!!! Error occured during operation !!!");
         outputProvider.Output(wrapperMessage);
@@ -300,7 +304,8 @@ public class CommandHandler
         }
         catch (CouldNotFindAuthorityException couldNotFindAuthorityException)
         {
-            OutputCouldNotFindAuthorityException($"Could not create user {userEmailAddress}.", couldNotFindAuthorityException);
+            OutputCouldNotFindAuthorityException($"Could not create user {userEmailAddress}.",
+                couldNotFindAuthorityException);
         }
     }
 
@@ -324,7 +329,8 @@ public class CommandHandler
         }
         catch (CouldNotFindAuthorityException couldNotFindAuthorityException)
         {
-            OutputCouldNotFindAuthorityException($"Could not add Custodian Codes to {user.EmailAddress}.", couldNotFindAuthorityException);
+            OutputCouldNotFindAuthorityException($"Could not add Custodian Codes to {user.EmailAddress}.",
+                couldNotFindAuthorityException);
         }
     }
 
@@ -348,7 +354,8 @@ public class CommandHandler
         }
         catch (CouldNotFindAuthorityException couldNotFindAuthorityException)
         {
-            OutputCouldNotFindAuthorityException($"Could not add Consortium Codes to {user.EmailAddress}.", couldNotFindAuthorityException);
+            OutputCouldNotFindAuthorityException($"Could not add Consortium Codes to {user.EmailAddress}.",
+                couldNotFindAuthorityException);
         }
     }
 

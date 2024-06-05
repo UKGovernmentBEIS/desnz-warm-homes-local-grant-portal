@@ -143,7 +143,8 @@ public class MigrateAdminsCommandTests
     }
 
     private (User, List<LocalAuthority>, List<Consortium>) SetupUser(IEnumerable<string> custodianCodes,
-        IReadOnlyCollection<string> consortiumCodes, IReadOnlyCollection<string> expectedCustodianCodesToRemove, IReadOnlyCollection<string> expectedConsortiumCodes)
+        IReadOnlyCollection<string> consortiumCodes, IReadOnlyCollection<string> expectedCustodianCodesToRemove,
+        IReadOnlyCollection<string> expectedConsortiumCodes)
     {
         var localAuthorities = custodianCodes
             .Select((custodianCode, i) => new LocalAuthority
