@@ -136,6 +136,11 @@ public class CommandHandler
         }
     }
 
+    public void MigrateAdmins()
+    {
+        adminAction.MigrateAdmins();
+    }
+
     private void OutputCouldNotFindAuthorityException(string wrapperMessage, CouldNotFindAuthorityException couldNotFindAuthorityException)
     {
         outputProvider.Output("!!! Error occured during operation !!!");

@@ -117,4 +117,9 @@ public partial class AdminAction
 
         dbOperation.RemoveConsortiaFromUser(user, consortiaToRemove);
     }
+
+    public void MigrateAdmins()
+    {
+        // TODO: implement
+    }
 }
