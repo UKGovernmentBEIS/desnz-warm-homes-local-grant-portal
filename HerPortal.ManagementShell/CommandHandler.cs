@@ -138,7 +138,32 @@ public class CommandHandler
 
     public void MigrateAdmins()
     {
-        adminAction.MigrateAdmins();
+        outputProvider.Output("!!! User Migration Script !!!");
+        outputProvider.Output("This script will ensure the validity of the LA / Consortium relationship for users.");
+        outputProvider.Output("If a user owns all LAs in a Consortium, they will be made a Consortium Admin.");
+        outputProvider.Output("If a user owns an LA in an owned Consortium, they will be removed.");
+
+        var users = adminAction.GetUsers();
+        
+        foreach (var user in users)
+        {
+            outputProvider.Output($"Processing user {user.EmailAddress}...");
+            var consortiumCodesUserShouldOwn = adminAction.GetConsortiumCodesUserShouldOwn(user).ToList();
+
+            if (consortiumCodesUserShouldOwn.Count == 0) continue;
+            
+            outputProvider.Output("This user should own the following Consortia:");
+            PrintCodes(consortiumCodesUserShouldOwn, consortiumCode => consortiumCodeToConsortiumNameDict[consortiumCode]);
+
+            var custodianCodesToRemove =
+                adminAction.GetOwnedCustodianCodesInConsortia(user, consortiumCodesUserShouldOwn);
+            outputProvider.Output("To make this user a Consortium Admin, the following LAs will be removed:");
+            PrintCodes(custodianCodesToRemove, custodianCode => custodianCodeToLaNameDict[custodianCode]);
+
+            var confirmation = outputProvider.Confirm("Okay to proceed? (Y/N)");
+                
+            if (confirmation) adminAction.MigrateAdmin(user);
+        }
     }
 
     private void OutputCouldNotFindAuthorityException(string wrapperMessage, CouldNotFindAuthorityException couldNotFindAuthorityException)

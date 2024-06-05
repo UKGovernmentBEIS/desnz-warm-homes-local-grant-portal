@@ -2,7 +2,7 @@ using HerPortal.BusinessLogic.Models;
 
 namespace HerPortal.ManagementShell;
 
-public partial class AdminAction
+public class AdminAction
 {
     private readonly Dictionary<string, List<string>> consortiumCodeToCustodianCodesDict =
         ConsortiumData.ConsortiumCustodianCodesIdsByConsortiumCode;
@@ -79,13 +79,14 @@ public partial class AdminAction
     public void RemoveLas(User user, IReadOnlyCollection<string> custodianCodes)
     {
         var lasToRemove = user.LocalAuthorities.Where(la => custodianCodes.Contains(la.CustodianCode)).ToList();
-        var missingCodes = custodianCodes.Where(code => 
-            !lasToRemove
-                .Select(la => la.CustodianCode)
-                .Contains(code))
+        var missingCodes = custodianCodes.Where(code =>
+                !lasToRemove
+                    .Select(la => la.CustodianCode)
+                    .Contains(code))
             .ToList();
         if (missingCodes.Count > 0)
-            throw new CouldNotFindAuthorityException("Custodian Codes are not associated with this user.", missingCodes);
+            throw new CouldNotFindAuthorityException("Custodian Codes are not associated with this user.",
+                missingCodes);
 
         dbOperation.RemoveLasFromUser(user, lasToRemove);
     }
@@ -113,13 +114,38 @@ public partial class AdminAction
                 .Contains(code)
             ).ToList();
         if (missingCodes.Count > 0)
-            throw new CouldNotFindAuthorityException("Consortium Codes are not associated with this user.", missingCodes);
+            throw new CouldNotFindAuthorityException("Consortium Codes are not associated with this user.",
+                missingCodes);
 
         dbOperation.RemoveConsortiaFromUser(user, consortiaToRemove);
     }
 
-    public void MigrateAdmins()
+    public List<User> GetUsers()
     {
-        // TODO: implement
+        return dbOperation.GetUsersWithLocalAuthoritiesAndConsortia();
+    }
+
+    public void MigrateAdmin(User user)
+    {
+        var consortiumCodesToAdd = GetConsortiumCodesUserShouldOwn(user).ToList();
+        var custodianCodesToRemove = GetOwnedCustodianCodesInConsortia(user, consortiumCodesToAdd);
+
+        var consortiaToAdd = dbOperation.GetConsortia(consortiumCodesToAdd);
+        var lasToRemove = dbOperation.GetLas(custodianCodesToRemove);
+        
+        dbOperation.AddConsortiaAndRemoveLasFromUser(user, consortiaToAdd, lasToRemove);
+    }
+
+    public IEnumerable<string> GetConsortiumCodesUserShouldOwn(User user)
+    {
+        var userCustodianCodes = user
+            .LocalAuthorities
+            .Select(la => la.CustodianCode)
+            .ToList();
+
+        return ConsortiumData.ConsortiumCustodianCodesIdsByConsortiumCode
+            .Where(kvp =>
+                kvp.Value.All(custodianCode => userCustodianCodes.Contains(custodianCode)))
+            .Select(kvp => kvp.Key);
     }
 }
