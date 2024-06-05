@@ -302,7 +302,6 @@ public class CommandHandlerTests
     public void RemoveLas_DisplaysErrorMessage_WhenRemovingLas_IfUserNotInDatabase()
     {
         // Arrange
-        const string userEmailAddress = "usernotindb@email.com";
         var users = new List<User>
         {
             new UserBuilder("userindb@email.com").Build()
@@ -817,7 +816,6 @@ public class CommandHandlerTests
     public void RemoveConsortia_DisplaysErrorMessage_WhenRemovingLas_IfUserNotInDatabase()
     {
         // Arrange
-        const string userEmailAddress = "usernotindb@email.com";
         var users = new List<User>
         {
             new UserBuilder("userindb@email.com").Build()
