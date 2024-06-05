@@ -2,7 +2,11 @@ name: Run automated tests
 
 on:
 - pull_request
-- push
+  push:
+    branches:
+      - develop
+      - staging
+      - main
 
 jobs:
   build-and-run-tests:
