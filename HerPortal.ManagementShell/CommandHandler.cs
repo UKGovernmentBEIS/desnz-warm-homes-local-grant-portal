@@ -166,15 +166,11 @@ public class CommandHandler
             var confirmation = outputProvider.Confirm("Okay to proceed? (Y/N)");
 
             if (confirmation)
-            {
                 adminAction.MigrateAdmin(user);
-            }
             else
-            {
                 outputProvider.Output("No changes made.");
-            }
         }
-        
+
         outputProvider.Output("Migration complete.");
     }
 

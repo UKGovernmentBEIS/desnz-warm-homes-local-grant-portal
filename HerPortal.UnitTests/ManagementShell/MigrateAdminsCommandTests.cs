@@ -127,7 +127,7 @@ public class MigrateAdminsCommandTests
         // Arrange
         var (user, _, _) = SetupUser(new UserTestSetup
         {
-            UserConsortiumCodes = new List<string> { "C_0008" },
+            UserConsortiumCodes = new List<string> { "C_0008" }
         });
 
         // Act
@@ -187,7 +187,7 @@ public class MigrateAdminsCommandTests
 
         return (user, expectedLasToRemove, expectedConsortiaToAdd);
     }
-    
+
     private struct UserTestSetup
     {
         public IEnumerable<string> UserCustodianCodes = new List<string>();
