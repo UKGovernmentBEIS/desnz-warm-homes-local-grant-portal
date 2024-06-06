@@ -31,11 +31,12 @@ public class MigrateAdminsCommandTests
     public void MigrateAdmins_IfOwnsAllLas_RemovesLasAndAddConsortia()
     {
         // Arrange
-        var (user, expectedLasToRemove, expectedConsortia) = SetupUser(
-            new List<string> { "660", "665" },
-            new List<string>(),
-            new List<string> { "660", "665" },
-            new List<string> { "C_0008" });
+        var (user, expectedLasToRemove, expectedConsortiaToAdd) = SetupUser(new UserTestSetup
+        {
+            UserCustodianCodes = new List<string> { "660", "665" },
+            ExpectedCustodianCodesToRemove = new List<string> { "660", "665" },
+            ExpectedConsortiumCodesToAdd = new List<string> { "C_0008" }
+        });
 
         // Act
         underTest.MigrateAdmins();
@@ -45,7 +46,7 @@ public class MigrateAdminsCommandTests
         mockDatabaseOperation.Verify(db => db.GetLas(new List<string> { "660", "665" }));
         mockDatabaseOperation.Verify(db => db.GetConsortia(new List<string> { "C_0008" }));
         mockDatabaseOperation.Verify(
-            db => db.AddConsortiaAndRemoveLasFromUser(user, expectedConsortia, expectedLasToRemove));
+            db => db.AddConsortiaAndRemoveLasFromUser(user, expectedConsortiaToAdd, expectedLasToRemove));
 
         mockDatabaseOperation.VerifyNoOtherCalls();
     }
@@ -54,11 +55,10 @@ public class MigrateAdminsCommandTests
     public void MigrateAdmins_IfOwnsNotEnoughLas_DoesNothing()
     {
         // Arrange
-        var (user, _, _) = SetupUser(
-            new List<string> { "660" },
-            new List<string>(),
-            new List<string>(),
-            new List<string>());
+        var (user, _, _) = SetupUser(new UserTestSetup
+        {
+            UserCustodianCodes = new List<string> { "660" }
+        });
 
         // Act
         underTest.MigrateAdmins();
@@ -77,11 +77,12 @@ public class MigrateAdminsCommandTests
     public void MigrateAdmins_IfOwnsAllLasInTwoConsortia_AddsBoth()
     {
         // Arrange
-        var (user, expectedLasToRemove, expectedConsortia) = SetupUser(
-            new List<string> { "660", "665", "835", "840" },
-            new List<string>(),
-            new List<string> { "660", "665", "835", "840" },
-            new List<string> { "C_0008", "C_0010" });
+        var (user, expectedLasToRemove, expectedConsortiaToAdd) = SetupUser(new UserTestSetup
+        {
+            UserCustodianCodes = new List<string> { "660", "665", "835", "840" },
+            ExpectedCustodianCodesToRemove = new List<string> { "660", "665", "835", "840" },
+            ExpectedConsortiumCodesToAdd = new List<string> { "C_0008", "C_0010" }
+        });
 
         // Act
         underTest.MigrateAdmins();
@@ -91,7 +92,7 @@ public class MigrateAdminsCommandTests
         mockDatabaseOperation.Verify(db => db.GetLas(new List<string> { "660", "665", "835", "840" }));
         mockDatabaseOperation.Verify(db => db.GetConsortia(new List<string> { "C_0008", "C_0010" }));
         mockDatabaseOperation.Verify(
-            db => db.AddConsortiaAndRemoveLasFromUser(user, expectedConsortia, expectedLasToRemove));
+            db => db.AddConsortiaAndRemoveLasFromUser(user, expectedConsortiaToAdd, expectedLasToRemove));
 
         mockDatabaseOperation.VerifyNoOtherCalls();
     }
@@ -100,11 +101,12 @@ public class MigrateAdminsCommandTests
     public void MigrateAdmins_IfOwnsAllInAConsortiaButNotEnoughInAnother_AddsOneConsortia()
     {
         // Arrange
-        var (user, expectedLasToRemove, expectedConsortia) = SetupUser(
-            new List<string> { "660", "665", "835" },
-            new List<string>(),
-            new List<string> { "660", "665" },
-            new List<string> { "C_0008" });
+        var (user, expectedLasToRemove, expectedConsortiaToAdd) = SetupUser(new UserTestSetup
+        {
+            UserCustodianCodes = new List<string> { "660", "665", "835" },
+            ExpectedCustodianCodesToRemove = new List<string> { "660", "665" },
+            ExpectedConsortiumCodesToAdd = new List<string> { "C_0008" }
+        });
 
         // Act
         underTest.MigrateAdmins();
@@ -114,7 +116,7 @@ public class MigrateAdminsCommandTests
         mockDatabaseOperation.Verify(db => db.GetLas(new List<string> { "660", "665" }));
         mockDatabaseOperation.Verify(db => db.GetConsortia(new List<string> { "C_0008" }));
         mockDatabaseOperation.Verify(
-            db => db.AddConsortiaAndRemoveLasFromUser(user, expectedConsortia, expectedLasToRemove));
+            db => db.AddConsortiaAndRemoveLasFromUser(user, expectedConsortiaToAdd, expectedLasToRemove));
 
         mockDatabaseOperation.VerifyNoOtherCalls();
     }
@@ -123,11 +125,10 @@ public class MigrateAdminsCommandTests
     public void MigrateAdmins_IfOwnsConsortia_DoesNothing()
     {
         // Arrange
-        var (user, _, _) = SetupUser(
-            new List<string>(),
-            new List<string> { "C_0008" },
-            new List<string>(),
-            new List<string> { "C_0008" });
+        var (user, _, _) = SetupUser(new UserTestSetup
+        {
+            UserConsortiumCodes = new List<string> { "C_0008" },
+        });
 
         // Act
         underTest.MigrateAdmins();
@@ -142,32 +143,30 @@ public class MigrateAdminsCommandTests
         mockDatabaseOperation.VerifyNoOtherCalls();
     }
 
-    private (User, List<LocalAuthority>, List<Consortium>) SetupUser(IEnumerable<string> custodianCodes,
-        IReadOnlyCollection<string> consortiumCodes, IReadOnlyCollection<string> expectedCustodianCodesToRemove,
-        IReadOnlyCollection<string> expectedConsortiumCodes)
+    private (User, List<LocalAuthority>, List<Consortium>) SetupUser(UserTestSetup userTestSetup)
     {
-        var localAuthorities = custodianCodes
+        var localAuthorities = userTestSetup.UserCustodianCodes
             .Select((custodianCode, i) => new LocalAuthority
             {
                 Id = i,
                 CustodianCode = custodianCode
             })
             .ToList();
-        var consortia = consortiumCodes
+        var consortia = userTestSetup.UserConsortiumCodes
             .Select((consortiumCode, i) => new Consortium
             {
                 Id = i,
                 ConsortiumCode = consortiumCode
             })
             .ToList();
-        var expectedConsortia = expectedConsortiumCodes
+        var expectedConsortiaToAdd = userTestSetup.ExpectedConsortiumCodesToAdd
             .Select((consortiumCode, i) => new Consortium
             {
-                Id = i + consortiumCodes.Count,
+                Id = i + userTestSetup.UserConsortiumCodes.Count,
                 ConsortiumCode = consortiumCode
             })
             .ToList();
-        var expectedLasToRemove = expectedCustodianCodesToRemove.Select(custodianCode =>
+        var expectedLasToRemove = userTestSetup.ExpectedCustodianCodesToRemove.Select(custodianCode =>
             localAuthorities.Single(la => la.CustodianCode == custodianCode)).ToList();
 
         mockOutputProvider.Setup(op => op.Confirm("Okay to proceed? (Y/N)")).Returns(true);
@@ -180,12 +179,24 @@ public class MigrateAdminsCommandTests
             .Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia())
             .Returns(new List<User> { user });
         mockDatabaseOperation
-            .Setup(db => db.GetConsortia(expectedConsortiumCodes))
-            .Returns(expectedConsortia);
+            .Setup(db => db.GetConsortia(userTestSetup.ExpectedConsortiumCodesToAdd))
+            .Returns(expectedConsortiaToAdd);
         mockDatabaseOperation
-            .Setup(db => db.GetLas(expectedCustodianCodesToRemove))
+            .Setup(db => db.GetLas(userTestSetup.ExpectedCustodianCodesToRemove))
             .Returns(expectedLasToRemove);
 
-        return (user, expectedLasToRemove, expectedConsortia);
+        return (user, expectedLasToRemove, expectedConsortiaToAdd);
+    }
+    
+    private struct UserTestSetup
+    {
+        public IEnumerable<string> UserCustodianCodes = new List<string>();
+        public IReadOnlyCollection<string> UserConsortiumCodes = new List<string>();
+        public IReadOnlyCollection<string> ExpectedCustodianCodesToRemove = new List<string>();
+        public IReadOnlyCollection<string> ExpectedConsortiumCodesToAdd = new List<string>();
+
+        public UserTestSetup()
+        {
+        }
     }
 }
