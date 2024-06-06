@@ -142,8 +142,8 @@ public class CommandHandler
     {
         outputProvider.Output("!!! User Migration Script !!!");
         outputProvider.Output("This script will ensure the validity of the LA / Consortium relationship for users.");
-        outputProvider.Output("If a user owns all LAs in a Consortium, they will be made a Consortium Admin.");
-        outputProvider.Output("If a user owns an LA in an owned Consortium, they will be removed.");
+        outputProvider.Output(
+            "If a user owns all LAs in a Consortium, they will be made a Consortium Admin and the LAs will be removed.");
 
         var users = adminAction.GetUsers();
 
