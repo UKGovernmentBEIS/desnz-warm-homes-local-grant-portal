@@ -5,7 +5,7 @@ namespace Tests.Builders;
 
 public class UserBuilder
 {
-    private User user;
+    private readonly User user;
 
     public UserBuilder(string emailAddress)
     {
@@ -29,12 +29,6 @@ public class UserBuilder
         user.LocalAuthorities = localAuthorities;
         return this;
     }
-    
-    public UserBuilder WithConsortia(List<Consortium> consortia)
-    {
-        user.Consortia = consortia;
-        return this;
-    }
 
     public UserBuilder WithConsortia(List<Consortium> consortia)
     {
@@ -54,4 +48,3 @@ public class UserBuilder
         return this;
     }
 }
-

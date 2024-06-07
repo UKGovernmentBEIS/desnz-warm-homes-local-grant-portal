@@ -274,9 +274,8 @@ public class CommandHandlerTests
         underTest.TryRemoveLas(user, custodianCodes);
 
         // Assert
-        mockOutputProvider.Verify(mock =>
-            mock.Output(
-                "Could not remove LAs from user: Could not find LAs attached to existinguser@email.com for the following codes: 9052. Please check your inputs and try again."));
+        mockOutputProvider.Verify(mock => mock.Output("Invalid Codes: 9052"));
+        mockOutputProvider.Verify(mock => mock.Output("Custodian Codes are not associated with this user."));
     }
 
     [Test]
@@ -303,7 +302,6 @@ public class CommandHandlerTests
     public void RemoveLas_DisplaysErrorMessage_WhenRemovingLas_IfUserNotInDatabase()
     {
         // Arrange
-        const string userEmailAddress = "usernotindb@email.com";
         var users = new List<User>
         {
             new UserBuilder("userindb@email.com").Build()
@@ -810,16 +808,14 @@ public class CommandHandlerTests
         underTest.TryRemoveConsortia(user, consortiumCodes);
 
         // Assert
-        mockOutputProvider.Verify(mock =>
-            mock.Output(
-                "Could not remove Consortia from user: Could not find Consortia attached to existinguser@email.com for the following codes: C_0002. Please check your inputs and try again."));
+        mockOutputProvider.Verify(mock => mock.Output("Invalid Codes: C_0002"));
+        mockOutputProvider.Verify(mock => mock.Output("Consortium Codes are not associated with this user."));
     }
 
     [Test]
     public void RemoveConsortia_DisplaysErrorMessage_WhenRemovingLas_IfUserNotInDatabase()
     {
         // Arrange
-        const string userEmailAddress = "usernotindb@email.com";
         var users = new List<User>
         {
             new UserBuilder("userindb@email.com").Build()
