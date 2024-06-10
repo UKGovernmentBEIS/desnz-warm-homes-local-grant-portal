@@ -1,7 +1,9 @@
 name: Run automated tests
 
 on:
-- pull_request
+  pull_request:
+    branches:
+      - '**'
   push:
     branches:
       - develop
