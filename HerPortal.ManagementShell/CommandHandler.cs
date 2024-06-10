@@ -159,7 +159,7 @@ public class CommandHandler
                 consortiumCode => consortiumCodeToConsortiumNameDict[consortiumCode]);
 
             var custodianCodesToRemove =
-                adminAction.GetOwnedCustodianCodesInConsortia(user, consortiumCodesUserShouldOwn);
+                adminAction.GetCustodianCodesInConsortia(consortiumCodesUserShouldOwn).ToList();
             outputProvider.Output("To make this user a Consortium Admin, the following LAs will be removed:");
             PrintCodes(custodianCodesToRemove, custodianCode => custodianCodeToLaNameDict[custodianCode]);
 

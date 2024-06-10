@@ -80,7 +80,7 @@ public class FixAllUserOwnedConsortiaCommandTests
         var (user, expectedLasToRemove, expectedConsortiaToAdd) = SetupUser(new UserTestSetup
         {
             UserCustodianCodes = new List<string> { "660", "665", "835", "840" },
-            ExpectedCustodianCodesToRemove = new List<string> { "660", "665", "835", "840" },
+            ExpectedCustodianCodesToRemove = new List<string> { "660", "665", "840", "835" },
             ExpectedConsortiumCodesToAdd = new List<string> { "C_0008", "C_0010" }
         });
 
@@ -89,7 +89,7 @@ public class FixAllUserOwnedConsortiaCommandTests
 
         // Assert
         mockDatabaseOperation.Verify(db => db.GetUsersWithLocalAuthoritiesAndConsortia());
-        mockDatabaseOperation.Verify(db => db.GetLas(new List<string> { "660", "665", "835", "840" }));
+        mockDatabaseOperation.Verify(db => db.GetLas(new List<string> { "660", "665", "840", "835" }));
         mockDatabaseOperation.Verify(db => db.GetConsortia(new List<string> { "C_0008", "C_0010" }));
         mockDatabaseOperation.Verify(
             db => db.AddConsortiaAndRemoveLasFromUser(user, expectedConsortiaToAdd, expectedLasToRemove));

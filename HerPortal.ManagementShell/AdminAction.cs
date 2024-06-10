@@ -46,6 +46,11 @@ public class AdminAction
             .ToList();
     }
 
+    public IEnumerable<string> GetCustodianCodesInConsortia(IEnumerable<string> consortiumCodes)
+    {
+        return consortiumCodes.SelectMany(consortiumCode => consortiumCodeToCustodianCodesDict[consortiumCode]);
+    }
+
     public UserAccountStatus GetUserStatus(User? userOrNull)
     {
         return userOrNull == null ? UserAccountStatus.New : UserAccountStatus.Active;
@@ -128,7 +133,7 @@ public class AdminAction
     public void FixUserOwnedConsortia(User user)
     {
         var consortiumCodesToAdd = GetConsortiumCodesUserShouldOwn(user).ToList();
-        var custodianCodesToRemove = GetOwnedCustodianCodesInConsortia(user, consortiumCodesToAdd);
+        var custodianCodesToRemove = GetCustodianCodesInConsortia(consortiumCodesToAdd).ToList();
 
         var consortiaToAdd = dbOperation.GetConsortia(consortiumCodesToAdd);
         var lasToRemove = dbOperation.GetLas(custodianCodesToRemove);
