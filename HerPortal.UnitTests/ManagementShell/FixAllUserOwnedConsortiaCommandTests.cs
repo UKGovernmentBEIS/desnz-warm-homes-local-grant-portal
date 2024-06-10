@@ -8,7 +8,7 @@ using Tests.Builders;
 
 namespace Tests.ManagementShell;
 
-public class MigrateAdminsCommandTests
+public class FixAllUserOwnedConsortiaCommandTests
 {
     private Mock<IDatabaseOperation> mockDatabaseOperation;
     private Mock<IOutputProvider> mockOutputProvider;
@@ -28,7 +28,7 @@ public class MigrateAdminsCommandTests
     // - Cheshire West and Chester 665
 
     [Test]
-    public void MigrateAdmins_IfOwnsAllLas_RemovesLasAndAddConsortia()
+    public void FixAllUserOwnedConsortia_IfOwnsAllLas_RemovesLasAndAddConsortia()
     {
         // Arrange
         var (user, expectedLasToRemove, expectedConsortiaToAdd) = SetupUser(new UserTestSetup
@@ -52,7 +52,7 @@ public class MigrateAdminsCommandTests
     }
 
     [Test]
-    public void MigrateAdmins_IfOwnsNotEnoughLas_DoesNothing()
+    public void FixAllUserOwnedConsortia_IfOwnsNotEnoughLas_DoesNothing()
     {
         // Arrange
         var (user, _, _) = SetupUser(new UserTestSetup
@@ -74,7 +74,7 @@ public class MigrateAdminsCommandTests
     }
 
     [Test]
-    public void MigrateAdmins_IfOwnsAllLasInTwoConsortia_AddsBoth()
+    public void FixAllUserOwnedConsortia_IfOwnsAllLasInTwoConsortia_AddsBoth()
     {
         // Arrange
         var (user, expectedLasToRemove, expectedConsortiaToAdd) = SetupUser(new UserTestSetup
@@ -98,7 +98,7 @@ public class MigrateAdminsCommandTests
     }
 
     [Test]
-    public void MigrateAdmins_IfOwnsAllInAConsortiaButNotEnoughInAnother_AddsOneConsortia()
+    public void FixAllUserOwnedConsortia_IfOwnsAllInAConsortiaButNotEnoughInAnother_AddsOneConsortia()
     {
         // Arrange
         var (user, expectedLasToRemove, expectedConsortiaToAdd) = SetupUser(new UserTestSetup
@@ -122,7 +122,7 @@ public class MigrateAdminsCommandTests
     }
 
     [Test]
-    public void MigrateAdmins_IfOwnsConsortia_DoesNothing()
+    public void FixAllUserOwnedConsortia_IfOwnsConsortia_DoesNothing()
     {
         // Arrange
         var (user, _, _) = SetupUser(new UserTestSetup
