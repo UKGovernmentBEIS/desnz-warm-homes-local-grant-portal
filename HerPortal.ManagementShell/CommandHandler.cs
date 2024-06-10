@@ -138,7 +138,7 @@ public class CommandHandler
         }
     }
 
-    public void MigrateAdmins()
+    public void FixAllUserOwnedConsortia()
     {
         outputProvider.Output("!!! User Migration Script !!!");
         outputProvider.Output("This script will ensure the validity of the LA / Consortium relationship for users.");
@@ -166,7 +166,7 @@ public class CommandHandler
             var confirmation = outputProvider.Confirm("Okay to proceed? (Y/N)");
 
             if (confirmation)
-                adminAction.MigrateAdmin(user);
+                adminAction.FixUserOwnedConsortia(user);
             else
                 outputProvider.Output("No changes made.");
         }

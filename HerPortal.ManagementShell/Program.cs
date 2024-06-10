@@ -66,8 +66,8 @@ public static class Program
             case Subcommand.RemoveConsortia:
                 commandHandler.TryRemoveConsortia(commandHandler.GetUser(userEmailAddress), codes);
                 break;
-            case Subcommand.MigrateUsers:
-                commandHandler.MigrateAdmins();
+            case Subcommand.FixAllUserOwnedConsortia:
+                commandHandler.FixAllUserOwnedConsortia();
                 break;
             default:
                 outputProvider.Output("Invalid terminal command entered. Please refer to the documentation");
@@ -82,6 +82,6 @@ public static class Program
         RemoveUser,
         AddConsortia,
         RemoveConsortia,
-        MigrateUsers
+        FixAllUserOwnedConsortia
     }
 }

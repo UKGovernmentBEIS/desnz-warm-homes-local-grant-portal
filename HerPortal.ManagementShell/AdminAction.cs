@@ -125,7 +125,7 @@ public class AdminAction
         return dbOperation.GetUsersWithLocalAuthoritiesAndConsortia();
     }
 
-    public void MigrateAdmin(User user)
+    public void FixUserOwnedConsortia(User user)
     {
         var consortiumCodesToAdd = GetConsortiumCodesUserShouldOwn(user).ToList();
         var custodianCodesToRemove = GetOwnedCustodianCodesInConsortia(user, consortiumCodesToAdd);

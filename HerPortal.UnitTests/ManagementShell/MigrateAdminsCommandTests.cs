@@ -39,7 +39,7 @@ public class MigrateAdminsCommandTests
         });
 
         // Act
-        underTest.MigrateAdmins();
+        underTest.FixAllUserOwnedConsortia();
 
         // Assert
         mockDatabaseOperation.Verify(db => db.GetUsersWithLocalAuthoritiesAndConsortia());
@@ -61,7 +61,7 @@ public class MigrateAdminsCommandTests
         });
 
         // Act
-        underTest.MigrateAdmins();
+        underTest.FixAllUserOwnedConsortia();
 
         // Assert
         mockDatabaseOperation.Verify(db => db.GetUsersWithLocalAuthoritiesAndConsortia());
@@ -85,7 +85,7 @@ public class MigrateAdminsCommandTests
         });
 
         // Act
-        underTest.MigrateAdmins();
+        underTest.FixAllUserOwnedConsortia();
 
         // Assert
         mockDatabaseOperation.Verify(db => db.GetUsersWithLocalAuthoritiesAndConsortia());
@@ -109,7 +109,7 @@ public class MigrateAdminsCommandTests
         });
 
         // Act
-        underTest.MigrateAdmins();
+        underTest.FixAllUserOwnedConsortia();
 
         // Assert
         mockDatabaseOperation.Verify(db => db.GetUsersWithLocalAuthoritiesAndConsortia());
@@ -131,7 +131,7 @@ public class MigrateAdminsCommandTests
         });
 
         // Act
-        underTest.MigrateAdmins();
+        underTest.FixAllUserOwnedConsortia();
 
         // Assert
         mockDatabaseOperation.Verify(db => db.GetUsersWithLocalAuthoritiesAndConsortia());
