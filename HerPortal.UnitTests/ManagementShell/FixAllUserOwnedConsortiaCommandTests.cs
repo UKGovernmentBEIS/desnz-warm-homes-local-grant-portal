@@ -23,19 +23,17 @@ public class FixAllUserOwnedConsortiaCommandTests
         underTest = new CommandHandler(adminAction, mockOutputProvider.Object);
     }
 
-    // Cheshire East C_0008 contains only two LAs:
-    // - Cheshire East 660
-    // - Cheshire West and Chester 665
-
     [Test]
     public void FixAllUserOwnedConsortia_IfOwnsAllLas_RemovesLasAndAddConsortia()
     {
         // Arrange
+        var (consortiumCodes, custodianCodes) = GetExampleConsortiumCodesWithCustodianCodes().First();
+        
         var (user, expectedLasToRemove, expectedConsortiaToAdd) = SetupUser(new UserTestSetup
         {
-            UserCustodianCodes = new List<string> { "660", "665" },
-            ExpectedCustodianCodesToRemove = new List<string> { "660", "665" },
-            ExpectedConsortiumCodesToAdd = new List<string> { "C_0008" }
+            UserCustodianCodes = custodianCodes,
+            ExpectedCustodianCodesToRemove = custodianCodes,
+            ExpectedConsortiumCodesToAdd = new List<string> { consortiumCodes }
         });
 
         // Act
@@ -43,8 +41,8 @@ public class FixAllUserOwnedConsortiaCommandTests
 
         // Assert
         mockDatabaseOperation.Verify(db => db.GetUsersWithLocalAuthoritiesAndConsortia());
-        mockDatabaseOperation.Verify(db => db.GetLas(new List<string> { "660", "665" }));
-        mockDatabaseOperation.Verify(db => db.GetConsortia(new List<string> { "C_0008" }));
+        mockDatabaseOperation.Verify(db => db.GetLas(custodianCodes));
+        mockDatabaseOperation.Verify(db => db.GetConsortia(new List<string> { consortiumCodes }));
         mockDatabaseOperation.Verify(
             db => db.AddConsortiaAndRemoveLasFromUser(user, expectedConsortiaToAdd, expectedLasToRemove));
 
@@ -55,9 +53,12 @@ public class FixAllUserOwnedConsortiaCommandTests
     public void FixAllUserOwnedConsortia_IfOwnsNotEnoughLas_DoesNothing()
     {
         // Arrange
+        var (_, custodianCodes) = GetExampleConsortiumCodesWithCustodianCodes().First();
+        var userCustodianCodes = custodianCodes.Take(1).ToList();
+        
         var (user, _, _) = SetupUser(new UserTestSetup
         {
-            UserCustodianCodes = new List<string> { "660" }
+            UserCustodianCodes = userCustodianCodes
         });
 
         // Act
@@ -77,11 +78,17 @@ public class FixAllUserOwnedConsortiaCommandTests
     public void FixAllUserOwnedConsortia_IfOwnsAllLasInTwoConsortia_AddsBoth()
     {
         // Arrange
+        var consortiumAndLasInfo = GetExampleConsortiumCodesWithCustodianCodes().Take(2).ToList();
+        var (consortiumCode1, custodianCodes1) = consortiumAndLasInfo[0];
+        var (consortiumCode2, custodianCodes2) = consortiumAndLasInfo[1];
+        var userCustodianCodes = custodianCodes1.Concat(custodianCodes2).ToList();
+        var expectedConsortiumCodesToAdd = new List<string> { consortiumCode1, consortiumCode2 };
+
         var (user, expectedLasToRemove, expectedConsortiaToAdd) = SetupUser(new UserTestSetup
         {
-            UserCustodianCodes = new List<string> { "660", "665", "835", "840" },
-            ExpectedCustodianCodesToRemove = new List<string> { "660", "665", "840", "835" },
-            ExpectedConsortiumCodesToAdd = new List<string> { "C_0008", "C_0010" }
+            UserCustodianCodes = userCustodianCodes,
+            ExpectedCustodianCodesToRemove = custodianCodes1.Concat(custodianCodes2).ToList(),
+            ExpectedConsortiumCodesToAdd = expectedConsortiumCodesToAdd
         });
 
         // Act
@@ -89,8 +96,8 @@ public class FixAllUserOwnedConsortiaCommandTests
 
         // Assert
         mockDatabaseOperation.Verify(db => db.GetUsersWithLocalAuthoritiesAndConsortia());
-        mockDatabaseOperation.Verify(db => db.GetLas(new List<string> { "660", "665", "840", "835" }));
-        mockDatabaseOperation.Verify(db => db.GetConsortia(new List<string> { "C_0008", "C_0010" }));
+        mockDatabaseOperation.Verify(db => db.GetLas(userCustodianCodes));
+        mockDatabaseOperation.Verify(db => db.GetConsortia(expectedConsortiumCodesToAdd));
         mockDatabaseOperation.Verify(
             db => db.AddConsortiaAndRemoveLasFromUser(user, expectedConsortiaToAdd, expectedLasToRemove));
 
@@ -101,11 +108,17 @@ public class FixAllUserOwnedConsortiaCommandTests
     public void FixAllUserOwnedConsortia_IfOwnsAllInAConsortiaButNotEnoughInAnother_AddsOneConsortia()
     {
         // Arrange
+        var consortiumAndLasInfo = GetExampleConsortiumCodesWithCustodianCodes().Take(2).ToList();
+        var (consortiumCode1, custodianCodes1) = consortiumAndLasInfo[0];
+        var (_, custodianCodes2) = consortiumAndLasInfo[1];
+        var userCustodianCodes = custodianCodes1.Concat(custodianCodes2.Take(1)).ToList();
+        var expectedConsortiumCodesToAdd = new List<string> { consortiumCode1 };
+
         var (user, expectedLasToRemove, expectedConsortiaToAdd) = SetupUser(new UserTestSetup
         {
-            UserCustodianCodes = new List<string> { "660", "665", "835" },
-            ExpectedCustodianCodesToRemove = new List<string> { "660", "665" },
-            ExpectedConsortiumCodesToAdd = new List<string> { "C_0008" }
+            UserCustodianCodes = userCustodianCodes,
+            ExpectedCustodianCodesToRemove = custodianCodes1,
+            ExpectedConsortiumCodesToAdd = expectedConsortiumCodesToAdd
         });
 
         // Act
@@ -113,8 +126,8 @@ public class FixAllUserOwnedConsortiaCommandTests
 
         // Assert
         mockDatabaseOperation.Verify(db => db.GetUsersWithLocalAuthoritiesAndConsortia());
-        mockDatabaseOperation.Verify(db => db.GetLas(new List<string> { "660", "665" }));
-        mockDatabaseOperation.Verify(db => db.GetConsortia(new List<string> { "C_0008" }));
+        mockDatabaseOperation.Verify(db => db.GetLas(custodianCodes1));
+        mockDatabaseOperation.Verify(db => db.GetConsortia(expectedConsortiumCodesToAdd));
         mockDatabaseOperation.Verify(
             db => db.AddConsortiaAndRemoveLasFromUser(user, expectedConsortiaToAdd, expectedLasToRemove));
 
@@ -125,9 +138,11 @@ public class FixAllUserOwnedConsortiaCommandTests
     public void FixAllUserOwnedConsortia_IfOwnsConsortia_DoesNothing()
     {
         // Arrange
+        var (consortiumCode, _) = GetExampleConsortiumCodesWithCustodianCodes().First();
+        
         var (user, _, _) = SetupUser(new UserTestSetup
         {
-            UserConsortiumCodes = new List<string> { "C_0008" }
+            UserConsortiumCodes = new List<string> { consortiumCode }
         });
 
         // Act
@@ -186,6 +201,12 @@ public class FixAllUserOwnedConsortiaCommandTests
             .Returns(expectedLasToRemove);
 
         return (user, expectedLasToRemove, expectedConsortiaToAdd);
+    }
+
+    private IEnumerable<(string, List<string>)> GetExampleConsortiumCodesWithCustodianCodes()
+    {
+        yield return ("C_0008", new List<string> { "660", "665" });
+        yield return ("C_0010", new List<string> { "840", "835" });
     }
 
     private struct UserTestSetup
