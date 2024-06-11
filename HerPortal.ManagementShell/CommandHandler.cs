@@ -152,7 +152,11 @@ public class CommandHandler
             outputProvider.Output($"Processing user {user.EmailAddress}...");
             var consortiumCodesUserShouldOwn = adminAction.GetConsortiumCodesUserShouldOwn(user).ToList();
 
-            if (consortiumCodesUserShouldOwn.Count == 0) continue;
+            if (consortiumCodesUserShouldOwn.Count == 0)
+            {
+                outputProvider.Output("No changes needed.");
+                continue;
+            }
 
             outputProvider.Output("This user should own the following Consortia:");
             PrintCodes(consortiumCodesUserShouldOwn,
