@@ -87,7 +87,8 @@ public class CommandHandler
         }
         catch (CouldNotFindAuthorityException couldNotFindAuthorityException)
         {
-            OutputCouldNotFindAuthorityException($"Could not remove Custodian Codes from {user.EmailAddress}.", couldNotFindAuthorityException);
+            OutputCouldNotFindAuthorityException($"Could not remove Custodian Codes from {user.EmailAddress}.",
+                couldNotFindAuthorityException);
         }
     }
 
@@ -132,11 +133,53 @@ public class CommandHandler
         }
         catch (CouldNotFindAuthorityException couldNotFindAuthorityException)
         {
-            OutputCouldNotFindAuthorityException($"Could not remove Consortium Codes from {user.EmailAddress}.", couldNotFindAuthorityException);
+            OutputCouldNotFindAuthorityException($"Could not remove Consortium Codes from {user.EmailAddress}.",
+                couldNotFindAuthorityException);
         }
     }
 
-    private void OutputCouldNotFindAuthorityException(string wrapperMessage, CouldNotFindAuthorityException couldNotFindAuthorityException)
+    public void FixAllUserOwnedConsortia()
+    {
+        outputProvider.Output("!!! User Migration Script !!!");
+        outputProvider.Output("This script will ensure the validity of the LA / Consortium relationship for users.");
+        outputProvider.Output(
+            "If a user owns all LAs in a Consortium, they will be made a Consortium Admin and the LAs will be removed.");
+
+        var users = adminAction.GetUsers();
+
+        foreach (var user in users)
+        {
+            outputProvider.Output($"Processing user {user.EmailAddress}...");
+            var consortiumCodesUserShouldOwn = adminAction.GetConsortiumCodesUserShouldOwn(user).ToList();
+
+            if (consortiumCodesUserShouldOwn.Count == 0)
+            {
+                outputProvider.Output("No changes needed.");
+                continue;
+            }
+
+            outputProvider.Output("This user should own the following Consortia:");
+            PrintCodes(consortiumCodesUserShouldOwn,
+                consortiumCode => consortiumCodeToConsortiumNameDict[consortiumCode]);
+
+            var custodianCodesToRemove =
+                adminAction.GetCustodianCodesInConsortia(consortiumCodesUserShouldOwn).ToList();
+            outputProvider.Output("To make this user a Consortium Admin, the following LAs will be removed from the user:");
+            PrintCodes(custodianCodesToRemove, custodianCode => custodianCodeToLaNameDict[custodianCode]);
+
+            var confirmation = outputProvider.Confirm("Okay to proceed? (Y/N)");
+
+            if (confirmation)
+                adminAction.FixUserOwnedConsortia(user);
+            else
+                outputProvider.Output("No changes made.");
+        }
+
+        outputProvider.Output("Migration complete.");
+    }
+
+    private void OutputCouldNotFindAuthorityException(string wrapperMessage,
+        CouldNotFindAuthorityException couldNotFindAuthorityException)
     {
         outputProvider.Output("!!! Error occured during operation !!!");
         outputProvider.Output(wrapperMessage);
@@ -270,7 +313,8 @@ public class CommandHandler
         }
         catch (CouldNotFindAuthorityException couldNotFindAuthorityException)
         {
-            OutputCouldNotFindAuthorityException($"Could not create user {userEmailAddress}.", couldNotFindAuthorityException);
+            OutputCouldNotFindAuthorityException($"Could not create user {userEmailAddress}.",
+                couldNotFindAuthorityException);
         }
     }
 
@@ -294,7 +338,8 @@ public class CommandHandler
         }
         catch (CouldNotFindAuthorityException couldNotFindAuthorityException)
         {
-            OutputCouldNotFindAuthorityException($"Could not add Custodian Codes to {user.EmailAddress}.", couldNotFindAuthorityException);
+            OutputCouldNotFindAuthorityException($"Could not add Custodian Codes to {user.EmailAddress}.",
+                couldNotFindAuthorityException);
         }
     }
 
@@ -318,7 +363,8 @@ public class CommandHandler
         }
         catch (CouldNotFindAuthorityException couldNotFindAuthorityException)
         {
-            OutputCouldNotFindAuthorityException($"Could not add Consortium Codes to {user.EmailAddress}.", couldNotFindAuthorityException);
+            OutputCouldNotFindAuthorityException($"Could not add Consortium Codes to {user.EmailAddress}.",
+                couldNotFindAuthorityException);
         }
     }
 

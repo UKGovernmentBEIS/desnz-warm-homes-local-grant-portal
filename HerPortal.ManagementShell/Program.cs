@@ -28,8 +28,18 @@ public static class Program
         try
         {
             command = Enum.Parse<Subcommand>(args[0], true);
-            userEmailAddress = args[1];
-            codes = args.Skip(2).ToArray();
+            if (new List<Subcommand>
+                {
+                    Subcommand.AddLas,
+                    Subcommand.AddConsortia,
+                    Subcommand.RemoveLas,
+                    Subcommand.RemoveConsortia,
+                    Subcommand.RemoveUser
+                }.Contains(command))
+            {
+                userEmailAddress = args[1];
+                codes = args.Skip(2).ToArray();
+            }
         }
         catch (Exception)
         {
@@ -56,6 +66,9 @@ public static class Program
             case Subcommand.RemoveConsortia:
                 commandHandler.TryRemoveConsortia(commandHandler.GetUser(userEmailAddress), codes);
                 break;
+            case Subcommand.FixAllUserOwnedConsortia:
+                commandHandler.FixAllUserOwnedConsortia();
+                break;
             default:
                 outputProvider.Output("Invalid terminal command entered. Please refer to the documentation");
                 return;
@@ -68,6 +81,7 @@ public static class Program
         RemoveLas,
         RemoveUser,
         AddConsortia,
-        RemoveConsortia
+        RemoveConsortia,
+        FixAllUserOwnedConsortia
     }
 }
