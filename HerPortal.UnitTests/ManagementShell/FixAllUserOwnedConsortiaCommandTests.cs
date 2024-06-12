@@ -164,7 +164,7 @@ public class FixAllUserOwnedConsortiaCommandTests
         // Arrange
         var custodianCodes = new List<string> { GetExampleCustodianCodesNotInConsortium().First() };
 
-        var (user, expectedLasToRemove, expectedConsortiaToAdd) = SetupUser(new UserTestSetup
+        var (user, _, _) = SetupUser(new UserTestSetup
         {
             UserCustodianCodes = custodianCodes
         });
@@ -174,6 +174,10 @@ public class FixAllUserOwnedConsortiaCommandTests
 
         // Assert
         mockDatabaseOperation.Verify(db => db.GetUsersWithLocalAuthoritiesAndConsortia());
+        mockDatabaseOperation.Verify(
+            db => db.AddConsortiaAndRemoveLasFromUser(
+                user, It.IsAny<List<Consortium>>(), It.IsAny<List<LocalAuthority>>()),
+            Times.Never);
 
         mockDatabaseOperation.VerifyNoOtherCalls();
     }
