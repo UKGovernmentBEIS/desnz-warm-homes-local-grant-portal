@@ -11,6 +11,7 @@ public class HerDbContext : DbContext, IDataProtectionKeyContext
     public DbSet<AuditDownload> AuditDownloads { get; set; }
     public DbSet<CsvFileDownload> CsvFileDownloads { get; set; }
     public DbSet<LocalAuthority> LocalAuthorities { get; set; }
+    public DbSet<Consortium> Consortia { get; set; }
     public DbSet<User> Users { get; set; }
 
     public HerDbContext(DbContextOptions<HerDbContext> options) : base(options)
