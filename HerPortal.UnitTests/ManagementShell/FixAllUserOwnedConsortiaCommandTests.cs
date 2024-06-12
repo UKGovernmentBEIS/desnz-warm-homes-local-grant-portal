@@ -236,7 +236,6 @@ public class FixAllUserOwnedConsortiaCommandTests
 
     private IEnumerable<string> GetExampleCustodianCodesNotInConsortium()
     {
-        // both these Consortia have two LAs
         yield return "2004";
     }
 
