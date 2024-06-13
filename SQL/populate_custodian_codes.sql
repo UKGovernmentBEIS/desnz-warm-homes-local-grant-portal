@@ -362,6 +362,7 @@ INSERT INTO "LocalAuthorities" ("CustodianCode") VALUES
     (360),	-- Wokingham
     (4635),	-- Wolverhampton
     (1835),	-- Worcester
+    (1855), -- Worcestershire
     (3835),	-- Worthing
     (6955),	-- Wrexham
     (1840),	-- Wychavon
