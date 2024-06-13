@@ -28,7 +28,7 @@ public class FixAllUserOwnedConsortiaCommandTests
     {
         // Arrange
         var (consortiumCodes, custodianCodes) = GetExampleConsortiumCodesWithCustodianCodes().First();
-        
+
         var (user, expectedLasToRemove, expectedConsortiaToAdd) = SetupUser(new UserTestSetup
         {
             UserCustodianCodes = custodianCodes,
@@ -55,7 +55,7 @@ public class FixAllUserOwnedConsortiaCommandTests
         // Arrange
         var (_, custodianCodes) = GetExampleConsortiumCodesWithCustodianCodes().First();
         var userCustodianCodes = custodianCodes.Take(1).ToList();
-        
+
         var (user, _, _) = SetupUser(new UserTestSetup
         {
             UserCustodianCodes = userCustodianCodes
@@ -139,10 +139,34 @@ public class FixAllUserOwnedConsortiaCommandTests
     {
         // Arrange
         var (consortiumCode, _) = GetExampleConsortiumCodesWithCustodianCodes().First();
-        
+
         var (user, _, _) = SetupUser(new UserTestSetup
         {
             UserConsortiumCodes = new List<string> { consortiumCode }
+        });
+
+        // Act
+        underTest.FixAllUserOwnedConsortia();
+
+        // Assert
+        mockDatabaseOperation.Verify(db => db.GetUsersWithLocalAuthoritiesAndConsortia());
+        mockDatabaseOperation.Verify(
+            db => db.AddConsortiaAndRemoveLasFromUser(
+                user, It.IsAny<List<Consortium>>(), It.IsAny<List<LocalAuthority>>()),
+            Times.Never);
+
+        mockDatabaseOperation.VerifyNoOtherCalls();
+    }
+
+    [Test]
+    public void FixAllUserOwnedConsortia_IfOwnsAllLaNotInConsortia_DoesNothing()
+    {
+        // Arrange
+        var custodianCodes = new List<string> { GetExampleCustodianCodesNotInConsortium().First() };
+
+        var (user, _, _) = SetupUser(new UserTestSetup
+        {
+            UserCustodianCodes = custodianCodes
         });
 
         // Act
@@ -208,6 +232,11 @@ public class FixAllUserOwnedConsortiaCommandTests
         // both these Consortia have two LAs
         yield return ("C_0008", new List<string> { "660", "665" });
         yield return ("C_0010", new List<string> { "840", "835" });
+    }
+
+    private IEnumerable<string> GetExampleCustodianCodesNotInConsortium()
+    {
+        yield return "2004";
     }
 
     private struct UserTestSetup

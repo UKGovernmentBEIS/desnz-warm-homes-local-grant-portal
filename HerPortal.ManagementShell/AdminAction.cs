@@ -40,8 +40,9 @@ public class AdminAction
     public List<string> GetOwnedCustodianCodesInConsortia(User user, IEnumerable<string> consortiumCodes)
     {
         return user.LocalAuthorities
-            .Where(localAuthority =>
-                consortiumCodes.Contains(custodianCodeToConsortiumCodeDict[localAuthority.CustodianCode]))
+            .Where(localAuthority => custodianCodeToConsortiumCodeDict.ContainsKey(localAuthority.CustodianCode) &&
+                                     consortiumCodes.Contains(
+                                         custodianCodeToConsortiumCodeDict[localAuthority.CustodianCode]))
             .Select(localAuthority => localAuthority.CustodianCode)
             .ToList();
     }
