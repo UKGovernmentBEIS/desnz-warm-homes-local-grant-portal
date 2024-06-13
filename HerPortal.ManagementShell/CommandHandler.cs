@@ -48,7 +48,7 @@ public class CommandHandler
 
     public void CreateOrUpdateUserWithLas(string userEmailAddress, IReadOnlyCollection<string> custodianCodes)
     {
-        var (user, userStatus) = CheckUserStatus(userEmailAddress);
+        var (user, userStatus) = CheckUserStatus(userEmailAddress, "LAs");
 
         var confirmation = ConfirmAddCustodianCodes(userEmailAddress, custodianCodes, user);
 
@@ -94,7 +94,7 @@ public class CommandHandler
 
     public void CreateOrUpdateUserWithConsortia(string userEmailAddress, IReadOnlyCollection<string> consortiumCodes)
     {
-        var (user, userStatus) = CheckUserStatus(userEmailAddress);
+        var (user, userStatus) = CheckUserStatus(userEmailAddress, "Consortia");
 
         var confirmation = ConfirmAddConsortiumCodes(userEmailAddress, consortiumCodes, user);
 
@@ -164,7 +164,8 @@ public class CommandHandler
 
             var custodianCodesToRemove =
                 adminAction.GetCustodianCodesInConsortia(consortiumCodesUserShouldOwn).ToList();
-            outputProvider.Output("To make this user a Consortium Admin, the following LAs will be removed from the user:");
+            outputProvider.Output(
+                "To make this user a Consortium Admin, the following LAs will be removed from the user:");
             PrintCodes(custodianCodesToRemove, custodianCode => custodianCodeToLaNameDict[custodianCode]);
 
             var confirmation = outputProvider.Confirm("Okay to proceed? (Y/N)");
@@ -291,7 +292,7 @@ public class CommandHandler
         return hasUserConfirmed;
     }
 
-    private void DisplayUserStatus(UserAccountStatus userAccountStatus)
+    private void DisplayUserStatus(UserAccountStatus userAccountStatus, string authorityType)
     {
         switch (userAccountStatus)
         {
@@ -299,7 +300,7 @@ public class CommandHandler
                 outputProvider.Output("User not found in database. A new user will be created");
                 break;
             case UserAccountStatus.Active:
-                outputProvider.Output("User found in database. LAs will be added to their account");
+                outputProvider.Output($"User found in database. {authorityType} will be added to their account");
                 break;
         }
     }
@@ -368,21 +369,21 @@ public class CommandHandler
         }
     }
 
-    private (User? user, UserAccountStatus userStatus) CheckUserStatus(string userEmailAddress)
+    private (User? user, UserAccountStatus userStatus) CheckUserStatus(string userEmailAddress, string authorityType)
     {
         var user = adminAction.GetUser(userEmailAddress);
         var userStatus = adminAction.GetUserStatus(user);
-        DisplayUserStatus(userStatus);
+        DisplayUserStatus(userStatus, authorityType);
         outputProvider.Output("");
 
         outputProvider.Output("!!! ATTENTION! READ CAREFULLY OR RISK A DATA BREACH !!!");
         outputProvider.Output("");
         outputProvider.Output(
-            "You are about to grant a user permission to read PERSONALLY IDENTIFIABLE INFORMATION submitted to LAs.");
+            $"You are about to grant a user permission to read PERSONALLY IDENTIFIABLE INFORMATION submitted to {authorityType}.");
         outputProvider.Output(
-            "Take a moment to double check the following list and only continue if you are certain this user should have access to these LAs.");
+            $"Take a moment to double check the following list and only continue if you are certain this user should have access to these {authorityType}.");
         outputProvider.Output(
-            "NB: in particular, you should only do this for LAs that have signed their DSA contracts!");
+            $"NB: in particular, you should only do this for {authorityType} that have signed their DSA contracts!");
         outputProvider.Output("");
 
         return (user, userStatus);
