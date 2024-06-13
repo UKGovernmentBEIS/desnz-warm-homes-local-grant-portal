@@ -633,7 +633,8 @@ public class CommandHandlerTests
         underTest.CreateOrUpdateUserWithConsortia(userEmailAddress, consortiumCodes);
 
         // Assert
-        mockOutputProvider.Verify(mock => mock.Output("User found in database. LAs will be added to their account"),
+        mockOutputProvider.Verify(
+            mock => mock.Output("User found in database. Consortia will be added to their account"),
             Times.Once());
     }
 
