@@ -13,8 +13,7 @@ public static class LocalAuthorityData
     /// consistency with the HUG2 Public Website data, and consider any remapping that may be required.
     /// <see
     ///     href="https://github.com/UKGovernmentBEIS/desnz-home-energy-retrofit-beta/blob/develop/HerPublicWebsite.BusinessLogic/Models/LocalAuthorityData.cs">
-    ///     HUG2
-    ///     Public Website codebase
+    ///     HUG2 Public Website codebase
     /// </see>
     /// The mapping from custodian code to name comes from the publicly available "Local custodian codes" download link
     /// on https://www.ordnancesurvey.co.uk/business-government/tools-support/addressbase-support
