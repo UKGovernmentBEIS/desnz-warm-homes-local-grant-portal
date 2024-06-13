@@ -1,4 +1,4 @@
-﻿-- Create LA records
+﻿-- Create Consortium records
 INSERT INTO "Consortia" ("ConsortiumCode") VALUES
     ('C_0002'), -- Blackpool
     ('C_0003'), -- Bristol
