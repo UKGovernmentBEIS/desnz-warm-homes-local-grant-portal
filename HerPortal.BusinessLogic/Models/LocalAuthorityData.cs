@@ -387,7 +387,8 @@ public static class LocalAuthorityData
         { "3310", "Sedgemoor" }, // Legacy LA
         { "2735", "Selby" }, // Legacy LA
         { "3330", "Somerset West and Taunton" }, // Legacy LA
-        { "930", "South Lakeland" } // Legacy LA
+        { "930", "South Lakeland" }, // Legacy LA
+        { "3325", "South Somerset" } // Legacy LA
     };
     
     /// If Custodian Codes change (through LAs merging etc.) we need to ensure consistency with the
