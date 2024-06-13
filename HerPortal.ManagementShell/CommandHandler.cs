@@ -379,11 +379,11 @@ public class CommandHandler
         outputProvider.Output("!!! ATTENTION! READ CAREFULLY OR RISK A DATA BREACH !!!");
         outputProvider.Output("");
         outputProvider.Output(
-            $"You are about to grant a user permission to read PERSONALLY IDENTIFIABLE INFORMATION submitted to {authorityType}.");
+            "You are about to grant a user permission to read PERSONALLY IDENTIFIABLE INFORMATION submitted to LAs.");
         outputProvider.Output(
-            $"Take a moment to double check the following list and only continue if you are certain this user should have access to these {authorityType}.");
+            "Take a moment to double check the following list and only continue if you are certain this user should have access to these LAs.");
         outputProvider.Output(
-            $"NB: in particular, you should only do this for {authorityType} that have signed their DSA contracts!");
+            "NB: in particular, you should only do this for LAs that have signed their DSA contracts!");
         outputProvider.Output("");
 
         return (user, userStatus);
