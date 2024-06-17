@@ -58,15 +58,12 @@ public class HomeController : Controller
             };
         }
 
-        var consortiumCodes = userService.GetConsortiumCodesForUser(userData);
-
         var homepageViewModel = new HomepageViewModel
         (
             userData,
             csvFilePage,
             GetPageLink,
-            GetDownloadLink,
-            consortiumCodes
+            GetDownloadLink
         );
 
         if (!userData.HasLoggedIn)
