@@ -83,17 +83,27 @@ public class CsvFileService : ICsvFileService
     {
         // Make sure that we only return file data for files that the user currently has access to
         var user = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
-        var currentCustodianCodes = user.LocalAuthorities.Select(la => la.CustodianCode);
+        var custodianCodes = user.GetAdministeredCustodianCodes();
+        var consortiumCodes = user.GetAdministeredConsortiumCodes();
         
+        var localAuthoritiesFileData = await BuildCsvFileDataForLocalAuthorities(user, custodianCodes);
+        var consortiaTransformedFileData = TransformFileDataForConsortia(consortiumCodes, localAuthoritiesFileData);
+        var combinedFileData = localAuthoritiesFileData.Concat(consortiaTransformedFileData);
+
+        return combinedFileData
+            .OrderByDescending(f => new DateOnly(f.Year, f.Month, 1))
+            .ThenByDescending(f => f is ConsortiumCsvFileData)
+            .ThenBy(f => f.Name);
+    }
+
+    private async Task<List<CsvFileData>> BuildCsvFileDataForLocalAuthorities(User user, IEnumerable<string> currentCustodianCodes)
+    {
+        var laFileData = new List<CsvFileData>();
         var downloads = await dataAccessProvider.GetCsvFileDownloadDataForUserAsync(user.Id);
-        var files = new List<CsvFileData>();
-
-        var consortiumCodes = dataAccessProvider.GetConsortiumCodesForUser(user);
-
         foreach (var custodianCode in currentCustodianCodes)
         {
             var s3Objects = await s3FileReader.GetS3ObjectsByCustodianCodeAsync(custodianCode);
-            files.AddRange(s3Objects.Select(s3O =>
+            laFileData.AddRange(s3Objects.Select(s3O =>
                 {
                     var data = keyService.GetDataFromS3Key(s3O.Key);
                     var downloadData = downloads.SingleOrDefault(d =>
@@ -113,30 +123,28 @@ public class CsvFileService : ICsvFileService
             ));
         }
 
-        files.AddRange(
-            files
-                .Where(file => LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode.ContainsKey(file.Code))
-                .GroupBy(file => (LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode[file.Code], file.Month,
-                    file.Year))
-                .Where(grouping => consortiumCodes.Contains(grouping.Key.Item1))
-                .Select(grouping => new ConsortiumCsvFileData(
-                        grouping.Key.Item1, 
-                        grouping.Key.Month, 
-                        grouping.Key.Year, 
-                        grouping
-                            .Select(fileData => fileData.LastUpdated)
-                            .Max(), // there are csv updates as new as
-                        grouping
-                            .Select(fileData => fileData.LastDownloaded)
-                            .Min() // there are csvs undownloaded for as long as
-                    )
+        return laFileData;
+    }
+    
+    private IEnumerable<CsvFileData> TransformFileDataForConsortia(IEnumerable<string> consortiumCodes, IEnumerable<CsvFileData> laFileData)
+    {
+        return laFileData
+            .Where(fileRow => LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode.ContainsKey(fileRow.Code))
+            .GroupBy(fileRow => (LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode[fileRow.Code], fileRow.Month,
+                fileRow.Year))
+            .Where(grouping => consortiumCodes.Contains(grouping.Key.Item1))
+            .Select(grouping => new ConsortiumCsvFileData(
+                    grouping.Key.Item1,
+                    grouping.Key.Month,
+                    grouping.Key.Year,
+                    grouping
+                        .Select(fileData => fileData.LastUpdated)
+                        .Max(), // there are csv updates as new as
+                    grouping
+                        .Select(fileData => fileData.LastDownloaded)
+                        .Min() // there are csvs undownloaded for as long as
                 )
             );
-
-        return files
-            .OrderByDescending(f => new DateOnly(f.Year, f.Month, 1))
-            .ThenByDescending(f => f is ConsortiumCsvFileData)
-            .ThenBy(f => f.Name);
     }
 
     // Page number starts at 1
@@ -167,7 +175,7 @@ public class CsvFileService : ICsvFileService
     {
         // Important! First ensure the logged-in user is allowed to access this data
         var userData = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
-        if (!userData.LocalAuthorities.Any(la => la.CustodianCode == custodianCode))
+        if (!userData.GetAdministeredCustodianCodes().Contains(custodianCode))
         {
             // We don't want to log the User's email address for GDPR reasons, but the ID is fine.
             throw new SecurityException(
@@ -194,9 +202,8 @@ public class CsvFileService : ICsvFileService
     {
         // Important! First ensure the logged-in user is allowed to access this data
         var userData = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
-        var consortiumCodes = dataAccessProvider.GetConsortiumCodesForUser(userData);
 
-        if (!consortiumCodes.Contains(consortiumCode))
+        if (!userData.GetAdministeredConsortiumCodes().Contains(consortiumCode))
         {
             // We don't want to log the User's email address for GDPR reasons, but the ID is fine.
             throw new SecurityException(

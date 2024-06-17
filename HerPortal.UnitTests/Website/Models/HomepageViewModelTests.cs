@@ -39,15 +39,16 @@ public class HomepageViewModelTests
         {
             HasLoggedIn = hasUserLoggedIn,
             LocalAuthorities = new List<LocalAuthority>(),
+            Consortia = new List<Consortium>()
         };
         
         // Act
-        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink, new List<string>());
+        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
         
         // Assert
         viewModel.ShouldShowBanner.Should().Be(shouldShowBanner);
     }
-    
+
     [TestCase(1, false)]
     [TestCase(2, true)]
     [TestCase(3, true)]
@@ -65,10 +66,36 @@ public class HomepageViewModelTests
             LocalAuthorities = ValidLocalAuthorityGenerator
                 .GetLocalAuthoritiesWithDifferentCodes(numberOfLas)
                 .ToList(),
+            Consortia = ValidConsortiumGenerator.GetConsortiaWithDifferentCodes(0).ToList()
         };
         
         // Act
-        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink, new List<string>());
+        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
+        
+        // Assert
+        viewModel.ShouldShowFilters.Should().Be(expected);
+    }
+    
+    [TestCase(0, 1, true)]
+    [TestCase(1, 1, true)]
+    public void HomepageViewModel_WhenUserHasConsortium_ShouldShowFilters
+    (
+        int numberOfLas,
+        int numberOfConsortia,
+        bool expected
+    ) {
+        // Arrange
+        var user = new User
+        {
+            HasLoggedIn = true,
+            LocalAuthorities = ValidLocalAuthorityGenerator
+                .GetLocalAuthoritiesWithDifferentCodes(numberOfLas)
+                .ToList(),
+            Consortia = ValidConsortiumGenerator.GetConsortiaWithDifferentCodes(numberOfConsortia).ToList()
+        };
+        
+        // Act
+        var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
         
         // Assert
         viewModel.ShouldShowFilters.Should().Be(expected);
