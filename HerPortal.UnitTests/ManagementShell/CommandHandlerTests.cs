@@ -427,8 +427,8 @@ public class CommandHandlerTests
         underTest.CreateOrUpdateUserWithLas(userEmailAddress, custodianCodes);
 
         // Assert
-        mockOutputProvider.Verify(mock => mock.Output("9052: Aberdeenshire"), Times.Once());
-        mockOutputProvider.Verify(mock => mock.Output("3805: Adur"), Times.Once());
+        mockOutputProvider.Verify(mock => mock.Output("9052: Aberdeenshire Council"), Times.Once());
+        mockOutputProvider.Verify(mock => mock.Output("3805: Adur District Council"), Times.Once());
     }
 
     [Test]
@@ -672,8 +672,8 @@ public class CommandHandlerTests
         underTest.CreateOrUpdateUserWithConsortia(userEmailAddress, consortiumCodes);
 
         // Assert
-        mockOutputProvider.Verify(mock => mock.Output("C_0002: Blackpool"), Times.Once());
-        mockOutputProvider.Verify(mock => mock.Output("C_0003: Bristol"), Times.Once());
+        mockOutputProvider.Verify(mock => mock.Output("C_0002: Blackpool Council"), Times.Once());
+        mockOutputProvider.Verify(mock => mock.Output("C_0003: Bristol City Council"), Times.Once());
     }
 
     [Test]
@@ -700,7 +700,7 @@ public class CommandHandlerTests
         underTest.CreateOrUpdateUserWithConsortia(userEmailAddress, consortiumCodes);
 
         // Assert
-        mockOutputProvider.Verify(mock => mock.Output("2372: Blackburn With Darwen (Blackpool)"), Times.Once());
+        mockOutputProvider.Verify(mock => mock.Output("2372: Blackburn with Darwen Borough Council (Blackpool Council)"), Times.Once());
     }
 
     [Test]

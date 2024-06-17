@@ -154,9 +154,9 @@ public class HomepageViewModelTests
         viewModelCsvFile.LastUpdatedText.Should().Be(expectedLastUpdatedString);
     }
     
-    [TestCase("5210", "Camden")]
-    [TestCase("505", "Cambridge")]
-    [TestCase("4215", "Manchester")]
+    [TestCase("5210", "Camden Council")]
+    [TestCase("505", "Cambridge City Council")]
+    [TestCase("4215", "Manchester City Council")]
     public void HomepageViewModelCsvFile_WhenValidCustodianCodeIsGiven_GetsTheLocalAuthorityName
     (
         string custodianCode,
@@ -199,9 +199,9 @@ public class HomepageViewModelTests
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
     
-    [TestCase("C_0022", "Liverpool City Region (Consortium)")]
-    [TestCase("C_0006", "Cambridge (Consortium)")]
-    [TestCase("C_0004", "Broadland (Consortium)")]
+    [TestCase("C_0022", "Liverpool City Region Combined Authority (Consortium)")]
+    [TestCase("C_0006", "Cambridge City Council (Consortium)")]
+    [TestCase("C_0004", "Broadland District Council (Consortium)")]
     public void HomepageViewModelCsvFile_WhenValidConsortiumCodeIsGiven_GetsTheConsortiumName
     (
         string consortiumCode,
