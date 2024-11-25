@@ -31,7 +31,8 @@ public class DatabaseOperation : IDatabaseOperation
             custodianCodes.SingleOrDefault(code => !dbContext.LocalAuthorities.Any(la => la.CustodianCode == code),
                 null);
         if (missingCustodianCode != null)
-            throw new CouldNotFindAuthorityException("Could not find Custodian Code in database.", new List<string> {missingCustodianCode});
+            throw new CouldNotFindAuthorityException("Could not find Custodian Code in database.",
+                new List<string> { missingCustodianCode });
 
         return custodianCodes
             .Select(code => dbContext.LocalAuthorities
@@ -44,7 +45,8 @@ public class DatabaseOperation : IDatabaseOperation
         var missingConsortiumCode =
             consortiumCodes.SingleOrDefault(code => !dbContext.Consortia.Any(la => la.ConsortiumCode == code), null);
         if (missingConsortiumCode != null)
-            throw new CouldNotFindAuthorityException("Could not find Consortium Code in database.", new List<string> {missingConsortiumCode});
+            throw new CouldNotFindAuthorityException("Could not find Consortium Code in database.",
+                new List<string> { missingConsortiumCode });
 
         return consortiumCodes
             .Select(code => dbContext.Consortia
@@ -135,6 +137,21 @@ public class DatabaseOperation : IDatabaseOperation
                     throw;
                 }
         });
+    }
+
+    public IEnumerable<LocalAuthority> GetAllLas()
+    {
+        return dbContext.LocalAuthorities;
+    }
+
+    public void CreateLas(IEnumerable<string> custodianCodes)
+    {
+        var las = custodianCodes.Select(custodianCode => new LocalAuthority
+        {
+            CustodianCode = custodianCode,
+            Users = new List<User>()
+        });
+        PerformTransaction(() => { dbContext.LocalAuthorities.AddRange(las); });
     }
 
     private void PerformTransaction(Action transaction)

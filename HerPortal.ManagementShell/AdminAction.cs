@@ -154,4 +154,19 @@ public class AdminAction
                 kvp.Value.All(custodianCode => userCustodianCodes.Contains(custodianCode)))
             .Select(kvp => kvp.Key);
     }
+
+    public void AddMissingLocalAuthoritiesToDatabase()
+    {
+        var custodianCodesMissingFromDatabase = GetCustodianCodesMissingFromDatabase();
+
+        dbOperation.CreateLas(custodianCodesMissingFromDatabase);
+    }
+
+    public IEnumerable<string> GetCustodianCodesMissingFromDatabase()
+    {
+        var custodianCodesInCode = LocalAuthorityData.LocalAuthorityNamesByCustodianCode.Keys;
+        var custodianCodesInDatabase = dbOperation.GetAllLas().Select(la => la.CustodianCode);
+
+        return custodianCodesInCode.Except(custodianCodesInDatabase);
+    }
 }

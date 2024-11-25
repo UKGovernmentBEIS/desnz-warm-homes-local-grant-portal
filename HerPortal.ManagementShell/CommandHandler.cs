@@ -179,6 +179,31 @@ public class CommandHandler
         outputProvider.Output("Migration complete.");
     }
 
+    public void AddAllMissingLocalAuthoritiesToDatabase()
+    {
+        outputProvider.Output("!!! Database Local Authority Population Script !!!");
+        outputProvider.Output("This script will ensure the database has an entry for every Local Authority present in LocalAuthorityData.");
+        outputProvider.Output("Use after adding a new Local Authority to the code.");
+
+        var custodianCodesMissingFromDatabase = adminAction.GetCustodianCodesMissingFromDatabase().ToList();
+
+        if (custodianCodesMissingFromDatabase.Count == 0)
+        {
+            outputProvider.Output("No changes needed.");
+            return;
+        }
+        
+        outputProvider.Output("The following Local Authorities will be added to the database:");
+        PrintCodes(custodianCodesMissingFromDatabase, code => custodianCodeToLaNameDict[code]);
+        
+        var confirmation = outputProvider.Confirm("Okay to proceed? (Y/N)");
+
+        if (confirmation)
+            adminAction.AddMissingLocalAuthoritiesToDatabase();
+        else
+            outputProvider.Output("No changes made.");
+    }
+
     private void OutputCouldNotFindAuthorityException(string wrapperMessage,
         CouldNotFindAuthorityException couldNotFindAuthorityException)
     {
