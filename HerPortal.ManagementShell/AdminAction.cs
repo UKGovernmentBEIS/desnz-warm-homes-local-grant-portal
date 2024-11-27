@@ -155,11 +155,12 @@ public class AdminAction
             .Select(kvp => kvp.Key);
     }
 
-    public void AddMissingLocalAuthoritiesToDatabase()
+    public void AddMissingAuthoritiesToDatabase()
     {
-        var custodianCodesMissingFromDatabase = GetCustodianCodesMissingFromDatabase();
+        var custodianCodesMissingFromDatabase = GetCustodianCodesMissingFromDatabase().ToList();
+        var consortiumCodesMissingFromDatabase = GetConsortiumCodesMissingFromDatabase().ToList();
 
-        dbOperation.CreateLas(custodianCodesMissingFromDatabase);
+        dbOperation.CreateLasAndConsortia(custodianCodesMissingFromDatabase, consortiumCodesMissingFromDatabase);
     }
 
     public IEnumerable<string> GetCustodianCodesMissingFromDatabase()
@@ -168,5 +169,13 @@ public class AdminAction
         var custodianCodesInDatabase = dbOperation.GetAllLas().Select(la => la.CustodianCode);
 
         return custodianCodesInCode.Except(custodianCodesInDatabase);
+    }
+
+    public IEnumerable<string> GetConsortiumCodesMissingFromDatabase()
+    {
+        var consortiumCodesInCode = ConsortiumData.ConsortiumNamesByConsortiumCode.Keys;
+        var consortiumCodesInDatabase = dbOperation.GetAllConsortia().Select(consortia => consortia.ConsortiumCode);
+
+        return consortiumCodesInCode.Except(consortiumCodesInDatabase);
     }
 }

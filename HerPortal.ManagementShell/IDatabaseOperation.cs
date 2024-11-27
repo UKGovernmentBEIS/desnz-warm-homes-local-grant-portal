@@ -21,5 +21,6 @@ public interface IDatabaseOperation
 
     public void RemoveConsortiaFromUser(User user, List<Consortium> consortia);
     public IEnumerable<LocalAuthority> GetAllLas();
-    public void CreateLas(IEnumerable<string> custodianCodes);
+    public IEnumerable<Consortium> GetAllConsortia();
+    public void CreateLasAndConsortia(IEnumerable<string> custodianCodes, IEnumerable<string> consortiumCodes);
 }

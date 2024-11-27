@@ -144,14 +144,29 @@ public class DatabaseOperation : IDatabaseOperation
         return dbContext.LocalAuthorities;
     }
 
-    public void CreateLas(IEnumerable<string> custodianCodes)
+    public IEnumerable<Consortium> GetAllConsortia()
+    {
+        return dbContext.Consortia;
+    }
+
+    public void CreateLasAndConsortia(IEnumerable<string> custodianCodes, IEnumerable<string> consortiumCodes)
     {
         var las = custodianCodes.Select(custodianCode => new LocalAuthority
         {
             CustodianCode = custodianCode,
-            Users = new List<User>()
+            Users = []
+        }).ToList();
+        var consortia = consortiumCodes.Select(consortiumCode => new Consortium
+        {
+            ConsortiumCode = consortiumCode,
+            Users = []
+        }).ToList();
+
+        PerformTransaction(() =>
+        {
+            dbContext.LocalAuthorities.AddRange(las);
+            dbContext.Consortia.AddRange(consortia);
         });
-        PerformTransaction(() => { dbContext.LocalAuthorities.AddRange(las); });
     }
 
     private void PerformTransaction(Action transaction)
