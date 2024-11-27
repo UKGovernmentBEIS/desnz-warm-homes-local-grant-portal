@@ -69,6 +69,9 @@ public static class Program
             case Subcommand.FixAllUserOwnedConsortia:
                 commandHandler.FixAllUserOwnedConsortia();
                 break;
+            case Subcommand.AddAllMissingAuthoritiesToDatabase:
+                commandHandler.AddAllMissingAuthoritiesToDatabase();
+                break;
             default:
                 outputProvider.Output("Invalid terminal command entered. Please refer to the documentation");
                 return;
@@ -82,6 +85,7 @@ public static class Program
         RemoveUser,
         AddConsortia,
         RemoveConsortia,
-        FixAllUserOwnedConsortia
+        FixAllUserOwnedConsortia,
+        AddAllMissingAuthoritiesToDatabase
     }
 }

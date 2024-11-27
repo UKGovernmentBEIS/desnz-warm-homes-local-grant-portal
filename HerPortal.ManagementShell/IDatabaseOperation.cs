@@ -20,4 +20,7 @@ public interface IDatabaseOperation
         List<LocalAuthority> localAuthorities);
 
     public void RemoveConsortiaFromUser(User user, List<Consortium> consortia);
+    public IEnumerable<LocalAuthority> GetAllLas();
+    public IEnumerable<Consortium> GetAllConsortia();
+    public void CreateLasAndConsortia(IEnumerable<string> custodianCodes, IEnumerable<string> consortiumCodes);
 }

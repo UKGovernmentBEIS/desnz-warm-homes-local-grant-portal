@@ -154,4 +154,28 @@ public class AdminAction
                 kvp.Value.All(custodianCode => userCustodianCodes.Contains(custodianCode)))
             .Select(kvp => kvp.Key);
     }
+
+    public void AddMissingAuthoritiesToDatabase()
+    {
+        var custodianCodesMissingFromDatabase = GetCustodianCodesMissingFromDatabase().ToList();
+        var consortiumCodesMissingFromDatabase = GetConsortiumCodesMissingFromDatabase().ToList();
+
+        dbOperation.CreateLasAndConsortia(custodianCodesMissingFromDatabase, consortiumCodesMissingFromDatabase);
+    }
+
+    public IEnumerable<string> GetCustodianCodesMissingFromDatabase()
+    {
+        var custodianCodesInCode = LocalAuthorityData.LocalAuthorityNamesByCustodianCode.Keys;
+        var custodianCodesInDatabase = dbOperation.GetAllLas().Select(la => la.CustodianCode);
+
+        return custodianCodesInCode.Except(custodianCodesInDatabase);
+    }
+
+    public IEnumerable<string> GetConsortiumCodesMissingFromDatabase()
+    {
+        var consortiumCodesInCode = ConsortiumData.ConsortiumNamesByConsortiumCode.Keys;
+        var consortiumCodesInDatabase = dbOperation.GetAllConsortia().Select(consortia => consortia.ConsortiumCode);
+
+        return consortiumCodesInCode.Except(consortiumCodesInDatabase);
+    }
 }

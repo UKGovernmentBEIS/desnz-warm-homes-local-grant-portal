@@ -179,6 +179,42 @@ public class CommandHandler
         outputProvider.Output("Migration complete.");
     }
 
+    public void AddAllMissingAuthoritiesToDatabase()
+    {
+        outputProvider.Output("!!! Database Local Authority Population Script !!!");
+        outputProvider.Output(
+            "This script will ensure the database has an entry for every Local Authority & Consortium present in LocalAuthorityData or ConsortiumData.");
+        outputProvider.Output("Use after adding a new Local Authority or Consortium to the code.");
+
+        var custodianCodesMissingFromDatabase = adminAction.GetCustodianCodesMissingFromDatabase().ToList();
+        var consortiumCodesMissingFromDatabase = adminAction.GetConsortiumCodesMissingFromDatabase().ToList();
+
+        if (custodianCodesMissingFromDatabase.Count == 0 && consortiumCodesMissingFromDatabase.Count == 0)
+        {
+            outputProvider.Output("No changes needed.");
+            return;
+        }
+
+        if (custodianCodesMissingFromDatabase.Count > 0)
+        {
+            outputProvider.Output("The following Local Authorities will be added to the database:");
+            PrintCodes(custodianCodesMissingFromDatabase, code => custodianCodeToLaNameDict[code]);
+        }
+
+        if (consortiumCodesMissingFromDatabase.Count > 0)
+        {
+            outputProvider.Output("The following Consortia will be added to the database:");
+            PrintCodes(consortiumCodesMissingFromDatabase, code => consortiumCodeToConsortiumNameDict[code]);
+        }
+
+        var confirmation = outputProvider.Confirm("Okay to proceed? (Y/N)");
+
+        if (confirmation)
+            adminAction.AddMissingAuthoritiesToDatabase();
+        else
+            outputProvider.Output("No changes made.");
+    }
+
     private void OutputCouldNotFindAuthorityException(string wrapperMessage,
         CouldNotFindAuthorityException couldNotFindAuthorityException)
     {

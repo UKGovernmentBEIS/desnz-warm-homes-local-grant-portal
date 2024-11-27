@@ -31,7 +31,8 @@ public class DatabaseOperation : IDatabaseOperation
             custodianCodes.SingleOrDefault(code => !dbContext.LocalAuthorities.Any(la => la.CustodianCode == code),
                 null);
         if (missingCustodianCode != null)
-            throw new CouldNotFindAuthorityException("Could not find Custodian Code in database.", new List<string> {missingCustodianCode});
+            throw new CouldNotFindAuthorityException("Could not find Custodian Code in database.",
+                new List<string> { missingCustodianCode });
 
         return custodianCodes
             .Select(code => dbContext.LocalAuthorities
@@ -44,7 +45,8 @@ public class DatabaseOperation : IDatabaseOperation
         var missingConsortiumCode =
             consortiumCodes.SingleOrDefault(code => !dbContext.Consortia.Any(la => la.ConsortiumCode == code), null);
         if (missingConsortiumCode != null)
-            throw new CouldNotFindAuthorityException("Could not find Consortium Code in database.", new List<string> {missingConsortiumCode});
+            throw new CouldNotFindAuthorityException("Could not find Consortium Code in database.",
+                new List<string> { missingConsortiumCode });
 
         return consortiumCodes
             .Select(code => dbContext.Consortia
@@ -134,6 +136,36 @@ public class DatabaseOperation : IDatabaseOperation
                     outputProvider.Output(e.Message);
                     throw;
                 }
+        });
+    }
+
+    public IEnumerable<LocalAuthority> GetAllLas()
+    {
+        return dbContext.LocalAuthorities;
+    }
+
+    public IEnumerable<Consortium> GetAllConsortia()
+    {
+        return dbContext.Consortia;
+    }
+
+    public void CreateLasAndConsortia(IEnumerable<string> custodianCodes, IEnumerable<string> consortiumCodes)
+    {
+        var las = custodianCodes.Select(custodianCode => new LocalAuthority
+        {
+            CustodianCode = custodianCode,
+            Users = []
+        }).ToList();
+        var consortia = consortiumCodes.Select(consortiumCode => new Consortium
+        {
+            ConsortiumCode = consortiumCode,
+            Users = []
+        }).ToList();
+
+        PerformTransaction(() =>
+        {
+            dbContext.LocalAuthorities.AddRange(las);
+            dbContext.Consortia.AddRange(consortia);
         });
     }
 
