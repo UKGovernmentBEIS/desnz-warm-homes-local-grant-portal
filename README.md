@@ -11,7 +11,7 @@ Migrations will be run automatically on deployment. If a migration needs to be r
 2. Generate and run a rollback script
    1. Check out the same commit locally
    2. [Install EF Core CLI tools](https://docs.microsoft.com/en-us/ef/core/cli/dotnet) if you haven't already
-   3. Generate a rollback script using `dotnet ef migrations script 2022010112345678_BadMigration 2022010112345678_LastGoodMigration -o revert.sql` from the `HerPortal` directory
+   3. Generate a rollback script using `dotnet ef migrations script 2022010112345678_BadMigration 2022010112345678_LastGoodMigration -o revert.sql` from the `WhlgPortalWebsite` directory
    4. Review the script 
    5. TODO Add instructions for running the script on the Azure environment
 
@@ -60,7 +60,7 @@ For critical bug fixes on production
   - [Windows](https://min.io/download#/windows)
   - [Mac](https://min.io/docs/minio/macos/index.html#procedure)
 
-In HerPortal run `npm install`
+In WhlgPortalWebsite run `npm install`
 
 #### Minio
 
@@ -117,7 +117,7 @@ the GovUkDesignSystem you may also need to update the GOV.UK Frontend NPM packag
 The app communicates with a number of APIs. You will need to obtain and configure credentials for these APIs in your user secrets file.
 
 In Rider:
-- Right-click on the `HerPortal` project
+- Right-click on the `WhlgPortalWebsite` project
 - Select `Tools`
 - Select `Open Project User Secrets`
 
@@ -149,8 +149,8 @@ cat secrets.json | dotnet user-secrets set
 
 - In your Minio folder run Minio `.\minio.exe server <path to data folder> --console-address :9090`
 - In Visual Studio / Rider build the solution
-- In `HerPortal` run `npm run watch`
-- In Visual Studio / Rider run the `HerPortal` project
+- In `WhlgPortalWebsite` run `npm run watch`
+- In Visual Studio / Rider run the `WhlgPortalWebsite` project
 - In a browser, visit https://localhost:5001/portal (the `/portal` is important!)
 
 ## Database
@@ -173,18 +173,18 @@ cat secrets.json | dotnet user-secrets set
 ### Creating/updating the local database
 
 - You can just run the website project and it will create and update the database on startup
-- If you want to manually update the database (e.g. to test a new migration) in the terminal (from the solution directory) run `dotnet ef database update --project .\HerPortal`
+- If you want to manually update the database (e.g. to test a new migration) in the terminal (from the solution directory) run `dotnet ef database update --project .\WhlgPortalWebsite`
 
 ### Adding Migrations
 
-- In the terminal (from the solution directory) run `dotnet ef migrations add <YOUR_MIGRATION_NAME> --project .\HerPortal.Data --startup-project .\HerPortal`
+- In the terminal (from the solution directory) run `dotnet ef migrations add <YOUR_MIGRATION_NAME> --project .\WhlgPortalWebsite.Data --startup-project .\WhlgPortalWebsite`
 - Then update the local database
 
 ### Reverting Migrations
 
 You may want to revert a migration on your local database as part of a merge, or just because it's wrong and you need to fix it (only do this for migrations that haven't been merged to main yet)
-- Run `dotnet ef database update <MIGRATION_BEFORE_YOURS> --project .\HerPortal` to rollback your local database
-- Run `dotnet ef migrations remove --project .\HerPortal.Data --startup-project .\HerPortal` to delete the migration and undo the snapshot changes
+- Run `dotnet ef database update <MIGRATION_BEFORE_YOURS> --project .\WhlgPortalWebsite` to rollback your local database
+- Run `dotnet ef migrations remove --project .\WhlgPortalWebsite.Data --startup-project .\WhlgPortalWebsite` to delete the migration and undo the snapshot changes
 
 #### Merging Migrations
 
