@@ -1,6 +1,6 @@
 ﻿using Amazon.S3.Model;
 
-namespace HerPortal.BusinessLogic.ExternalServices.S3FileReader;
+namespace WhlgPortalWebsite.BusinessLogic.ExternalServices.S3FileReader;
 
 public interface IS3FileReader
 {

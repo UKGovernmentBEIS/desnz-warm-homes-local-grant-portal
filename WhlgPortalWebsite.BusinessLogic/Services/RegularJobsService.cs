@@ -1,8 +1,8 @@
-﻿using HerPortal.BusinessLogic.ExternalServices.EmailSending;
-using HerPortal.BusinessLogic.Services.CsvFileService;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using WhlgPortalWebsite.BusinessLogic.ExternalServices.EmailSending;
+using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 
-namespace HerPortal.BusinessLogic.Services;
+namespace WhlgPortalWebsite.BusinessLogic.Services;
 
 public class RegularJobsService
 {

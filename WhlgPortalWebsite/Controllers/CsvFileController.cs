@@ -2,12 +2,12 @@
 using System.IO;
 using System.Security;
 using System.Threading.Tasks;
-using HerPortal.BusinessLogic.Services.CsvFileService;
-using HerPortal.Helpers;
+using WhlgPortalWebsite.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 
-namespace HerPortal.Controllers;
+namespace WhlgPortalWebsite.Controllers;
 
 [Route("/download")]
 public class CsvFileController : Controller

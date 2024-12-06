@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace HerPortal.Data.Migrations
+namespace WhlgPortalWebsite.Data.Migrations
 {
     public partial class AddTableToTrackAllCsvFileDownloads : Migration
     {

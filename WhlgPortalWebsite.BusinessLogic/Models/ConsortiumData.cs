@@ -1,4 +1,4 @@
-﻿namespace HerPortal.BusinessLogic.Models;
+﻿namespace WhlgPortalWebsite.BusinessLogic.Models;
 
 /// <summary>
 ///     LA-Consortium mapping data can be found both in <see cref="LocalAuthorityData"/>, and in the HUG2 Public Website codebase's LocalAuthorityData.cs.

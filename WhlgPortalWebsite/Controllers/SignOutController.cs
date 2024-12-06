@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HerPortal.Controllers;
+namespace WhlgPortalWebsite.Controllers;
 
 [Route("sign-out")]
 public class SignOutController : Controller

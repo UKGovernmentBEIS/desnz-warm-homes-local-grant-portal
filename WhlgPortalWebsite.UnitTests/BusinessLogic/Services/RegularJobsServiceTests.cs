@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using HerPortal.BusinessLogic;
-using HerPortal.BusinessLogic.ExternalServices.EmailSending;
-using HerPortal.BusinessLogic.Models;
-using HerPortal.BusinessLogic.Services;
-using HerPortal.BusinessLogic.Services.CsvFileService;
+using WhlgPortalWebsite.BusinessLogic;
+using WhlgPortalWebsite.BusinessLogic.ExternalServices.EmailSending;
+using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Services;
+using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Moq;

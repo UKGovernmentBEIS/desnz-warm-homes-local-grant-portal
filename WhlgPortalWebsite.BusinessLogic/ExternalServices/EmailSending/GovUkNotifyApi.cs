@@ -4,7 +4,7 @@ using Notify.Client;
 using Notify.Exceptions;
 using Notify.Models.Responses;
 
-namespace HerPortal.BusinessLogic.ExternalServices.EmailSending
+namespace WhlgPortalWebsite.BusinessLogic.ExternalServices.EmailSending
 {
     public class GovUkNotifyApi: IEmailSender
     {

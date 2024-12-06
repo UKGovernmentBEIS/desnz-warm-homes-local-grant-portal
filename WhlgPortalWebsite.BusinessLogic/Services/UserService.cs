@@ -1,6 +1,6 @@
-﻿using HerPortal.BusinessLogic.Models;
+﻿using WhlgPortalWebsite.BusinessLogic.Models;
 
-namespace HerPortal.BusinessLogic.Services;
+namespace WhlgPortalWebsite.BusinessLogic.Services;
 
 public class UserService
 {

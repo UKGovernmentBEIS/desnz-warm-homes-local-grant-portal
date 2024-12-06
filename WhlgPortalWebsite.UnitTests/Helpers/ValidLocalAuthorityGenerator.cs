@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using HerPortal.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Models;
 
 namespace Tests.Helpers;
 

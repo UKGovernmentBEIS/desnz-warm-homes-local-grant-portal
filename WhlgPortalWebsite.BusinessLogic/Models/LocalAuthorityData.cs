@@ -1,4 +1,4 @@
-﻿namespace HerPortal.BusinessLogic.Models;
+﻿namespace WhlgPortalWebsite.BusinessLogic.Models;
 
 /// <summary>
 ///     This class does not contain all data for Local Authorities.

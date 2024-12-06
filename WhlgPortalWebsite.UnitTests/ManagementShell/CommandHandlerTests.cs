@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using HerPortal.BusinessLogic.Models;
-using HerPortal.ManagementShell;
+using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.ManagementShell;
 using Moq;
 using NUnit.Framework;
 using Tests.Builders;

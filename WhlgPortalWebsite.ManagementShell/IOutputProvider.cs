@@ -1,4 +1,4 @@
-namespace HerPortal.ManagementShell;
+namespace WhlgPortalWebsite.ManagementShell;
 
 public interface IOutputProvider
 {

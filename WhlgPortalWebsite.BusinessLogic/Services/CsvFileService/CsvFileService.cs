@@ -2,11 +2,11 @@ using System.Globalization;
 using System.Security;
 using CsvHelper;
 using CsvHelper.Configuration.Attributes;
-using HerPortal.BusinessLogic.ExternalServices.S3FileReader;
-using HerPortal.BusinessLogic.Models;
 using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
+using WhlgPortalWebsite.BusinessLogic.ExternalServices.S3FileReader;
+using WhlgPortalWebsite.BusinessLogic.Models;
 
-namespace HerPortal.BusinessLogic.Services.CsvFileService;
+namespace WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 
 public class CsvFileService : ICsvFileService
 {

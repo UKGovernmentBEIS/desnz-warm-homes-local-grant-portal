@@ -1,6 +1,6 @@
-using HerPortal.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Models;
 
-namespace HerPortal.BusinessLogic.Services.CsvFileService;
+namespace WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 
 public class ConsortiumCsvFileData : CsvFileData
 {

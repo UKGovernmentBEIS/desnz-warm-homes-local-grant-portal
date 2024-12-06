@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using HerPortal.BusinessLogic.Models;
-using HerPortal.BusinessLogic.Services.CsvFileService;
-using HerPortal.Models;
+using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+using WhlgPortalWebsite.Models;
 using NUnit.Framework;
 using Tests.Helpers;
 

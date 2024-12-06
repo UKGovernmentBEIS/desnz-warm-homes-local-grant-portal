@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using GovUkDesignSystem.GovUkDesignSystemComponents;
-using HerPortal.BusinessLogic.Models;
-using HerPortal.BusinessLogic.Services.CsvFileService;
 using Microsoft.AspNetCore.Mvc.Routing;
+using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 
-namespace HerPortal.Models;
+namespace WhlgPortalWebsite.Models;
 
 public class HomepageViewModel
 {

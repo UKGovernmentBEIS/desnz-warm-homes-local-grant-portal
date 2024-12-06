@@ -1,4 +1,4 @@
-﻿namespace HerPortal.BusinessLogic.Models;
+﻿namespace WhlgPortalWebsite.BusinessLogic.Models;
 
 /// <summary>
 ///     This model is not a full model for Local Authority Data.

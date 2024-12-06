@@ -1,4 +1,4 @@
-namespace HerPortal.BusinessLogic.Services.CsvFileService;
+namespace WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 
 public class PaginatedFileData
 {

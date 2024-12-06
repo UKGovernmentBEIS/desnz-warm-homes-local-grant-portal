@@ -1,8 +1,8 @@
-﻿using HerPortal.BusinessLogic;
-using HerPortal.BusinessLogic.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using WhlgPortalWebsite.BusinessLogic;
+using WhlgPortalWebsite.BusinessLogic.Models;
 
-namespace HerPortal.Data;
+namespace WhlgPortalWebsite.Data;
 
 public class DataAccessProvider : IDataAccessProvider
 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HerPortal.Controllers
+namespace WhlgPortalWebsite.Controllers
 {
     public class HealthCheckController : Controller
     {

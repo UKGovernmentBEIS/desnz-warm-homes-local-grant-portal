@@ -5,11 +5,6 @@ using Amazon.S3;
 using GovUkDesignSystem.ModelBinders;
 using Hangfire;
 using Hangfire.PostgreSql;
-using HerPortal.BusinessLogic;
-using HerPortal.BusinessLogic.ExternalServices.EmailSending;
-using HerPortal.BusinessLogic.ExternalServices.S3FileReader;
-using HerPortal.BusinessLogic.Services;
-using HerPortal.BusinessLogic.Services.CsvFileService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -18,19 +13,24 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using HerPortal.Data;
-using HerPortal.ErrorHandling;
-using HerPortal.Middleware;
-using HerPortal.Services;
 using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using GlobalConfiguration = HerPortal.BusinessLogic.GlobalConfiguration;
+using WhlgPortalWebsite.BusinessLogic;
+using WhlgPortalWebsite.BusinessLogic.ExternalServices.EmailSending;
+using WhlgPortalWebsite.BusinessLogic.ExternalServices.S3FileReader;
+using WhlgPortalWebsite.BusinessLogic.Services;
+using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+using WhlgPortalWebsite.Data;
+using WhlgPortalWebsite.ErrorHandling;
+using WhlgPortalWebsite.Middleware;
+using WhlgPortalWebsite.Services;
+using GlobalConfiguration = WhlgPortalWebsite.BusinessLogic.GlobalConfiguration;
 
-namespace HerPortal
+namespace WhlgPortalWebsite
 {
     public class Startup
     {

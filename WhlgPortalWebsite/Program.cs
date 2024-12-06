@@ -1,14 +1,14 @@
 using Hangfire;
-using HerPortal.BusinessLogic.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using HerPortal.Data;
 using Microsoft.Extensions.Options;
-using GlobalConfiguration = HerPortal.BusinessLogic.GlobalConfiguration;
+using WhlgPortalWebsite.BusinessLogic.Services;
+using WhlgPortalWebsite.Data;
+using GlobalConfiguration = WhlgPortalWebsite.BusinessLogic.GlobalConfiguration;
 
-namespace HerPortal
+namespace WhlgPortalWebsite
 {
     public class Program
     {

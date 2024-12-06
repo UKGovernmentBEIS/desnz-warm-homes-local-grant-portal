@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 
-namespace HerPortal.Middleware;
+namespace WhlgPortalWebsite.Middleware;
 
 public class SecurityHeadersMiddleware
 {

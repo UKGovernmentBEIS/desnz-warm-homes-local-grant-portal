@@ -1,4 +1,4 @@
-﻿namespace HerPortal.BusinessLogic.ExternalServices.S3FileReader;
+﻿namespace WhlgPortalWebsite.BusinessLogic.ExternalServices.S3FileReader;
 
 public class S3Configuration
 {

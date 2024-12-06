@@ -3,7 +3,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace HerPortal.Data.Migrations
+namespace WhlgPortalWebsite.Data.Migrations
 {
     public partial class AddConsortiumModelAndUserListOfConsortiums : Migration
     {

@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using HerPortal.BusinessLogic.Services;
-using HerPortal.BusinessLogic.Services.CsvFileService;
-using HerPortal.Helpers;
-using HerPortal.Models;
+using WhlgPortalWebsite.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using WhlgPortalWebsite.BusinessLogic.Services;
+using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+using WhlgPortalWebsite.Models;
 
-namespace HerPortal.Controllers;
+namespace WhlgPortalWebsite.Controllers;
 
 public class HomeController : Controller
 {

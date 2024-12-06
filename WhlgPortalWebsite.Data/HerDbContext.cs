@@ -1,9 +1,9 @@
-﻿using HerPortal.BusinessLogic.Models;
-using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using WhlgPortalWebsite.BusinessLogic.Models;
 
-namespace HerPortal.Data;
+namespace WhlgPortalWebsite.Data;
 
 public class HerDbContext : DbContext, IDataProtectionKeyContext
 {

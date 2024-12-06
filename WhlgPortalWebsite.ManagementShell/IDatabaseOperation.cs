@@ -1,6 +1,6 @@
-using HerPortal.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Models;
 
-namespace HerPortal.ManagementShell;
+namespace WhlgPortalWebsite.ManagementShell;
 
 public interface IDatabaseOperation
 {

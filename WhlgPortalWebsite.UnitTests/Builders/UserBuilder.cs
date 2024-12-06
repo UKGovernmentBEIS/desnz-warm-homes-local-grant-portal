@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using HerPortal.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Models;
 
 namespace Tests.Builders;
 

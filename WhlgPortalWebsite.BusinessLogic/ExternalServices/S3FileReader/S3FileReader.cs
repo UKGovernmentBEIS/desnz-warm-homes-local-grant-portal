@@ -6,7 +6,7 @@ using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace HerPortal.BusinessLogic.ExternalServices.S3FileReader;
+namespace WhlgPortalWebsite.BusinessLogic.ExternalServices.S3FileReader;
 
 public class S3FileReader : IS3FileReader
 {

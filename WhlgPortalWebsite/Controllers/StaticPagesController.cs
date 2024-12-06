@@ -1,7 +1,7 @@
-﻿using HerPortal.Helpers;
+﻿using WhlgPortalWebsite.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HerPortal.Controllers;
+namespace WhlgPortalWebsite.Controllers;
 
 public class StaticPagesController : Controller
 {

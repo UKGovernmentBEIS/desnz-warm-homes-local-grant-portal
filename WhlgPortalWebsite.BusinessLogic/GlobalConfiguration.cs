@@ -1,4 +1,4 @@
-﻿namespace HerPortal.BusinessLogic;
+﻿namespace WhlgPortalWebsite.BusinessLogic;
 
 public class GlobalConfiguration
 {

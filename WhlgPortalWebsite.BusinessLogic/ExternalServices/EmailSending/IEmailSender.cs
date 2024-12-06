@@ -1,4 +1,4 @@
-﻿namespace HerPortal.BusinessLogic.ExternalServices.EmailSending
+﻿namespace WhlgPortalWebsite.BusinessLogic.ExternalServices.EmailSending
 {
     public interface IEmailSender
     {

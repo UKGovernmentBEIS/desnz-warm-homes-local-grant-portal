@@ -1,9 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
-using HerPortal.BusinessLogic.Models;
-using HerPortal.Data;
 using Microsoft.EntityFrameworkCore;
+using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.Data;
 
-namespace HerPortal.ManagementShell;
+namespace WhlgPortalWebsite.ManagementShell;
 
 [ExcludeFromCodeCoverage]
 public class DatabaseOperation : IDatabaseOperation

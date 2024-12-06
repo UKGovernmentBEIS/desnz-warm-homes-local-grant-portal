@@ -1,4 +1,4 @@
-﻿namespace HerPortal;
+﻿namespace WhlgPortalWebsite;
 
 public static class Constants
 {

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Security.Claims;
 
-namespace HerPortal.Helpers;
+namespace WhlgPortalWebsite.Helpers;
 
 public static class CognitoUserHelper
 {

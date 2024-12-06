@@ -5,11 +5,11 @@ using System.Security;
 using System.Threading.Tasks;
 using Amazon.S3.Model;
 using FluentAssertions;
-using HerPortal.BusinessLogic;
-using HerPortal.BusinessLogic.ExternalServices.S3FileReader;
-using HerPortal.BusinessLogic.Models;
-using HerPortal.BusinessLogic.Services;
-using HerPortal.BusinessLogic.Services.CsvFileService;
+using WhlgPortalWebsite.BusinessLogic;
+using WhlgPortalWebsite.BusinessLogic.ExternalServices.S3FileReader;
+using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Services;
+using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -23,7 +23,7 @@ public class CsvFileServiceTests
     private Mock<ILogger<S3ReferralFileKeyService>> mockS3Logger;
     private Mock<IDataAccessProvider> mockDataAccessProvider;
     private Mock<IS3FileReader> mockFileReader;
-    private HerPortal.BusinessLogic.Services.CsvFileService.CsvFileService underTest;
+    private WhlgPortalWebsite.BusinessLogic.Services.CsvFileService.CsvFileService underTest;
     
     [SetUp]
     public void Setup()
@@ -33,7 +33,7 @@ public class CsvFileServiceTests
         mockFileReader = new Mock<IS3FileReader>();
         var s3ReferralFileKeyService = new S3ReferralFileKeyService(mockS3Logger.Object);
 
-        underTest = new HerPortal.BusinessLogic.Services.CsvFileService.CsvFileService(mockDataAccessProvider.Object, s3ReferralFileKeyService, mockFileReader.Object);
+        underTest = new WhlgPortalWebsite.BusinessLogic.Services.CsvFileService.CsvFileService(mockDataAccessProvider.Object, s3ReferralFileKeyService, mockFileReader.Object);
     }
 
     [Test]

@@ -1,4 +1,4 @@
-﻿namespace HerPortal.BusinessLogic.Models;
+﻿namespace WhlgPortalWebsite.BusinessLogic.Models;
 
 public class User
 {
