@@ -1,8 +1,8 @@
 ﻿namespace WhlgPortalWebsite.BusinessLogic.Models;
 
 /// <summary>
-///     LA-Consortium mapping data can be found both in <see cref="LocalAuthorityData"/>, and in the HUG2 Public Website codebase's LocalAuthorityData.cs.
-///     <seealso href="https://github.com/UKGovernmentBEIS/desnz-home-energy-retrofit-beta/blob/develop/HerPublicWebsite.BusinessLogic/Models/LocalAuthorityData.cs">Link to HUG2 Public Website codebase's LocalAuthorityData.cs</seealso>
+///     LA-Consortium mapping data can be found both in <see cref="LocalAuthorityData"/>, and in the WH:LG Public Website codebase's LocalAuthorityData.cs.
+///     <seealso href="https://github.com/UKGovernmentBEIS/desnz-warm-homes-local-grant/blob/develop/WhlgPublicWebsite.BusinessLogic/Models/LocalAuthorityData.cs">Link to WH:LG Public Website codebase's LocalAuthorityData.cs</seealso>
 ///     Note: Mappings in the above files are expected to be consistent between both repos
 /// </summary>
 public static class ConsortiumData
