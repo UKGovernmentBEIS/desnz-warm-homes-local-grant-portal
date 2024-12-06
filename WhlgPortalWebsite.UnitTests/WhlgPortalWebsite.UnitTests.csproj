@@ -18,8 +18,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\HerPortal.ManagementShell\HerPortal.ManagementShell.csproj"/>
-        <ProjectReference Include="..\HerPortal\HerPortal.csproj"/>
+        <ProjectReference Include="..\WhlgPortalWebsite.ManagementShell\WhlgPortalWebsite.ManagementShell.csproj" />
+        <ProjectReference Include="..\WhlgPortalWebsite\WhlgPortalWebsite.csproj" />
     </ItemGroup>
 
 </Project>

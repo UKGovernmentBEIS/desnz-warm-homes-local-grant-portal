@@ -4,6 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <LangVersion>12</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>HerPortal.Data</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\HerPortal.BusinessLogic\HerPortal.BusinessLogic.csproj" />
+      <ProjectReference Include="..\WhlgPortalWebsite.BusinessLogic\WhlgPortalWebsite.BusinessLogic.csproj" />
     </ItemGroup>
 
 </Project>

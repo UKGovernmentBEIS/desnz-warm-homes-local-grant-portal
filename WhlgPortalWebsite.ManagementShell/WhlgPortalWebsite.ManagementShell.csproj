@@ -6,11 +6,12 @@
         <LangVersion>12</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>HerPortal.ManagementShell</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\HerPortal.BusinessLogic\HerPortal.BusinessLogic.csproj"/>
-        <ProjectReference Include="..\HerPortal.Data\HerPortal.Data.csproj"/>
+        <ProjectReference Include="..\WhlgPortalWebsite.BusinessLogic\WhlgPortalWebsite.BusinessLogic.csproj" />
+        <ProjectReference Include="..\WhlgPortalWebsite.Data\WhlgPortalWebsite.Data.csproj" />
     </ItemGroup>
 
 </Project>

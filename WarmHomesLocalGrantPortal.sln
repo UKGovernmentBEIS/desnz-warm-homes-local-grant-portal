@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerPortal", "HerPortal\HerPortal.csproj", "{68F9016E-95CB-4A9E-A111-43619D287158}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhlgPortalWebsite", "WhlgPortalWebsite\WhlgPortalWebsite.csproj", "{68F9016E-95CB-4A9E-A111-43619D287158}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "General files", "General files", "{B4E04C79-22C1-4E83-92AE-9666840A1933}"
 ProjectSection(SolutionItems) = preProject
@@ -16,11 +16,11 @@ ProjectSection(SolutionItems) = preProject
 	.github\workflows\build-and-run-tests.yml = .github\workflows\build-and-run-tests.yml
 EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerPortal.UnitTests", "HerPortal.UnitTests\HerPortal.UnitTests.csproj", "{BC27E00A-BCB1-40DD-872A-3FF0A46A5FFF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhlgPortalWebsite.UnitTests", "WhlgPortalWebsite.UnitTests\WhlgPortalWebsite.UnitTests.csproj", "{BC27E00A-BCB1-40DD-872A-3FF0A46A5FFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerPortal.Data", "HerPortal.Data\HerPortal.Data.csproj", "{2829E31D-41AF-4B37-87C9-1F78BE84990A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhlgPortalWebsite.Data", "WhlgPortalWebsite.Data\WhlgPortalWebsite.Data.csproj", "{2829E31D-41AF-4B37-87C9-1F78BE84990A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerPortal.BusinessLogic", "HerPortal.BusinessLogic\HerPortal.BusinessLogic.csproj", "{52A59A93-AC33-48E1-927D-FFCBB37A330E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhlgPortalWebsite.BusinessLogic", "WhlgPortalWebsite.BusinessLogic\WhlgPortalWebsite.BusinessLogic.csproj", "{52A59A93-AC33-48E1-927D-FFCBB37A330E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL", "SQL", "{16067151-D518-4B3B-9C68-2DE899A13F98}"
 	ProjectSection(SolutionItems) = preProject
@@ -28,7 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL", "SQL", "{16067151-D51
 		SQL\add_users.sql = SQL\add_users.sql
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerPortal.ManagementShell", "HerPortal.ManagementShell\HerPortal.ManagementShell.csproj", "{390AAF3C-C580-4DED-8C25-F38FE44C7BB9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhlgPortalWebsite.ManagementShell", "WhlgPortalWebsite.ManagementShell\WhlgPortalWebsite.ManagementShell.csproj", "{390AAF3C-C580-4DED-8C25-F38FE44C7BB9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

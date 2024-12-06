@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HerPortal.Data.Migrations
 {
     [DbContext(typeof(HerDbContext))]
-    [Migration("20230629081503_MakeAuditDownloadUserEmailAndCustodianCodeNonNullable")]
-    partial class MakeAuditDownloadUserEmailAndCustodianCodeNonNullable
+    [Migration("20230628160412_AddSeparateIdColumnOnAuditDownload")]
+    partial class AddSeparateIdColumnOnAuditDownload
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,7 +24,7 @@ namespace HerPortal.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("HerPortal.BusinessLogic.Models.AuditDownload", b =>
+            modelBuilder.Entity("WhlgPortalWebsite.BusinessLogic.Models.AuditDownload", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,7 +33,6 @@ namespace HerPortal.Data.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CustodianCode")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Month")
@@ -43,7 +42,6 @@ namespace HerPortal.Data.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UserEmail")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Year")
@@ -54,7 +52,7 @@ namespace HerPortal.Data.Migrations
                     b.ToTable("AuditDownloads");
                 });
 
-            modelBuilder.Entity("HerPortal.BusinessLogic.Models.CsvFileDownload", b =>
+            modelBuilder.Entity("WhlgPortalWebsite.BusinessLogic.Models.CsvFileDownload", b =>
                 {
                     b.Property<string>("CustodianCode")
                         .HasColumnType("text");
@@ -83,7 +81,7 @@ namespace HerPortal.Data.Migrations
                     b.ToTable("CsvFileDownloads");
                 });
 
-            modelBuilder.Entity("HerPortal.BusinessLogic.Models.LocalAuthority", b =>
+            modelBuilder.Entity("WhlgPortalWebsite.BusinessLogic.Models.LocalAuthority", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -107,7 +105,7 @@ namespace HerPortal.Data.Migrations
                     b.ToTable("LocalAuthorities");
                 });
 
-            modelBuilder.Entity("HerPortal.BusinessLogic.Models.User", b =>
+            modelBuilder.Entity("WhlgPortalWebsite.BusinessLogic.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -168,9 +166,9 @@ namespace HerPortal.Data.Migrations
                     b.ToTable("DataProtectionKeys");
                 });
 
-            modelBuilder.Entity("HerPortal.BusinessLogic.Models.CsvFileDownload", b =>
+            modelBuilder.Entity("WhlgPortalWebsite.BusinessLogic.Models.CsvFileDownload", b =>
                 {
-                    b.HasOne("HerPortal.BusinessLogic.Models.User", "User")
+                    b.HasOne("WhlgPortalWebsite.BusinessLogic.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -181,13 +179,13 @@ namespace HerPortal.Data.Migrations
 
             modelBuilder.Entity("LocalAuthorityUser", b =>
                 {
-                    b.HasOne("HerPortal.BusinessLogic.Models.LocalAuthority", null)
+                    b.HasOne("WhlgPortalWebsite.BusinessLogic.Models.LocalAuthority", null)
                         .WithMany()
                         .HasForeignKey("LocalAuthoritiesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HerPortal.BusinessLogic.Models.User", null)
+                    b.HasOne("WhlgPortalWebsite.BusinessLogic.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)

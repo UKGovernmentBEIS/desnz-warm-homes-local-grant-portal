@@ -12,19 +12,49 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HerPortal.Data.Migrations
 {
     [DbContext(typeof(HerDbContext))]
-    [Migration("20230517152404_AddRowVersioningToTables")]
-    partial class AddRowVersioningToTables
+    [Migration("20230629081503_MakeAuditDownloadUserEmailAndCustodianCodeNonNullable")]
+    partial class MakeAuditDownloadUserEmailAndCustodianCodeNonNullable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.4")
+                .HasAnnotation("ProductVersion", "6.0.16")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("HerPortal.BusinessLogic.Models.CsvFileDownload", b =>
+            modelBuilder.Entity("WhlgPortalWebsite.BusinessLogic.Models.AuditDownload", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CustodianCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AuditDownloads");
+                });
+
+            modelBuilder.Entity("WhlgPortalWebsite.BusinessLogic.Models.CsvFileDownload", b =>
                 {
                     b.Property<string>("CustodianCode")
                         .HasColumnType("text");
@@ -39,7 +69,7 @@ namespace HerPortal.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("LastDownloaded")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("xmin")
                         .IsConcurrencyToken()
@@ -53,7 +83,7 @@ namespace HerPortal.Data.Migrations
                     b.ToTable("CsvFileDownloads");
                 });
 
-            modelBuilder.Entity("HerPortal.BusinessLogic.Models.LocalAuthority", b =>
+            modelBuilder.Entity("WhlgPortalWebsite.BusinessLogic.Models.LocalAuthority", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -77,7 +107,7 @@ namespace HerPortal.Data.Migrations
                     b.ToTable("LocalAuthorities");
                 });
 
-            modelBuilder.Entity("HerPortal.BusinessLogic.Models.User", b =>
+            modelBuilder.Entity("WhlgPortalWebsite.BusinessLogic.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -138,9 +168,9 @@ namespace HerPortal.Data.Migrations
                     b.ToTable("DataProtectionKeys");
                 });
 
-            modelBuilder.Entity("HerPortal.BusinessLogic.Models.CsvFileDownload", b =>
+            modelBuilder.Entity("WhlgPortalWebsite.BusinessLogic.Models.CsvFileDownload", b =>
                 {
-                    b.HasOne("HerPortal.BusinessLogic.Models.User", "User")
+                    b.HasOne("WhlgPortalWebsite.BusinessLogic.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -151,13 +181,13 @@ namespace HerPortal.Data.Migrations
 
             modelBuilder.Entity("LocalAuthorityUser", b =>
                 {
-                    b.HasOne("HerPortal.BusinessLogic.Models.LocalAuthority", null)
+                    b.HasOne("WhlgPortalWebsite.BusinessLogic.Models.LocalAuthority", null)
                         .WithMany()
                         .HasForeignKey("LocalAuthoritiesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HerPortal.BusinessLogic.Models.User", null)
+                    b.HasOne("WhlgPortalWebsite.BusinessLogic.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)

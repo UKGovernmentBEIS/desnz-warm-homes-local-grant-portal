@@ -4,6 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <LangVersion>12</LangVersion>
         <UserSecretsId>b05a1249-b368-4866-addb-a537726db09b</UserSecretsId>
+        <RootNamespace>HerPortal</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -32,7 +33,7 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
         <Content Remove="wwwroot\assets\images\hot-water-tank.png" />
-        <ProjectReference Include="..\HerPortal.Data\HerPortal.Data.csproj" />
+        <ProjectReference Include="..\WhlgPortalWebsite.Data\WhlgPortalWebsite.Data.csproj" />
         <None Update="manifest.yml">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
