@@ -5,7 +5,7 @@ using WhlgPortalWebsite.BusinessLogic.Models;
 
 namespace WhlgPortalWebsite.Data;
 
-public class HerDbContext : DbContext, IDataProtectionKeyContext
+public class WhlgDbContext : DbContext, IDataProtectionKeyContext
 {
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
     public DbSet<AuditDownload> AuditDownloads { get; set; }
@@ -14,7 +14,7 @@ public class HerDbContext : DbContext, IDataProtectionKeyContext
     public DbSet<Consortium> Consortia { get; set; }
     public DbSet<User> Users { get; set; }
 
-    public HerDbContext(DbContextOptions<HerDbContext> options) : base(options)
+    public WhlgDbContext(DbContextOptions<WhlgDbContext> options) : base(options)
     {
     }
 

@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace WhlgPortalWebsite.Data.Migrations
 {
-    [DbContext(typeof(HerDbContext))]
+    [DbContext(typeof(WhlgDbContext))]
     [Migration("20230418091113_InitialMigration")]
     partial class InitialMigration
     {

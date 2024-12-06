@@ -6,9 +6,9 @@ namespace WhlgPortalWebsite.Data;
 
 public class DataAccessProvider : IDataAccessProvider
 {
-    private readonly HerDbContext context;
+    private readonly WhlgDbContext context;
 
-    public DataAccessProvider(HerDbContext context)
+    public DataAccessProvider(WhlgDbContext context)
     {
         this.context = context;
     }

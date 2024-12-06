@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace WhlgPortalWebsite.Data.Migrations
 {
-    [DbContext(typeof(HerDbContext))]
+    [DbContext(typeof(WhlgDbContext))]
     [Migration("20230517152404_AddRowVersioningToTables")]
     partial class AddRowVersioningToTables
     {

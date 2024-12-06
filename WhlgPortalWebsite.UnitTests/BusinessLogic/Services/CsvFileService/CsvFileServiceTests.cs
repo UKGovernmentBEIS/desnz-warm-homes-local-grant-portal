@@ -10,7 +10,7 @@ using WhlgPortalWebsite.BusinessLogic.ExternalServices.S3FileReader;
 using WhlgPortalWebsite.BusinessLogic.Models;
 using WhlgPortalWebsite.BusinessLogic.Services;
 using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
-using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
+using WhlgPortalWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;

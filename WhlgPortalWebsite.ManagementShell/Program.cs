@@ -9,13 +9,13 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        var contextOptions = new DbContextOptionsBuilder<HerDbContext>()
+        var contextOptions = new DbContextOptionsBuilder<WhlgDbContext>()
             .UseNpgsql(
                 Environment.GetEnvironmentVariable("ConnectionStrings__PostgreSQLConnection") ??
                 @"UserId=postgres;Password=postgres;Server=localhost;Port=5432;Database=whlgportaldev;Integrated Security=true;Include Error Detail=true;Pooling=true")
             .Options;
 
-        using var context = new HerDbContext(contextOptions);
+        using var context = new WhlgDbContext(contextOptions);
         var outputProvider = new OutputProvider();
         var dbOperation = new DatabaseOperation(context, outputProvider);
         var adminAction = new AdminAction(dbOperation);

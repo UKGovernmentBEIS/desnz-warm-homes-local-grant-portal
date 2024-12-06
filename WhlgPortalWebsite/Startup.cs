@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
+using WhlgPortalWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
@@ -54,7 +54,7 @@ namespace WhlgPortalWebsite
             services.AddScoped<ICsvFileService, CsvFileService>();
             services.AddSingleton<StaticAssetsVersioningService>();
             // This allows encrypted cookies to be understood across multiple web server instances
-            services.AddDataProtection().PersistKeysToDbContext<HerDbContext>();
+            services.AddDataProtection().PersistKeysToDbContext<WhlgDbContext>();
 
             ConfigureGlobalConfiguration(services);
 
@@ -158,7 +158,7 @@ namespace WhlgPortalWebsite
         private void ConfigureDatabaseContext(IServiceCollection services)
         {
             var databaseConnectionString = configuration.GetConnectionString("PostgreSQLConnection");
-            services.AddDbContext<HerDbContext>(opt =>
+            services.AddDbContext<WhlgDbContext>(opt =>
                 opt.UseNpgsql(databaseConnectionString));
         }
 

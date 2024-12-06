@@ -8,10 +8,10 @@ namespace WhlgPortalWebsite.ManagementShell;
 [ExcludeFromCodeCoverage]
 public class DatabaseOperation : IDatabaseOperation
 {
-    private readonly HerDbContext dbContext;
+    private readonly WhlgDbContext dbContext;
     private readonly OutputProvider outputProvider;
 
-    public DatabaseOperation(HerDbContext dbContext, OutputProvider outputProvider)
+    public DatabaseOperation(WhlgDbContext dbContext, OutputProvider outputProvider)
     {
         this.dbContext = dbContext;
         this.outputProvider = outputProvider;

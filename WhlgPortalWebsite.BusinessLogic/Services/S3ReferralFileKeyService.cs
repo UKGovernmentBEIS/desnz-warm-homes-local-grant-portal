@@ -2,7 +2,7 @@
 using WhlgPortalWebsite.BusinessLogic.Models;
 using Microsoft.Extensions.Logging;
 
-namespace HerPublicWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
+namespace WhlgPortalWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 
 public class S3ReferralFileKeyService
 {
