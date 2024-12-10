@@ -1,5 +1,9 @@
 # Home Energy Retrofit Portal BETA
 
+This repository was cloned from [HUG2 Portal](https://github.com/UKGovernmentBEIS/desnz-home-energy-retrofit-portal-beta) in December 2024, keeping all previous commits.
+
+The code was then adapted into the WH:LG service.
+
 ## Deployment
 
 The site is deployed using github actions.
