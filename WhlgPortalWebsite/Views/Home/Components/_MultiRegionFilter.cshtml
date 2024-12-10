@@ -1,0 +1,24 @@
+﻿@using GovUkDesignSystem
+@using GovUkDesignSystem.GovUkDesignSystemComponents
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model WhlgPortalWebsite.Models.HomepageViewModel
+
+<form method="get">
+    @(await Html.GovUkCheckboxesFromStringsFor(
+            model => model.Codes,
+            checkboxOptions: Model.LocalAuthorityCheckboxLabels,
+            fieldsetOptions: new FieldsetViewModel()
+            {
+                Legend = new LegendViewModel()
+                {
+                    Html = @<h2 class="govuk-heading-m">Organisations</h2>,
+                    IsPageHeading = false
+                }
+            }
+        )
+    )
+    @(await Html.GovUkButton(new ButtonViewModel
+    {
+        Text = "Apply filters"
+    }))
+</form>
