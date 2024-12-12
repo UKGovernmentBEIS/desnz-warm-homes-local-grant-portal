@@ -50,9 +50,6 @@ public class CsvFileService : ICsvFileService
         [Name("EPC Lodgement Date")]
         public string EpcLodgementDate { get; set; }
         [Optional]
-        [Name("Is off gas grid")]
-        public string IsOffGasGrid { get; set; }
-        [Optional]
         [Name("Household income band")]
         public string HouseholdIncomeBand { get; set; }
         [Optional]
