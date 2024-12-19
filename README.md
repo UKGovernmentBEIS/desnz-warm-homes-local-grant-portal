@@ -103,6 +103,8 @@ For further information on interacting with the database and using migrations, p
 ### Accessing the admin portal
 
 Before signing up to the portal and viewing referrals there are a few steps required:
+
+[//]: # (TODO - PC-1629: Update link to WH:LG common tasks Swiki page)
 1. Follow step 1 'Onboarding Local Authorities and Consortiums' [here](https://softwiretech.atlassian.net/wiki/spaces/Support/pages/20606746709/DESNZ+HUG2+Common+Tasks), using `dev` anywhere `[env]` is mentioned.
    - Use the email you plan to use to sign up to the local referrals site on.
    - Custodian/consortium codes of LAs/Consortia to be associated with user can be found in [LocalAuthorityData.cs](WhlgPortalWebsite.BusinessLogic/Models/LocalAuthorityData.cs)
