@@ -142,7 +142,7 @@ public class CommandHandlerTests
             new()
             {
                 Id = 2,
-                ConsortiumCode = "C_0002"
+                ConsortiumCode = "C_0001"
             }
         };
         const string userEmailAddress = "existinguser@email.com";
@@ -667,13 +667,13 @@ public class CommandHandlerTests
             new UserBuilder("existinguser@email.com").Build()
         };
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
-        var consortiumCodes = new[] { "C_0002", "C_0003" };
+        var consortiumCodes = new[] { "C_0001", "C_0002" };
         // Act
         underTest.CreateOrUpdateUserWithConsortia(userEmailAddress, consortiumCodes);
 
         // Assert
-        mockOutputProvider.Verify(mock => mock.Output("C_0002: Blackpool Council"), Times.Once());
-        mockOutputProvider.Verify(mock => mock.Output("C_0003: Bristol City Council"), Times.Once());
+        mockOutputProvider.Verify(mock => mock.Output("C_0001: Blackpool Council"), Times.Once());
+        mockOutputProvider.Verify(mock => mock.Output("C_0002: Bristol City Council"), Times.Once());
     }
 
     [Test]
@@ -695,7 +695,7 @@ public class CommandHandlerTests
             new UserBuilder("existinguser@email.com").WithLocalAuthorities(currentLa).Build()
         };
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
-        var consortiumCodes = new[] { "C_0002" };
+        var consortiumCodes = new[] { "C_0001" };
         // Act
         underTest.CreateOrUpdateUserWithConsortia(userEmailAddress, consortiumCodes);
 
@@ -723,7 +723,7 @@ public class CommandHandlerTests
         };
         mockDatabaseOperation.Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia()).Returns(users);
 
-        var consortiumCodes = new[] { "C_0002" };
+        var consortiumCodes = new[] { "C_0001" };
         var custodianCodesToRemove = new[] { "2372" };
         mockOutputProvider.Setup(op => op.Confirm("Please confirm (y/n)")).Returns(true);
 
@@ -732,7 +732,7 @@ public class CommandHandlerTests
             new()
             {
                 Id = 1,
-                ConsortiumCode = "C_0002"
+                ConsortiumCode = "C_0001"
             }
         };
         mockDatabaseOperation.Setup(mock => mock.GetConsortia(consortiumCodes)).Returns(consortiaToAdd);
