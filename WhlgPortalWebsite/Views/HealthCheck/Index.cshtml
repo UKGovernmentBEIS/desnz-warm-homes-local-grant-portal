@@ -1,0 +1,13 @@
+﻿@using WhlgPortalWebsite.Controllers
+@{
+    ViewBag.Title = "Health check";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Health check passed</h1>
+        <a href="@Url.Action(nameof(HomeController.Index), "Home")" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+            Return to the home page
+        </a>
+    </div>
+</div>
