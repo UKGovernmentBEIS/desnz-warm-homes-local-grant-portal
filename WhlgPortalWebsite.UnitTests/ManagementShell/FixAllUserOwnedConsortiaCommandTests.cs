@@ -230,8 +230,8 @@ public class FixAllUserOwnedConsortiaCommandTests
     private IEnumerable<(string, List<string>)> GetExampleConsortiumCodesWithCustodianCodes()
     {
         // both these Consortia have two LAs
-        yield return ("C_0008", new List<string> { "660", "665" });
-        yield return ("C_0010", new List<string> { "840", "835" });
+        yield return ("C_0007", ["840", "835"]);
+        yield return ("C_0026", ["1940", "1945"]);
     }
 
     private IEnumerable<string> GetExampleCustodianCodesNotInConsortium()
