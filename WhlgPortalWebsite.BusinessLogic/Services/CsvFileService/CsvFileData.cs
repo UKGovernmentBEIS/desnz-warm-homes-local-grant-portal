@@ -2,6 +2,9 @@ namespace WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 
 public abstract class CsvFileData
 {
+    private const int WhlgStartYear = 2025;
+    private const int WhlgStartMonth = 4;
+    
     public string Code { get; }
     public int Month { get; }
     public int Year { get; }
@@ -12,6 +15,7 @@ public abstract class CsvFileData
     // When LastDownloaded is null, we assume it hasn't been downloaded, therefore
     //   it will always have been updated since it was last downloaded.
     public bool HasUpdatedSinceLastDownload => !LastDownloaded.HasValue || LastDownloaded.Value.CompareTo(LastUpdated) < 0;
+    public bool ContainsLegacyReferrals => Year < WhlgStartYear || (Year == WhlgStartYear && Month < WhlgStartMonth);
     public abstract string Name { get; }
 
     protected CsvFileData

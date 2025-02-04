@@ -19,6 +19,7 @@ public class HomepageViewModel
         public string Name { get; }
         public string LastUpdatedText { get; }
         public bool HasNewUpdates { get; }
+        public bool ContainsLegacyReferrals { get; }
         public string DownloadLink { get; }
 
         public CsvFile(CsvFileData csvFileData, string downloadLink)
@@ -46,6 +47,7 @@ public class HomepageViewModel
             Month = csvFileData.Month;
             LastUpdatedText = csvFileData.LastUpdated.ToString("dd/MM/yy");
             HasNewUpdates = csvFileData.HasUpdatedSinceLastDownload;
+            ContainsLegacyReferrals = csvFileData.ContainsLegacyReferrals;
             Name = csvFileData is ConsortiumCsvFileData ? $"{csvFileData.Name} (Consortium)" : csvFileData.Name;
             DownloadLink = downloadLink;
         }
