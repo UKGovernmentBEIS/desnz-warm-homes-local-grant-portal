@@ -32,11 +32,11 @@
                 {
                     Text = "Updates",
                 },
-                new()
+                Model.ShowLegacyColumn ? new TableCellViewModel
                 {
                     Text = "Contains Legacy Referrals",
-                }
-            },
+                } : null
+            }.Where(row => row != null).ToList(),
             Rows = Model.CsvFiles.Select(cf => new TableRowViewModel
                 {
                     Row = new List<TableCellViewModel>
@@ -59,13 +59,13 @@
                                 ? @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--green", Text = "New" }))</text>
                                 : null
                         },
-                        new()
+                        Model.ShowLegacyColumn ? new TableCellViewModel
                         {
                             Html = cf.ContainsLegacyReferrals
                                 ? @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--yellow", Text = "HUG2" }))</text>
                                 : null
-                        }
-                    }.Where(row => row != null),
+                        } : null
+                    }.Where(row => row != null).ToList(),
                 }).ToList(),
             FirstCellIsHeader = false,
         }))

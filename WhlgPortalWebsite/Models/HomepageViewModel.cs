@@ -61,6 +61,7 @@ public class HomepageViewModel
     public IEnumerable<CsvFile> CsvFiles { get; }
     public int CurrentPage { get; }
     public string[] PageUrls { get; }
+    public bool ShowLegacyColumn => CsvFiles.Any(csvFile => csvFile.ContainsLegacyReferrals);
 
     public HomepageViewModel(
         User user,
