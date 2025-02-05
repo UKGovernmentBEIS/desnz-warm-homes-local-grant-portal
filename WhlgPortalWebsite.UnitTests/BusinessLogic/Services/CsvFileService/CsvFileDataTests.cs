@@ -58,4 +58,33 @@ public class CsvFileDataTests
         // Assert
         underTest.HasUpdatedSinceLastDownload.Should().BeFalse();
     }
+
+    [TestCase(1, 2024, true)]
+    [TestCase(3, 2024, true)]
+    [TestCase(4, 2024, true)]
+    [TestCase(5, 2024, true)]
+    [TestCase(1, 2025, true)]
+    [TestCase(3, 2025, true)]
+    [TestCase(4, 2025, false)]
+    [TestCase(5, 2025, false)]
+    [TestCase(1, 2026, false)]
+    [TestCase(3, 2026, false)]
+    [TestCase(4, 2026, false)]
+    [TestCase(5, 2026, false)]
+    public void CsvFileData_WhenDatedBeforeHUG2Shutdown_ContainsLegacyReferralsIsTrue(int month, int year,
+        bool expectedContainsLegacyReferrals)
+    {
+        // Arrange/Act
+        var underTest = new LocalAuthorityCsvFileData
+        (
+            "505",
+            month,
+            year,
+            new DateTime(2024, 1, 1),
+            null
+        );
+
+        // Assert
+        underTest.ContainsLegacyReferrals.Should().Be(expectedContainsLegacyReferrals);
+    }
 }
