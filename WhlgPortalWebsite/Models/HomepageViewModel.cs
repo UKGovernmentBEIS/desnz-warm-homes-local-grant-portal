@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using GovUkDesignSystem.GovUkDesignSystemComponents;
-using Microsoft.AspNetCore.Mvc.Routing;
 using WhlgPortalWebsite.BusinessLogic.Models;
 using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 
@@ -10,59 +9,6 @@ namespace WhlgPortalWebsite.Models;
 
 public class HomepageViewModel
 {
-    public class CsvFile
-    {
-        public string CustodianCode { get; }
-        public int Year { get; }
-        public int Month { get; }
-        public string MonthAndYearText => new DateOnly(Year, Month, 1).ToString("MMMM yyyy");
-        public string Name { get; }
-        public string LastUpdatedText { get; }
-        public bool HasNewUpdates { get; }
-        public bool ContainsLegacyReferrals { get; }
-        public string DownloadLink { get; }
-
-        public CsvFile(CsvFileData csvFileData, string downloadLink)
-        {
-            switch (csvFileData)
-            {
-                case LocalAuthorityCsvFileData:
-                    if (!LocalAuthorityData.LocalAuthorityNamesByCustodianCode.ContainsKey(csvFileData.Code))
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(csvFileData.Code), csvFileData.Code,
-                            "The given custodian code is not known.");
-                    }
-                    break;
-                case ConsortiumCsvFileData:
-                    if (!ConsortiumData.ConsortiumNamesByConsortiumCode.ContainsKey(csvFileData.Code))
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(csvFileData.Code), csvFileData.Code,
-                            "The given consortium code is not known.");
-                    }
-                    break;
-            }
-            
-            CustodianCode = csvFileData.Code;
-            Year = csvFileData.Year;
-            Month = csvFileData.Month;
-            LastUpdatedText = csvFileData.LastUpdated.ToString("dd/MM/yy");
-            HasNewUpdates = csvFileData.HasUpdatedSinceLastDownload;
-            ContainsLegacyReferrals = csvFileData.ContainsLegacyReferrals;
-            Name = csvFileData is ConsortiumCsvFileData ? $"{csvFileData.Name} (Consortium)" : csvFileData.Name;
-            DownloadLink = downloadLink;
-        }
-    }
-    
-    public bool ShouldShowBanner { get; }
-    public bool ShouldShowFilters { get; }
-    public bool UserHasNewUpdates { get; }
-    public List<string> Codes { get; }
-    public Dictionary<string, LabelViewModel> LocalAuthorityCheckboxLabels { get; }
-    public IEnumerable<CsvFile> CsvFiles { get; }
-    public int CurrentPage { get; }
-    public string[] PageUrls { get; }
-    public bool ShowLegacyColumn => CsvFiles.Any(csvFile => csvFile.ContainsLegacyReferrals);
-
     public HomepageViewModel(
         User user,
         PaginatedFileData paginatedFileData,
@@ -106,5 +52,60 @@ public class HomepageViewModel
 
         CurrentPage = paginatedFileData.CurrentPage;
         PageUrls = Enumerable.Range(1, paginatedFileData.MaximumPage).Select(pageLinkGenerator).ToArray();
+    }
+
+    public bool ShouldShowBanner { get; }
+    public bool ShouldShowFilters { get; }
+    public bool UserHasNewUpdates { get; }
+    public List<string> Codes { get; }
+    public Dictionary<string, LabelViewModel> LocalAuthorityCheckboxLabels { get; }
+    public IEnumerable<CsvFile> CsvFiles { get; }
+    public int CurrentPage { get; }
+    public string[] PageUrls { get; }
+    public bool ShowLegacyColumn => CsvFiles.Any(csvFile => csvFile.ContainsLegacyReferrals);
+
+    public class CsvFile
+    {
+        public CsvFile(CsvFileData csvFileData, string downloadLink)
+        {
+            switch (csvFileData)
+            {
+                case LocalAuthorityCsvFileData:
+                    if (!LocalAuthorityData.LocalAuthorityNamesByCustodianCode.ContainsKey(csvFileData.Code))
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(csvFileData.Code), csvFileData.Code,
+                            "The given custodian code is not known.");
+                    }
+
+                    break;
+                case ConsortiumCsvFileData:
+                    if (!ConsortiumData.ConsortiumNamesByConsortiumCode.ContainsKey(csvFileData.Code))
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(csvFileData.Code), csvFileData.Code,
+                            "The given consortium code is not known.");
+                    }
+
+                    break;
+            }
+
+            CustodianCode = csvFileData.Code;
+            Year = csvFileData.Year;
+            Month = csvFileData.Month;
+            LastUpdatedText = csvFileData.LastUpdated.ToString("dd/MM/yy");
+            HasNewUpdates = csvFileData.HasUpdatedSinceLastDownload;
+            ContainsLegacyReferrals = csvFileData.ContainsLegacyReferrals;
+            Name = csvFileData is ConsortiumCsvFileData ? $"{csvFileData.Name} (Consortium)" : csvFileData.Name;
+            DownloadLink = downloadLink;
+        }
+
+        public string CustodianCode { get; }
+        public int Year { get; }
+        public int Month { get; }
+        public string MonthAndYearText => new DateOnly(Year, Month, 1).ToString("MMMM yyyy");
+        public string Name { get; }
+        public string LastUpdatedText { get; }
+        public bool HasNewUpdates { get; }
+        public bool ContainsLegacyReferrals { get; }
+        public string DownloadLink { get; }
     }
 }

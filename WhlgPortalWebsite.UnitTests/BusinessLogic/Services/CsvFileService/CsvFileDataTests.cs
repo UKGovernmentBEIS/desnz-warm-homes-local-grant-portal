@@ -1,7 +1,7 @@
 ﻿using System;
 using FluentAssertions;
-using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 using NUnit.Framework;
+using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 
 namespace Tests.BusinessLogic.Services.CsvFileService;
 
@@ -20,11 +20,11 @@ public class CsvFileDataTests
             new DateTime(2024, 1, 1),
             null
         );
-        
+
         // Assert
         underTest.HasUpdatedSinceLastDownload.Should().BeTrue();
     }
-    
+
     [Test]
     public void CsvFileData_WhenLastDownloadedIsEarlierThanLastUpdated_SetsHasUpdatedSinceLastDownloadedToTrue()
     {
@@ -37,11 +37,11 @@ public class CsvFileDataTests
             new DateTime(2023, 5, 2),
             new DateTime(2023, 5, 1)
         );
-        
+
         // Assert
         underTest.HasUpdatedSinceLastDownload.Should().BeTrue();
     }
-    
+
     [Test]
     public void CsvFileData_WhenLastDownloadedIsLaterThanLastUpdated_SetsHasUpdatedSinceLastDownloadedToFalse()
     {
@@ -54,7 +54,7 @@ public class CsvFileDataTests
             new DateTime(2023, 5, 1),
             new DateTime(2023, 5, 2)
         );
-        
+
         // Assert
         underTest.HasUpdatedSinceLastDownload.Should().BeFalse();
     }

@@ -18,56 +18,60 @@
             {
                 new()
                 {
-                    Text = "Month/Year",
+                    Text = "Month/Year"
                 },
                 new()
                 {
-                    Text = "Region/LA",
+                    Text = "Region/LA"
                 },
                 new()
                 {
-                    Text = "Last updated",
+                    Text = "Last updated"
                 },
                 new()
                 {
-                    Text = "Updates",
+                    Text = "Updates"
                 },
-                Model.ShowLegacyColumn ? new TableCellViewModel
-                {
-                    Text = "Contains Legacy Referrals",
-                } : null
+                Model.ShowLegacyColumn
+                    ? new TableCellViewModel
+                    {
+                        Text = "Contains Legacy Referrals"
+                    }
+                    : null
             }.Where(row => row != null).ToList(),
             Rows = Model.CsvFiles.Select(cf => new TableRowViewModel
+            {
+                Row = new List<TableCellViewModel>
                 {
-                    Row = new List<TableCellViewModel>
+                    new()
                     {
-                        new()
-                        {
-                            Html = @<a class="govuk-link" href="@cf.DownloadLink" download>@cf.MonthAndYearText</a>
-                        },
-                        new()
-                        {
-                            Text = cf.Name,
-                        },
-                        new()
-                        {
-                            Text = cf.LastUpdatedText,
-                        },
-                        new()
-                        {
-                            Html = cf.HasNewUpdates
-                                ? @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--green", Text = "New" }))</text>
-                                : null
-                        },
-                        Model.ShowLegacyColumn ? new TableCellViewModel
+                        Html = @<a class="govuk-link" href="@cf.DownloadLink" download>@cf.MonthAndYearText</a>
+                    },
+                    new()
+                    {
+                        Text = cf.Name
+                    },
+                    new()
+                    {
+                        Text = cf.LastUpdatedText
+                    },
+                    new()
+                    {
+                        Html = cf.HasNewUpdates
+                            ? @<text>@(await Html.GovUkTag(new TagViewModel { Classes = "govuk-tag--green", Text = "New" }))</text>
+                            : null
+                    },
+                    Model.ShowLegacyColumn
+                        ? new TableCellViewModel
                         {
                             Html = cf.ContainsLegacyReferrals
-                                ? @<text>@(await Html.GovUkTag(new TagViewModel{ Classes = "govuk-tag--yellow", Text = "HUG2" }))</text>
+                                ? @<text>@(await Html.GovUkTag(new TagViewModel { Classes = "govuk-tag--yellow", Text = "HUG2" }))</text>
                                 : null
-                        } : null
-                    }.Where(row => row != null).ToList(),
-                }).ToList(),
-            FirstCellIsHeader = false,
+                        }
+                        : null
+                }.Where(row => row != null).ToList()
+            }).ToList(),
+            FirstCellIsHeader = false
         }))
     </div>
 
