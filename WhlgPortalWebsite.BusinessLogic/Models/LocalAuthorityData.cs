@@ -18,6 +18,9 @@ public static class LocalAuthorityData
     /// The mapping from custodian code to name comes from the publicly available "Local custodian codes" download link
     /// on https://www.ordnancesurvey.co.uk/business-government/tools-support/addressbase-support
     /// <see href=" https://www.ordnancesurvey.co.uk/business-government/tools-support/addressbase-support" />
+    /// 
+    /// This dictionary data is automatically generated, see <see href="https://github.com/UKGovernmentBEIS/desnz-warm-homes-local-grant/tree/develop/scripts/local-authority-information-generators"/>.
+    /// Avoid making manual changes to this code if possible
     public static readonly Dictionary<string, string> LocalAuthorityNamesByCustodianCode = new()
     {
         { "9051", "Aberdeen City Council" },
@@ -384,6 +387,9 @@ public static class LocalAuthorityData
     /// <see href="https://github.com/UKGovernmentBEIS/desnz-warm-homes-local-grant/blob/develop/WhlgPublicWebsite.BusinessLogic/Models/LocalAuthorityData.cs"> WH:LG Public Website codebase </see>
     /// The mappings contained here should be consistent with the mapping in the WH:LG Public Website Repo's LocalAuthorityData.cs
     /// <see href="https://github.com/UKGovernmentBEIS/desnz-warm-homes-local-grant/blob/develop/WhlgPublicWebsite.BusinessLogic/Models/LocalAuthorityData.cs"> WH:LG Public Website codebase </see>
+    /// 
+    /// This dictionary data is automatically generated, see <see href="https://github.com/UKGovernmentBEIS/desnz-warm-homes-local-grant/tree/develop/scripts/local-authority-information-generators"/>.
+    /// Avoid making manual changes to this code if possible
     public static readonly Dictionary<string, string> LocalAuthorityConsortiumCodeByCustodianCode = new()
     { 
         { "3805", "C_0020" },

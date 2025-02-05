@@ -7,7 +7,8 @@
 /// </summary>
 public static class ConsortiumData
 {
-    /// If any Custodian/Consortium codes are changed, consider if remapping is required in <see cref="LocalAuthorityData"/>
+    /// This dictionary data is automatically generated, see <see href="https://github.com/UKGovernmentBEIS/desnz-warm-homes-local-grant/tree/develop/scripts/local-authority-information-generators"/>.
+    /// Avoid making manual changes to this code if possible
     public static readonly Dictionary<string, string> ConsortiumNamesByConsortiumCode = new()
     {
         { "C_0001", "Blackpool Council" },
