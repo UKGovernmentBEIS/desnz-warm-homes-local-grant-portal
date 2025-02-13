@@ -2,17 +2,8 @@ namespace WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 
 public abstract class CsvFileData
 {
-    public string Code { get; }
-    public int Month { get; }
-    public int Year { get; }
-    public DateTime LastUpdated { get; }
-    public DateTime? LastDownloaded { get; }
-    // The below slightly complicated boolean expression evaluates to false ONLY when
-    //   LastDownloaded is not null and is more recent than LastUpdated.
-    // When LastDownloaded is null, we assume it hasn't been downloaded, therefore
-    //   it will always have been updated since it was last downloaded.
-    public bool HasUpdatedSinceLastDownload => !LastDownloaded.HasValue || LastDownloaded.Value.CompareTo(LastUpdated) < 0;
-    public abstract string Name { get; }
+    private const int WhlgStartYear = 2025;
+    private const int WhlgStartMonth = 4;
 
     protected CsvFileData
     (
@@ -21,11 +12,32 @@ public abstract class CsvFileData
         int year,
         DateTime lastUpdated,
         DateTime? lastDownloaded
-    ) {
+    )
+    {
         Code = code;
         Month = month;
         Year = year;
         LastUpdated = lastUpdated;
         LastDownloaded = lastDownloaded;
     }
+
+    public string Code { get; }
+    public int Month { get; }
+    public int Year { get; }
+    public DateTime LastUpdated { get; }
+
+    public DateTime? LastDownloaded { get; }
+
+    // The below slightly complicated boolean expression evaluates to false ONLY when
+    //   LastDownloaded is not null and is more recent than LastUpdated.
+    // When LastDownloaded is null, we assume it hasn't been downloaded, therefore
+    //   it will always have been updated since it was last downloaded.
+    public bool HasUpdatedSinceLastDownload =>
+        !LastDownloaded.HasValue || LastDownloaded.Value.CompareTo(LastUpdated) < 0;
+
+    public bool ContainsLegacyReferrals =>
+        Year < WhlgStartYear ||
+        (Year == WhlgStartYear && Month < WhlgStartMonth);
+
+    public abstract string Name { get; }
 }

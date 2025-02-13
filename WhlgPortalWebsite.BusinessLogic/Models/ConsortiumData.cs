@@ -7,7 +7,8 @@
 /// </summary>
 public static class ConsortiumData
 {
-    /// If any Custodian/Consortium codes are changed, consider if remapping is required in <see cref="LocalAuthorityData"/>
+    /// This dictionary data is automatically generated, see <see href="https://github.com/UKGovernmentBEIS/desnz-warm-homes-local-grant/tree/develop/scripts/local-authority-information-generators"/>.
+    /// Avoid making manual changes to this code if possible
     public static readonly Dictionary<string, string> ConsortiumNamesByConsortiumCode = new()
     {
         { "C_0001", "Blackpool Council" },
@@ -23,22 +24,21 @@ public static class ConsortiumData
         { "C_0011", "Dover District Council" },
         { "C_0012", "East Lindsey District Council" },
         { "C_0013", "Essex County Council" },
-        { "C_0014", "Essex County Council" },
-        { "C_0015", "Greater London Authority" },
-        { "C_0016", "Greater Manchester Combined Authority" },
-        { "C_0017", "Lewes District Council" },
-        { "C_0018", "Liverpool City Region Combined Authority" },
-        { "C_0019", "Nottingham City Council" },
-        { "C_0020", "Oxfordshire County Council" },
-        { "C_0021", "Portsmouth City Council" },
-        { "C_0022", "Shropshire County Council" },
-        { "C_0023", "Stroud District Council" },
-        { "C_0024", "Suffolk County Council" },
-        { "C_0025", "Surrey County Council" },
-        { "C_0026", "Watford Borough Council" },
-        { "C_0027", "West Devon Borough Council" },
-        { "C_0028", "West Midlands Combined Authority" },
-        { "C_0029", "Westmorland and Furness Council" },
+        { "C_0014", "Greater London Authority" },
+        { "C_0015", "Greater Manchester Combined Authority" },
+        { "C_0016", "Lewes District Council" },
+        { "C_0017", "Liverpool City Region Combined Authority" },
+        { "C_0018", "Nottingham City Council" },
+        { "C_0019", "Oxfordshire County Council" },
+        { "C_0020", "Portsmouth City Council" },
+        { "C_0021", "Shropshire County Council" },
+        { "C_0022", "Stroud District Council" },
+        { "C_0023", "Suffolk County Council" },
+        { "C_0024", "Surrey County Council" },
+        { "C_0025", "Watford Borough Council" },
+        { "C_0026", "West Devon Borough Council" },
+        { "C_0027", "West Midlands Combined Authority" },
+        { "C_0028", "Westmorland and Furness Council" },
     };
     
     public static readonly Dictionary<string, List<string>> ConsortiumCustodianCodesIdsByConsortiumCode = 
