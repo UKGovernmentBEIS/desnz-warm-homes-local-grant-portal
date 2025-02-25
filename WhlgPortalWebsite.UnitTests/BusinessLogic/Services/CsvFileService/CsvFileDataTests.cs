@@ -64,13 +64,13 @@ public class CsvFileDataTests
     [TestCase(4, 2024, true)]
     [TestCase(5, 2024, true)]
     [TestCase(1, 2025, true)]
-    [TestCase(3, 2025, true)]
+    [TestCase(2, 2025, true)]
+    [TestCase(3, 2025, false)]
     [TestCase(4, 2025, false)]
-    [TestCase(5, 2025, false)]
     [TestCase(1, 2026, false)]
+    [TestCase(2, 2026, false)]
     [TestCase(3, 2026, false)]
     [TestCase(4, 2026, false)]
-    [TestCase(5, 2026, false)]
     public void CsvFileData_WhenDatedBeforeHUG2Shutdown_ContainsLegacyReferralsIsTrue(int month, int year,
         bool expectedContainsLegacyReferrals)
     {
