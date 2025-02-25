@@ -3,7 +3,7 @@ namespace WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 public abstract class CsvFileData
 {
     private const int WhlgStartYear = 2025;
-    private const int WhlgStartMonth = 4;
+    private const int WhlgStartMonth = 3;
 
     protected CsvFileData
     (
