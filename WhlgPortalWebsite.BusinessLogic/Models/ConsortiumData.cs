@@ -9,6 +9,8 @@ public static class ConsortiumData
 {
     /// This dictionary data is automatically generated, see <see href="https://github.com/UKGovernmentBEIS/desnz-warm-homes-local-grant/tree/develop/scripts/local-authority-information-generators"/>.
     /// Avoid making manual changes to this code if possible
+    /// We should avoid if possible changing the Consortia Code. Doing so would require us to make live database edits to update this. See <see cref="Consortium"/>.
+    /// It’s much more straightforward to add new IDs and use the AddAllMissingAuthorities Portal CLI command after adding these new IDs to the codebase, then use the CLI commands to move users across.
     public static readonly Dictionary<string, string> ConsortiumNamesByConsortiumCode = new()
     {
         { "C_0001", "Blackpool Council" },
