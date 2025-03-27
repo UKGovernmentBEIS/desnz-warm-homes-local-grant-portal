@@ -415,7 +415,7 @@ public class CsvFileServiceTests
     public async Task GetFileDataForUserAsync_WhenCalledWithConsortium_ReturnsFileData()
     {
         // Arrange
-        var user = GetUserWithConsortia("C_0006");
+        var user = GetUserWithConsortia("C_0005");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
         
@@ -461,7 +461,7 @@ public class CsvFileServiceTests
         // Assert
         var expectedResult = new List<CsvFileData>()
         {
-            new ConsortiumCsvFileData("C_0006", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+            new ConsortiumCsvFileData("C_0005", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
             new LocalAuthorityCsvFileData("660", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
             new LocalAuthorityCsvFileData("665", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
         };
@@ -472,7 +472,7 @@ public class CsvFileServiceTests
     public async Task GetFileDataForUserAsync_WhenCalledWithConsortium_ReturnsFileData_WithCorrectConsortiumDates()
     {
         // Arrange
-        var user = GetUserWithConsortia("C_0006");
+        var user = GetUserWithConsortia("C_0005");
         
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
         
@@ -518,7 +518,7 @@ public class CsvFileServiceTests
         // Assert
         var expectedResult = new List<CsvFileData>()
         {
-            new ConsortiumCsvFileData("C_0006", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+            new ConsortiumCsvFileData("C_0005", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
             new LocalAuthorityCsvFileData("660", 2, 2023, new DateTime(2023, 02, 02), new DateTime(2023, 02, 10)),
             new LocalAuthorityCsvFileData("665", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
         };
@@ -529,7 +529,7 @@ public class CsvFileServiceTests
     public async Task GetFileDataForUserAsync_WhenCalledWithConsortium_ReturnsFileData_EvenIfNotAllLasReportInTheMonth()
     {
         // Arrange
-        var user = GetUserWithConsortia("C_0006");
+        var user = GetUserWithConsortia("C_0005");
 
         mockDataAccessProvider.Setup(dap => dap.GetUserByEmailAsync(user.EmailAddress)).ReturnsAsync(user);
         
@@ -560,7 +560,7 @@ public class CsvFileServiceTests
         // Assert
         var expectedResult = new List<CsvFileData>()
         {
-            new ConsortiumCsvFileData("C_0006", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
+            new ConsortiumCsvFileData("C_0005", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
             new LocalAuthorityCsvFileData("660", 2, 2023, new DateTime(2023, 02, 04), new DateTime(2023, 02, 06)),
         };
         result.Should().BeEquivalentTo(expectedResult);

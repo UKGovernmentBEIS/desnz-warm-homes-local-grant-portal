@@ -199,7 +199,7 @@ public class HomepageViewModelTests
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
     
-    [TestCase("C_0017", "Liverpool City Region Combined Authority (Consortium)")]
+    [TestCase("C_0016", "Liverpool City Region Combined Authority (Consortium)")]
     [TestCase("C_0004", "Cambridge City Council (Consortium)")]
     [TestCase("C_0003", "Broadland District Council (Consortium)")]
     public void HomepageViewModelCsvFile_WhenValidConsortiumCodeIsGiven_GetsTheConsortiumName
