@@ -19,7 +19,7 @@ public class RegularJobsServiceTests
     private Mock<ILogger<RegularJobsService>> mockLogger;
     private Mock<IDataAccessProvider> mockDataAccessProvider;
     private Mock<IEmailSender> mockEmailSender;
-    private Mock<ICsvFileService> mockCsvFileService;
+    private Mock<IFileService> mockCsvFileService;
     private RegularJobsService underTest;
     
     private const string EmailAddress = "test@example.com";
@@ -30,7 +30,7 @@ public class RegularJobsServiceTests
         mockLogger = new Mock<ILogger<RegularJobsService>>();
         mockDataAccessProvider = new Mock<IDataAccessProvider>();
         mockEmailSender = new Mock<IEmailSender>();
-        mockCsvFileService = new Mock<ICsvFileService>();
+        mockCsvFileService = new Mock<IFileService>();
         
         underTest = new RegularJobsService(mockDataAccessProvider.Object, mockEmailSender.Object, mockCsvFileService.Object, mockLogger.Object);
     }
@@ -56,7 +56,7 @@ public class RegularJobsServiceTests
     public async Task SendReminderEmailsAsync_WhenThereAreNoUpdates_DoesntSendEmails()
     {
         // Arrange
-        var files = new List<LocalAuthorityCsvFileData>()
+        var files = new List<LocalAuthorityFileData>()
         {
             new("114", 1, 2023, new DateTime(2023, 1, 31), new DateTime(2023, 02, 01)),
         };
@@ -88,11 +88,11 @@ public class RegularJobsServiceTests
     public async Task SendReminderEmailsAsync_WhenThereAreUpdates_SendsEmails()
     {
         // Arrange
-        var user1Files = new List<LocalAuthorityCsvFileData>()
+        var user1Files = new List<LocalAuthorityFileData>()
         {
             new("114", 1, 2023, new DateTime(2023, 1, 31), new DateTime(2023, 01, 30)),
         };
-        var user2Files = new List<LocalAuthorityCsvFileData>()
+        var user2Files = new List<LocalAuthorityFileData>()
         {
             new("910", 1, 2023, new DateTime(2023, 1, 31), new DateTime(2023, 02, 01)),
         };
@@ -138,11 +138,11 @@ public class RegularJobsServiceTests
     public async Task SendReminderEmailsAsync_WhenThereAreErrors_ContinuesSendingEmails()
     {
         // Arrange
-        var user1Files = new List<LocalAuthorityCsvFileData>()
+        var user1Files = new List<LocalAuthorityFileData>()
         {
             new("114", 1, 2023, new DateTime(2023, 1, 31), new DateTime(2023, 01, 30)),
         };
-        var user2Files = new List<LocalAuthorityCsvFileData>()
+        var user2Files = new List<LocalAuthorityFileData>()
         {
             new("910", 1, 2023, new DateTime(2023, 1, 31), new DateTime(2023, 01, 30)),
         };

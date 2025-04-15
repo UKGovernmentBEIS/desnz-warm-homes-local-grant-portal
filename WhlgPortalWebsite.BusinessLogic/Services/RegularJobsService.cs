@@ -8,7 +8,7 @@ public class RegularJobsService
 {
     private readonly IDataAccessProvider dataProvider;
     private readonly IEmailSender emailSender;
-    private readonly ICsvFileService csvFileService;
+    private readonly IFileService fileService;
 
     private readonly ILogger logger;
 
@@ -16,12 +16,12 @@ public class RegularJobsService
     (
         IDataAccessProvider dataProvider,
         IEmailSender emailSender,
-        ICsvFileService csvFileService,
+        IFileService fileService,
         ILogger<RegularJobsService> logger
     ) {
         this.dataProvider = dataProvider;
         this.emailSender = emailSender;
-        this.csvFileService = csvFileService;
+        this.fileService = fileService;
 
         this.logger = logger;
     }
@@ -33,11 +33,11 @@ public class RegularJobsService
         var activeUsers = await dataProvider.GetAllActiveUsersAsync();
         foreach (var user in activeUsers)
         {
-            IEnumerable<CsvFileData> userCsvFiles;
+            IEnumerable<FileData> userCsvFiles;
 
             try
             {
-                userCsvFiles = await csvFileService.GetFileDataForUserAsync(user.EmailAddress);
+                userCsvFiles = await fileService.GetFileDataForUserAsync(user.EmailAddress);
             }
             catch (Exception ex)
             {

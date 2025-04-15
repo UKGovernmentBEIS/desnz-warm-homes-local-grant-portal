@@ -13,21 +13,21 @@ using Tests.Builders;
 namespace Tests.Website.Controllers;
 
 [TestFixture]
-public class CsvFileControllerTests
+public class FileControllerTests
 {
-    private Mock<ILogger<CsvFileController>> mockCsvLogger;
-    private CsvFileController underTest;
-    private Mock<ICsvFileService> mockCsvFileService;
+    private Mock<ILogger<FileController>> mockCsvLogger;
+    private FileController underTest;
+    private Mock<IFileService> mockCsvFileService;
     
     private const string EmailAddress = "test@example.com";
 
     [SetUp]
     public void Setup()
     {
-        mockCsvLogger = new Mock<ILogger<CsvFileController>>();
-        mockCsvFileService = new Mock<ICsvFileService>();
+        mockCsvLogger = new Mock<ILogger<FileController>>();
+        mockCsvFileService = new Mock<IFileService>();
 
-        underTest = new CsvFileController(mockCsvFileService.Object, mockCsvLogger.Object);
+        underTest = new FileController(mockCsvFileService.Object, mockCsvLogger.Object);
         underTest.ControllerContext.HttpContext = new HttpContextBuilder(EmailAddress).Build();
     }
 
@@ -40,7 +40,7 @@ public class CsvFileControllerTests
             .ThrowsAsync(new SecurityException());
         
         // Act
-        var result = await underTest.GetLaCsvFile("115", 2023, 11);
+        var result = await underTest.GetLaFile("115", 2023, 11);
         
         // Assert
         result.Should().BeOfType<UnauthorizedObjectResult>();
@@ -55,7 +55,7 @@ public class CsvFileControllerTests
             .ThrowsAsync(new ArgumentOutOfRangeException());
         
         // Act
-        var result = await underTest.GetLaCsvFile("115", 2023, 11);
+        var result = await underTest.GetLaFile("115", 2023, 11);
         
         // Assert
         result.Should().BeOfType<NotFoundResult>();
@@ -70,7 +70,7 @@ public class CsvFileControllerTests
             .ThrowsAsync(new SecurityException());
         
         // Act
-        var result = await underTest.GetConsortiumCsvFile("C_0001", 2023, 11);
+        var result = await underTest.GetConsortiumFile("C_0001", 2023, 11);
         
         // Assert
         result.Should().BeOfType<UnauthorizedObjectResult>();
@@ -85,7 +85,7 @@ public class CsvFileControllerTests
             .ThrowsAsync(new ArgumentOutOfRangeException());
         
         // Act
-        var result = await underTest.GetConsortiumCsvFile("C_0001", 2023, 11);
+        var result = await underTest.GetConsortiumFile("C_0001", 2023, 11);
         
         // Assert
         result.Should().BeOfType<NotFoundResult>();

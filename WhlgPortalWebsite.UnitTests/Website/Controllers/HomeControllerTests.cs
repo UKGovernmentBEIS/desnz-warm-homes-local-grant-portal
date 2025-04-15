@@ -18,7 +18,7 @@ public class HomeFileControllerTests
 {
     private HomeController underTest;
     private Mock<IDataAccessProvider> mockDataAccessProvider;
-    private Mock<ICsvFileService> mockCsvFileService;
+    private Mock<IFileService> mockCsvFileService;
 
     private const string EmailAddress = "test@example.com";
 
@@ -26,7 +26,7 @@ public class HomeFileControllerTests
     public void Setup()
     {
         mockDataAccessProvider = new Mock<IDataAccessProvider>();
-        mockCsvFileService = new Mock<ICsvFileService>();
+        mockCsvFileService = new Mock<IFileService>();
         var userDataStore = new UserService(mockDataAccessProvider.Object);
 
         underTest = new HomeController(userDataStore, mockCsvFileService.Object);
@@ -42,7 +42,7 @@ public class HomeFileControllerTests
         {
             CurrentPage = 1,
             MaximumPage = 1,
-            FileData = new List<LocalAuthorityCsvFileData>()
+            FileData = new List<LocalAuthorityFileData>()
             {
                 new("114", 1, 2023, new DateTime(2023, 1, 31), null)
             }

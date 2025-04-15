@@ -8,7 +8,7 @@ using WhlgPortalWebsite.BusinessLogic.Models;
 
 namespace WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 
-public class CsvFileService : ICsvFileService
+public class FileService : IFileService
 {
     private readonly IDataAccessProvider dataAccessProvider;
     private readonly S3ReferralFileKeyService keyService;
@@ -65,7 +65,7 @@ public class CsvFileService : ICsvFileService
         public string LocalAuthority { get; set; }
     }
 
-    public CsvFileService
+    public FileService
     (
         IDataAccessProvider dataAccessProvider,
         S3ReferralFileKeyService keyService,
@@ -76,7 +76,7 @@ public class CsvFileService : ICsvFileService
         this.s3FileReader = s3FileReader;
     }
 
-    public async Task<IEnumerable<CsvFileData>> GetFileDataForUserAsync(string userEmailAddress)
+    public async Task<IEnumerable<FileData>> GetFileDataForUserAsync(string userEmailAddress)
     {
         // Make sure that we only return file data for files that the user currently has access to
         var user = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
@@ -89,13 +89,13 @@ public class CsvFileService : ICsvFileService
 
         return combinedFileData
             .OrderByDescending(f => new DateOnly(f.Year, f.Month, 1))
-            .ThenByDescending(f => f is ConsortiumCsvFileData)
+            .ThenByDescending(f => f is ConsortiumFileData)
             .ThenBy(f => f.Name);
     }
 
-    private async Task<List<CsvFileData>> BuildCsvFileDataForLocalAuthorities(User user, IEnumerable<string> currentCustodianCodes)
+    private async Task<List<FileData>> BuildCsvFileDataForLocalAuthorities(User user, IEnumerable<string> currentCustodianCodes)
     {
-        var laFileData = new List<CsvFileData>();
+        var laFileData = new List<FileData>();
         var downloads = await dataAccessProvider.GetCsvFileDownloadDataForUserAsync(user.Id);
         foreach (var custodianCode in currentCustodianCodes)
         {
@@ -108,7 +108,7 @@ public class CsvFileService : ICsvFileService
                         && d.Year == data.Year
                         && d.Month == data.Month
                     );
-                    return new LocalAuthorityCsvFileData
+                    return new LocalAuthorityFileData
                     (
                         data.CustodianCode,
                         data.Month,
@@ -123,14 +123,14 @@ public class CsvFileService : ICsvFileService
         return laFileData;
     }
     
-    private IEnumerable<CsvFileData> TransformFileDataForConsortia(IEnumerable<string> consortiumCodes, IEnumerable<CsvFileData> laFileData)
+    private IEnumerable<FileData> TransformFileDataForConsortia(IEnumerable<string> consortiumCodes, IEnumerable<FileData> laFileData)
     {
         return laFileData
             .Where(fileRow => LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode.ContainsKey(fileRow.Code))
             .GroupBy(fileRow => (LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode[fileRow.Code], fileRow.Month,
                 fileRow.Year))
             .Where(grouping => consortiumCodes.Contains(grouping.Key.Item1))
-            .Select(grouping => new ConsortiumCsvFileData(
+            .Select(grouping => new ConsortiumFileData(
                     grouping.Key.Item1,
                     grouping.Key.Month,
                     grouping.Key.Year,

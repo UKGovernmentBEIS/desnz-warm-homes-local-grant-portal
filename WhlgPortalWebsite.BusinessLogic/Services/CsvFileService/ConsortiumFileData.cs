@@ -2,11 +2,11 @@ using WhlgPortalWebsite.BusinessLogic.Models;
 
 namespace WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 
-public class LocalAuthorityCsvFileData : CsvFileData
+public class ConsortiumFileData : FileData
 {
-    public override string Name => LocalAuthorityData.LocalAuthorityNamesByCustodianCode[Code];
+    public override string Name => ConsortiumData.ConsortiumNamesByConsortiumCode[Code];
 
-    public LocalAuthorityCsvFileData
+    public ConsortiumFileData
     (
         string code,
         int month,

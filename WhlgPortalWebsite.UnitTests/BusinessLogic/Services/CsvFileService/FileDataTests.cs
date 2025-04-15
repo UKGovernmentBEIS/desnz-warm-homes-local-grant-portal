@@ -6,13 +6,13 @@ using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 namespace Tests.BusinessLogic.Services.CsvFileService;
 
 [TestFixture]
-public class CsvFileDataTests
+public class FileDataTests
 {
     [Test]
     public void CsvFileData_WhenLastDownloadedIsNull_SetsHasUpdatedSinceLastDownloadedToTrue()
     {
         // Arrange/Act
-        var underTest = new LocalAuthorityCsvFileData
+        var underTest = new LocalAuthorityFileData
         (
             "505",
             1,
@@ -29,7 +29,7 @@ public class CsvFileDataTests
     public void CsvFileData_WhenLastDownloadedIsEarlierThanLastUpdated_SetsHasUpdatedSinceLastDownloadedToTrue()
     {
         // Arrange/Act
-        var underTest = new LocalAuthorityCsvFileData
+        var underTest = new LocalAuthorityFileData
         (
             "505",
             1,
@@ -46,7 +46,7 @@ public class CsvFileDataTests
     public void CsvFileData_WhenLastDownloadedIsLaterThanLastUpdated_SetsHasUpdatedSinceLastDownloadedToFalse()
     {
         // Arrange/Act
-        var underTest = new LocalAuthorityCsvFileData
+        var underTest = new LocalAuthorityFileData
         (
             "505",
             1,
@@ -75,7 +75,7 @@ public class CsvFileDataTests
         bool expectedContainsLegacyReferrals)
     {
         // Arrange/Act
-        var underTest = new LocalAuthorityCsvFileData
+        var underTest = new LocalAuthorityFileData
         (
             "505",
             month,

@@ -22,9 +22,9 @@ public class HomepageViewModelTests
         return $"link-{pageNumber}";
     }
 
-    private string GetDummyDownloadLink(CsvFileData csvFileData)
+    private string GetDummyDownloadLink(FileData fileData)
     {
-        return $"link-{csvFileData.Name}";
+        return $"link-{fileData.Name}";
     }
 
     [TestCase(true, false)]
@@ -111,7 +111,7 @@ public class HomepageViewModelTests
         string expectedDateString
     ) {
         // Arrange
-        var csvFileData = new LocalAuthorityCsvFileData
+        var csvFileData = new LocalAuthorityFileData
         (
             ValidCustodianCode,
             month,
@@ -138,7 +138,7 @@ public class HomepageViewModelTests
         string expectedLastUpdatedString
     ) {
         // Arrange
-        var csvFileData = new LocalAuthorityCsvFileData
+        var csvFileData = new LocalAuthorityFileData
         (
             ValidCustodianCode,
             1,
@@ -163,7 +163,7 @@ public class HomepageViewModelTests
         string expectedLocalAuthorityName
     ) {
         // Arrange
-        var csvFileData = new LocalAuthorityCsvFileData
+        var csvFileData = new LocalAuthorityFileData
         (
             custodianCode,
             1,
@@ -183,7 +183,7 @@ public class HomepageViewModelTests
     public void HomepageViewModelCsvFile_WhenInvalidCustodianCodeIsGiven_ThrowsException()
     {
         // Arrange
-        var csvFileData = new LocalAuthorityCsvFileData
+        var csvFileData = new LocalAuthorityFileData
         (
             InvalidCustodianCode,
             1,
@@ -208,7 +208,7 @@ public class HomepageViewModelTests
         string expectedLocalAuthorityName
     ) {
         // Arrange
-        var csvFileData = new ConsortiumCsvFileData
+        var csvFileData = new ConsortiumFileData
         (
             consortiumCode,
             1,
@@ -228,7 +228,7 @@ public class HomepageViewModelTests
     public void HomepageViewModelCsvFile_WhenInvalidConsortiumCodeIsGiven_ThrowsException()
     {
         // Arrange
-        var csvFileData = new ConsortiumCsvFileData
+        var csvFileData = new ConsortiumFileData
         (
             InvalidConsortiumCode,
             1,

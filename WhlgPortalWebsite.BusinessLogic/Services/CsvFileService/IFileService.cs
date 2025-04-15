@@ -1,8 +1,8 @@
 namespace WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 
-public interface ICsvFileService
+public interface IFileService
 {
-    public Task<IEnumerable<CsvFileData>> GetFileDataForUserAsync(string userEmailAddress);
+    public Task<IEnumerable<FileData>> GetFileDataForUserAsync(string userEmailAddress);
 
     public Task<PaginatedFileData> GetPaginatedFileDataForUserAsync(
         string userEmailAddress,
