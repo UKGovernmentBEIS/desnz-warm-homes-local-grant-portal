@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Moq;
 using Tests.Builders;
+using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 
 namespace Tests.BusinessLogic.Services;
 
@@ -19,7 +20,7 @@ public class RegularJobsServiceTests
     private Mock<ILogger<RegularJobsService>> mockLogger;
     private Mock<IDataAccessProvider> mockDataAccessProvider;
     private Mock<IEmailSender> mockEmailSender;
-    private Mock<IFileService> mockCsvFileService;
+    private Mock<IFileRetrievalService> mockCsvFileService;
     private RegularJobsService underTest;
     
     private const string EmailAddress = "test@example.com";
@@ -30,7 +31,7 @@ public class RegularJobsServiceTests
         mockLogger = new Mock<ILogger<RegularJobsService>>();
         mockDataAccessProvider = new Mock<IDataAccessProvider>();
         mockEmailSender = new Mock<IEmailSender>();
-        mockCsvFileService = new Mock<IFileService>();
+        mockCsvFileService = new Mock<IFileRetrievalService>();
         
         underTest = new RegularJobsService(mockDataAccessProvider.Object, mockEmailSender.Object, mockCsvFileService.Object, mockLogger.Object);
     }

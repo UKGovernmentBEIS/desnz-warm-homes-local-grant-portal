@@ -6,37 +6,28 @@ using System.Threading.Tasks;
 using WhlgPortalWebsite.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using WhlgPortalWebsite.BusinessLogic.Helpers;
-using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 using WhlgPortalWebsite.Enums;
 
 namespace WhlgPortalWebsite.Controllers;
 
 [Route("/download")]
-public class FileController : Controller
+public class FileController(
+    IFileRetrievalService fileRetrievalService,
+    ILogger<FileController> logger,
+    IStreamService streamService)
+    : Controller
 {
-    private readonly IFileService fileService;
-    private readonly ILogger<FileController> logger;
-
-    public FileController
-    (
-        IFileService fileService,
-        ILogger<FileController> logger
-    ) {
-        this.fileService = fileService;
-        this.logger = logger;
-    }
-    
     [HttpGet("/la/{custodianCode}/{year:int}/{month:int}/{fileExtension}")]
     public async Task<IActionResult> GetLaFile(string custodianCode, int year, int month, string fileExtension)
     {
-        if (!Enum.TryParse(fileExtension, out FileType fileType))
+        if (!Enum.TryParse(fileExtension.ToUpper(), true, out FileType fileType))
         {
             throw new InvalidEnumArgumentException($"{fileExtension} is not a valid FileType");
         }
         
         return await HandleAccessingFile(
-            async () => await fileService.GetLocalAuthorityFileForDownloadAsync(custodianCode, year, month, HttpContext.User.GetEmailAddress()),
+            async () => await fileRetrievalService.GetLocalAuthorityFileForDownloadAsync(custodianCode, year, month, HttpContext.User.GetEmailAddress()),
             $"{custodianCode}_{year}-{month:D2}.{fileExtension.ToLower()}",
             $"An error occured while trying to access the {fileExtension.ToUpper()} file with custodian code {custodianCode}, year {year}, month {month}.",
             fileType
@@ -46,13 +37,14 @@ public class FileController : Controller
     [HttpGet("/consortium/{custodianCode}/{year:int}/{month:int}/{fileExtension}")]
     public async Task<IActionResult> GetConsortiumFile(string consortiumCode, int year, int month, string fileExtension)
     {
-        if (!Enum.TryParse(fileExtension, out FileType fileType))
+        fileExtension = fileExtension.ToUpper();
+        if (!Enum.TryParse(fileExtension, true, out FileType fileType))
         {
             throw new InvalidEnumArgumentException($"{fileExtension} is not a valid FileType");
         }
     
         return await HandleAccessingFile(
-            async () => await fileService.GetConsortiumFileForDownloadAsync(consortiumCode, year, month, HttpContext.User.GetEmailAddress()),
+            async () => await fileRetrievalService.GetConsortiumFileForDownloadAsync(consortiumCode, year, month, HttpContext.User.GetEmailAddress()),
             $"{consortiumCode}_{year}-{month:D2}.{fileExtension.ToLower()}",
             $"An error occured while trying to access the {fileExtension.ToUpper()} file with consortium code {consortiumCode}, year {year}, month {month}.",
             fileType
@@ -90,10 +82,8 @@ public class FileController : Controller
         return fileType switch
         {
             FileType.Csv => File(file, "text/csv", fileName),
-            FileType.Xlsx => File(FileConversionHelper.ConvertCsvToXlsx(file), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName),
+            FileType.Xlsx => File(streamService.ConvertCsvToXlsx(file), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName),
             _ => throw new ArgumentOutOfRangeException(nameof(fileType), fileType, null)
         };
-        ;
-
     }
 }

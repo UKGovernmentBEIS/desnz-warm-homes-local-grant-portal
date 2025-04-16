@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using WhlgPortalWebsite.BusinessLogic.Services;
 using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 using WhlgPortalWebsite.Enums;
 using WhlgPortalWebsite.Models;
 
@@ -13,16 +14,16 @@ namespace WhlgPortalWebsite.Controllers;
 public class HomeController : Controller
 {
     private readonly UserService userService;
-    private readonly IFileService fileService;
+    private readonly IFileRetrievalService fileRetrievalService;
     private const int PageSize = 20;
 
     public HomeController
     (
         UserService userService,
-        IFileService fileService
+        IFileRetrievalService fileRetrievalService
     ) {
         this.userService = userService;
-        this.fileService = fileService;
+        this.fileRetrievalService = fileRetrievalService;
     }
     
     [HttpGet("/")]
@@ -31,7 +32,7 @@ public class HomeController : Controller
         var userEmailAddress = HttpContext.User.GetEmailAddress();
         var userData = await userService.GetUserByEmailAsync(userEmailAddress);
 
-        var csvFilePage = await fileService.GetPaginatedFileDataForUserAsync(userEmailAddress, codes, page, PageSize);
+        var csvFilePage = await fileRetrievalService.GetPaginatedFileDataForUserAsync(userEmailAddress, codes, page, PageSize);
 
         string GetPageLink(int pageNumber) => Url.Action(nameof(Index), "Home", new RouteValueDictionary { { "custodianCodes", codes }, { "page", pageNumber } });
 
@@ -46,7 +47,7 @@ public class HomeController : Controller
                         { "custodianCode", localAuthorityFileData.Code },
                         { "year", localAuthorityFileData.Year },
                         { "month", localAuthorityFileData.Month },
-                        { "fileExtension", fileType.ToString()}
+                        { "fileExtension", fileType.ToString().ToLower()}
                     }),
                 ConsortiumFileData consortiumFileData => Url.Action(nameof(FileController.GetConsortiumFile),
                     "File",
@@ -55,7 +56,7 @@ public class HomeController : Controller
                         { "consortiumCode", consortiumFileData.Code },
                         { "year", consortiumFileData.Year },
                         { "month", consortiumFileData.Month },
-                        { "fileExtension", fileType.ToString()}
+                        { "fileExtension", fileType.ToString().ToLower()}
                     }),
                 _ => ""
             };

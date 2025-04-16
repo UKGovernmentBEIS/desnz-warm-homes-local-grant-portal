@@ -5,25 +5,26 @@ using System.Security;
 using System.Threading.Tasks;
 using Amazon.S3.Model;
 using FluentAssertions;
-using WhlgPortalWebsite.BusinessLogic;
-using WhlgPortalWebsite.BusinessLogic.ExternalServices.S3FileReader;
-using WhlgPortalWebsite.BusinessLogic.Models;
-using WhlgPortalWebsite.BusinessLogic.Services;
-using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
-using WhlgPortalWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Tests.Builders;
+using WhlgPortalWebsite.BusinessLogic;
+using WhlgPortalWebsite.BusinessLogic.ExternalServices.S3FileReader;
+using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+using WhlgPortalWebsite.BusinessLogic.Services.FileService;
+using WhlgPortalWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 
-namespace Tests.BusinessLogic.Services.CsvFileService;
+namespace Tests.BusinessLogic.Services.FileService;
 
-public class FileServiceTests
+public class FileRetrievalServiceTests
 {
     private Mock<ILogger<S3ReferralFileKeyService>> mockS3Logger;
     private Mock<IDataAccessProvider> mockDataAccessProvider;
     private Mock<IS3FileReader> mockFileReader;
-    private WhlgPortalWebsite.BusinessLogic.Services.CsvFileService.FileService underTest;
+    private FileRetrievalService underTest;
+    private Mock<IStreamService> mockFileStreamService;
     
     [SetUp]
     public void Setup()
@@ -31,9 +32,10 @@ public class FileServiceTests
         mockDataAccessProvider = new Mock<IDataAccessProvider>();
         mockS3Logger = new Mock<ILogger<S3ReferralFileKeyService>>();
         mockFileReader = new Mock<IS3FileReader>();
+        mockFileStreamService = new Mock<IStreamService>();
         var s3ReferralFileKeyService = new S3ReferralFileKeyService(mockS3Logger.Object);
 
-        underTest = new WhlgPortalWebsite.BusinessLogic.Services.CsvFileService.FileService(mockDataAccessProvider.Object, s3ReferralFileKeyService, mockFileReader.Object);
+        underTest = new FileRetrievalService(mockDataAccessProvider.Object, s3ReferralFileKeyService, mockFileReader.Object, mockFileStreamService.Object);
     }
 
     [Test]

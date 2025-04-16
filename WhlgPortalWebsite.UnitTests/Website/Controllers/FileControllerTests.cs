@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Tests.Builders;
+using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 using WhlgPortalWebsite.Enums;
 
 namespace Tests.Website.Controllers;
@@ -18,7 +19,8 @@ public class FileControllerTests
 {
     private Mock<ILogger<FileController>> mockFileControllerLogger;
     private FileController underTest;
-    private Mock<IFileService> mockFileService;
+    private Mock<IFileRetrievalService> mockFileService;
+    private Mock<IStreamService> mockFileStreamService;
     
     private const string EmailAddress = "test@example.com";
 
@@ -26,9 +28,10 @@ public class FileControllerTests
     public void Setup()
     {
         mockFileControllerLogger = new Mock<ILogger<FileController>>();
-        mockFileService = new Mock<IFileService>();
+        mockFileService = new Mock<IFileRetrievalService>();
+        mockFileStreamService = new Mock<IStreamService>();
 
-        underTest = new FileController(mockFileService.Object, mockFileControllerLogger.Object);
+        underTest = new FileController(mockFileService.Object, mockFileControllerLogger.Object, mockFileStreamService.Object);
         underTest.ControllerContext.HttpContext = new HttpContextBuilder(EmailAddress).Build();
     }
 

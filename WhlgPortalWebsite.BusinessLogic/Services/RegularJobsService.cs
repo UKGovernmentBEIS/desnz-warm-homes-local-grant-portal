@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using WhlgPortalWebsite.BusinessLogic.ExternalServices.EmailSending;
 using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 
 namespace WhlgPortalWebsite.BusinessLogic.Services;
 
@@ -8,7 +9,7 @@ public class RegularJobsService
 {
     private readonly IDataAccessProvider dataProvider;
     private readonly IEmailSender emailSender;
-    private readonly IFileService fileService;
+    private readonly IFileRetrievalService fileRetrievalService;
 
     private readonly ILogger logger;
 
@@ -16,12 +17,12 @@ public class RegularJobsService
     (
         IDataAccessProvider dataProvider,
         IEmailSender emailSender,
-        IFileService fileService,
+        IFileRetrievalService fileRetrievalService,
         ILogger<RegularJobsService> logger
     ) {
         this.dataProvider = dataProvider;
         this.emailSender = emailSender;
-        this.fileService = fileService;
+        this.fileRetrievalService = fileRetrievalService;
 
         this.logger = logger;
     }
@@ -37,7 +38,7 @@ public class RegularJobsService
 
             try
             {
-                userCsvFiles = await fileService.GetFileDataForUserAsync(user.EmailAddress);
+                userCsvFiles = await fileRetrievalService.GetFileDataForUserAsync(user.EmailAddress);
             }
             catch (Exception ex)
             {

@@ -3,7 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 
-namespace Tests.BusinessLogic.Services.CsvFileService;
+namespace Tests.BusinessLogic.Services.FileService;
 
 [TestFixture]
 public class FileDataTests

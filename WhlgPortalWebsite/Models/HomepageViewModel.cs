@@ -4,6 +4,7 @@ using System.Linq;
 using GovUkDesignSystem.GovUkDesignSystemComponents;
 using WhlgPortalWebsite.BusinessLogic.Models;
 using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 using WhlgPortalWebsite.Enums;
 
 namespace WhlgPortalWebsite.Models;
@@ -47,7 +48,7 @@ public class HomepageViewModel
         LocalAuthorityCheckboxLabels = new Dictionary<string, LabelViewModel>(checkboxLabels
             .OrderBy(kvp => kvp.Value.Text)
         );
-        FileList = paginatedFileData.FileData.Select(cf => new Files(cf, downloadLinkGenerator(cf, FileType.Csv), downloadLinkGenerator(cf, FileType.Xlsx)));
+        FileList = paginatedFileData.FileData.Select(cf => new ReferralDownloadListing(cf, downloadLinkGenerator(cf, FileType.Csv), downloadLinkGenerator(cf, FileType.Xlsx)));
 
         UserHasNewUpdates = paginatedFileData.UserHasUndownloadedFiles;
 
@@ -60,14 +61,14 @@ public class HomepageViewModel
     public bool UserHasNewUpdates { get; }
     public List<string> Codes { get; }
     public Dictionary<string, LabelViewModel> LocalAuthorityCheckboxLabels { get; }
-    public IEnumerable<Files> FileList { get; }
+    public IEnumerable<ReferralDownloadListing> FileList { get; }
     public int CurrentPage { get; }
     public string[] PageUrls { get; }
     public bool ShowLegacyColumn => FileList.Any(file => file.ContainsLegacyReferrals);
 
-    public class Files
+    public class ReferralDownloadListing
     {
-        public Files(FileData fileData, string csvDownloadLink, string xlsxDownloadLink)
+        public ReferralDownloadListing(FileData fileData, string csvDownloadLink, string xlsxDownloadLink)
         {
             switch (fileData)
             {

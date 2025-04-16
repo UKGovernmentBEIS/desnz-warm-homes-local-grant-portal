@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using Tests.Builders;
+using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 
 namespace Tests.Website.Controllers;
 
@@ -18,7 +19,7 @@ public class HomeFileControllerTests
 {
     private HomeController underTest;
     private Mock<IDataAccessProvider> mockDataAccessProvider;
-    private Mock<IFileService> mockCsvFileService;
+    private Mock<IFileRetrievalService> mockCsvFileService;
 
     private const string EmailAddress = "test@example.com";
 
@@ -26,7 +27,7 @@ public class HomeFileControllerTests
     public void Setup()
     {
         mockDataAccessProvider = new Mock<IDataAccessProvider>();
-        mockCsvFileService = new Mock<IFileService>();
+        mockCsvFileService = new Mock<IFileRetrievalService>();
         var userDataStore = new UserService(mockDataAccessProvider.Object);
 
         underTest = new HomeController(userDataStore, mockCsvFileService.Object);

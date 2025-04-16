@@ -1,15 +1,58 @@
 ﻿using System.Globalization;
 using System.Text;
+using CsvHelper;
+using CsvHelper.Configuration.Attributes;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.VisualBasic.FileIO;
+using WhlgPortalWebsite.BusinessLogic.Models;
 
-namespace WhlgPortalWebsite.BusinessLogic.Helpers;
+namespace WhlgPortalWebsite.BusinessLogic.Services.FileService;
 
-public static class FileConversionHelper
+public class StreamService : IStreamService
 {
-    public static MemoryStream ConvertCsvToXlsx(Stream csvStream)
+    private class CsvReferralRequest
+    {
+        [Name("Referral date")] public string Date { get; }
+        [Optional] [Name("Referral code")] public string Code { get; set; }
+        [Optional] public string Name { get; set; }
+        [Optional] public string Email { get; set; }
+        [Optional] public string Telephone { get; set; }
+        [Optional] public string Address1 { get; set; }
+        [Optional] public string Address2 { get; set; }
+        [Optional] public string Town { get; set; }
+        [Optional] public string County { get; set; }
+        [Optional] public string Postcode { get; set; }
+        [Optional] [Name("UPRN")] public string Uprn { get; set; }
+        [Optional] [Name("EPC Band")] public string EpcBand { get; set; }
+
+        [Optional]
+        [Name("EPC confirmed by homeowner")]
+        public string EpcConfirmedByHomeowner { get; set; }
+
+        [Optional]
+        [Name("EPC Lodgement Date")]
+        public string EpcLodgementDate { get; set; }
+
+        [Optional]
+        [Name("Household income band")]
+        public string HouseholdIncomeBand { get; set; }
+
+        [Optional]
+        [Name("Is eligible postcode")]
+        public string IsEligiblePostcode { get; set; }
+
+        [Optional] public string Tenure { get; set; }
+
+        [Optional] // optional as it doesnt appear in input csv
+        [Name("Custodian Code")]
+        public string CustodianCode { get; set; }
+
+        [Optional] [Name("Local Authority")] public string LocalAuthority { get; set; }
+    }
+
+    public MemoryStream ConvertCsvToXlsx(Stream csvStream)
     {
         if (csvStream.CanSeek)
             csvStream.Position = 0;
@@ -19,7 +62,7 @@ public static class FileConversionHelper
         using var reader = new StreamReader(csvStream, Encoding.UTF8, leaveOpen: true);
         using var parser = new TextFieldParser(reader);
         parser.TextFieldType = FieldType.Delimited;
-        parser.Delimiters = new[] { "," };
+        parser.Delimiters = [","];
         parser.HasFieldsEnclosedInQuotes = true;
         parser.TrimWhiteSpace = true;
 
@@ -32,10 +75,10 @@ public static class FileConversionHelper
             var sheetData = new SheetData();
             worksheetPart.Worksheet = new Worksheet(sheetData);
 
-            var sheets = spreadsheet.WorkbookPart.Workbook.AppendChild(new Sheets());
+            var sheets = workbookPart.Workbook.AppendChild(new Sheets());
             var sheet = new Sheet
             {
-                Id = spreadsheet.WorkbookPart.GetIdOfPart(worksheetPart),
+                Id = workbookPart.GetIdOfPart(worksheetPart),
                 SheetId = 1,
                 Name = "Sheet1"
             };
@@ -46,8 +89,8 @@ public static class FileConversionHelper
             {
                 var fields = parser.ReadFields();
                 if (fields == null) continue;
-
-                var row = new Row { RowIndex = rowIndex++ };
+                var row = new Row { RowIndex = rowIndex };
+                rowIndex++;
 
                 foreach (var value in fields)
                 {
@@ -90,6 +133,45 @@ public static class FileConversionHelper
         return xlsxStream;
     }
 
+    public async Task<Stream> ConvertLocalAuthorityS3StreamsIntoConsortiumStream(
+        Dictionary<string, Stream> csvFileStreams)
+    {
+        var referralRequests = new List<CsvReferralRequest>();
+        foreach (var kvp in csvFileStreams)
+        {
+            var localAuthorityName = LocalAuthorityData.LocalAuthorityNamesByCustodianCode[kvp.Key];
+            using var reader = new StreamReader(kvp.Value);
+            using var localAuthorityCsv = new CsvReader(reader, CultureInfo.InvariantCulture);
+            referralRequests.AddRange(localAuthorityCsv
+                .GetRecords<CsvReferralRequest>()
+                .Select(record =>
+                {
+                    record.CustodianCode = kvp.Key;
+                    record.LocalAuthority = localAuthorityName;
+                    return record;
+                })
+            );
+        }
+
+        referralRequests = referralRequests
+            .Select(referralRequest => (DateTime.Parse(referralRequest.Date), referralRequest))
+            .OrderBy(dateAndReferralRequest => dateAndReferralRequest.Item1)
+            .Select(dateAndReferralRequest => dateAndReferralRequest.referralRequest)
+            .ToList();
+
+        byte[] outBytes;
+
+        using var stream = new MemoryStream();
+        await using var writer = new StreamWriter(stream);
+        await using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+
+        await csv.WriteRecordsAsync(referralRequests);
+        await writer.FlushAsync();
+
+        outBytes = stream.ToArray();
+        return new MemoryStream(outBytes);
+    }
+
     private static bool IsValidDate(string input, out DateTime date)
     {
         return DateTime.TryParseExact(input,
@@ -117,7 +199,7 @@ public static class FileConversionHelper
         var cellStyleFormats = new CellStyleFormats(new CellFormat());
 
         var cellFormats = new CellFormats();
-        cellFormats.Append(new CellFormat()); // Index 0 - default
+        cellFormats.Append(new CellFormat());
         cellFormats.Append(new CellFormat
         {
             NumberFormatId = 164,

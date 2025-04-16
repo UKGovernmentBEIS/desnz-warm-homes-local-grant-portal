@@ -7,6 +7,7 @@ using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 using WhlgPortalWebsite.Models;
 using NUnit.Framework;
 using Tests.Helpers;
+using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 using WhlgPortalWebsite.Enums;
 
 namespace Tests.Website.Models;
@@ -122,7 +123,7 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var viewModelFiles = new HomepageViewModel.Files(csvFileData, "", "");
+        var viewModelFiles = new HomepageViewModel.ReferralDownloadListing(csvFileData, "", "");
         
         // Assert
         viewModelFiles.MonthAndYearText.Should().Be(expectedDateString);
@@ -149,7 +150,7 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var viewModelFiles = new HomepageViewModel.Files(csvFileData, "", "");
+        var viewModelFiles = new HomepageViewModel.ReferralDownloadListing(csvFileData, "", "");
         
         // Assert
         viewModelFiles.LastUpdatedText.Should().Be(expectedLastUpdatedString);
@@ -174,7 +175,7 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var viewModelFiles = new HomepageViewModel.Files(csvFileData, "", "");
+        var viewModelFiles = new HomepageViewModel.ReferralDownloadListing(csvFileData, "", "");
         
         // Assert
         viewModelFiles.Name.Should().Be(expectedLocalAuthorityName);
@@ -194,7 +195,7 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var act = () => new HomepageViewModel.Files(csvFileData, "", "");
+        var act = () => new HomepageViewModel.ReferralDownloadListing(csvFileData, "", "");
         
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>();
@@ -219,7 +220,7 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var viewModelFiles = new HomepageViewModel.Files(csvFileData, "", "");
+        var viewModelFiles = new HomepageViewModel.ReferralDownloadListing(csvFileData, "", "");
         
         // Assert
         viewModelFiles.Name.Should().Be(expectedLocalAuthorityName);
@@ -239,7 +240,7 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var act = () => new HomepageViewModel.Files(csvFileData, "", "");
+        var act = () => new HomepageViewModel.ReferralDownloadListing(csvFileData, "", "");
         
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>();
