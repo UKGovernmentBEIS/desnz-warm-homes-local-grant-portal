@@ -7,6 +7,7 @@ using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 using WhlgPortalWebsite.Models;
 using NUnit.Framework;
 using Tests.Helpers;
+using WhlgPortalWebsite.Enums;
 
 namespace Tests.Website.Models;
 
@@ -22,9 +23,9 @@ public class HomepageViewModelTests
         return $"link-{pageNumber}";
     }
 
-    private string GetDummyDownloadLink(FileData fileData)
+    private string GetDummyDownloadLink(FileData fileData, FileType fileType)
     {
-        return $"link-{fileData.Name}";
+        return $"link-{fileData.Name}.{fileType.ToString()}";
     }
 
     [TestCase(true, false)]
@@ -104,7 +105,7 @@ public class HomepageViewModelTests
     [TestCase(1, 2023, "January 2023")]
     [TestCase(4, 2020, "April 2020")]
     [TestCase(12, 2025, "December 2025")]
-    public void HomepageViewModelCsvFile_WhenMonthAndYearAreGiven_ConvertsThemToAStringWithFullMonthAndYear
+    public void HomepageViewModelFile_WhenMonthAndYearAreGiven_ConvertsThemToAStringWithFullMonthAndYear
     (
         int month,
         int year,
@@ -121,16 +122,16 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData, "");
+        var viewModelFiles = new HomepageViewModel.Files(csvFileData, "", "");
         
         // Assert
-        viewModelCsvFile.MonthAndYearText.Should().Be(expectedDateString);
+        viewModelFiles.MonthAndYearText.Should().Be(expectedDateString);
     }
     
     [TestCase(26, 1, 2023, "26/01/23")]
     [TestCase(22, 5, 2020, "22/05/20")]
     [TestCase(19, 12, 2025, "19/12/25")]
-    public void HomepageViewModelCsvFile_WhenLastUpdatedIsGiven_ConvertsItToAStringWith2DigitsAndSlashes
+    public void HomepageViewModelFile_WhenLastUpdatedIsGiven_ConvertsItToAStringWith2DigitsAndSlashes
     (
         int day,
         int month,
@@ -148,16 +149,16 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData, "");
+        var viewModelFiles = new HomepageViewModel.Files(csvFileData, "", "");
         
         // Assert
-        viewModelCsvFile.LastUpdatedText.Should().Be(expectedLastUpdatedString);
+        viewModelFiles.LastUpdatedText.Should().Be(expectedLastUpdatedString);
     }
     
     [TestCase("5210", "Camden Council")]
     [TestCase("505", "Cambridge City Council")]
     [TestCase("4215", "Manchester City Council")]
-    public void HomepageViewModelCsvFile_WhenValidCustodianCodeIsGiven_GetsTheLocalAuthorityName
+    public void HomepageViewModelFile_WhenValidCustodianCodeIsGiven_GetsTheLocalAuthorityName
     (
         string custodianCode,
         string expectedLocalAuthorityName
@@ -173,14 +174,14 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData, "");
+        var viewModelFiles = new HomepageViewModel.Files(csvFileData, "", "");
         
         // Assert
-        viewModelCsvFile.Name.Should().Be(expectedLocalAuthorityName);
+        viewModelFiles.Name.Should().Be(expectedLocalAuthorityName);
     }
     
     [Test]
-    public void HomepageViewModelCsvFile_WhenInvalidCustodianCodeIsGiven_ThrowsException()
+    public void HomepageViewModelFile_WhenInvalidCustodianCodeIsGiven_ThrowsException()
     {
         // Arrange
         var csvFileData = new LocalAuthorityFileData
@@ -193,7 +194,7 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var act = () => new HomepageViewModel.CsvFile(csvFileData, "");
+        var act = () => new HomepageViewModel.Files(csvFileData, "", "");
         
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>();
@@ -202,7 +203,7 @@ public class HomepageViewModelTests
     [TestCase("C_0016", "Liverpool City Region Combined Authority (Consortium)")]
     [TestCase("C_0004", "Cambridge City Council (Consortium)")]
     [TestCase("C_0003", "Broadland District Council (Consortium)")]
-    public void HomepageViewModelCsvFile_WhenValidConsortiumCodeIsGiven_GetsTheConsortiumName
+    public void HomepageViewModelFile_WhenValidConsortiumCodeIsGiven_GetsTheConsortiumName
     (
         string consortiumCode,
         string expectedLocalAuthorityName
@@ -218,14 +219,14 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var viewModelCsvFile = new HomepageViewModel.CsvFile(csvFileData, "");
+        var viewModelFiles = new HomepageViewModel.Files(csvFileData, "", "");
         
         // Assert
-        viewModelCsvFile.Name.Should().Be(expectedLocalAuthorityName);
+        viewModelFiles.Name.Should().Be(expectedLocalAuthorityName);
     }
     
     [Test]
-    public void HomepageViewModelCsvFile_WhenInvalidConsortiumCodeIsGiven_ThrowsException()
+    public void HomepageViewModelFile_WhenInvalidConsortiumCodeIsGiven_ThrowsException()
     {
         // Arrange
         var csvFileData = new ConsortiumFileData
@@ -238,7 +239,7 @@ public class HomepageViewModelTests
         );
         
         // Act
-        var act = () => new HomepageViewModel.CsvFile(csvFileData, "");
+        var act = () => new HomepageViewModel.Files(csvFileData, "", "");
         
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>();
