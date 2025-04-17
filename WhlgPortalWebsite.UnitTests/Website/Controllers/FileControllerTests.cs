@@ -2,13 +2,13 @@
 using System.Security;
 using System.Threading.Tasks;
 using FluentAssertions;
-using WhlgPortalWebsite.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Tests.Builders;
 using WhlgPortalWebsite.BusinessLogic.Services.FileService;
+using WhlgPortalWebsite.Controllers;
 using WhlgPortalWebsite.Enums;
 
 namespace Tests.Website.Controllers;
@@ -20,7 +20,7 @@ public class FileControllerTests
     private FileController underTest;
     private Mock<IFileRetrievalService> mockFileService;
     private Mock<IStreamService> mockFileStreamService;
-    
+
     private const string EmailAddress = "test@example.com";
 
     [SetUp]
@@ -30,7 +30,8 @@ public class FileControllerTests
         mockFileService = new Mock<IFileRetrievalService>();
         mockFileStreamService = new Mock<IStreamService>();
 
-        underTest = new FileController(mockFileService.Object, mockFileControllerLogger.Object, mockFileStreamService.Object);
+        underTest = new FileController(mockFileService.Object, mockFileControllerLogger.Object,
+            mockFileStreamService.Object);
         underTest.ControllerContext.HttpContext = new HttpContextBuilder(EmailAddress).Build();
     }
 
@@ -42,14 +43,14 @@ public class FileControllerTests
         mockFileService
             .Setup(cfs => cfs.GetLocalAuthorityFileForDownloadAsync("115", 2023, 11, EmailAddress))
             .ThrowsAsync(new SecurityException());
-        
+
         // Act
         var result = await underTest.GetLaFile("115", 2023, 11, fileType.ToString());
-        
+
         // Assert
         result.Should().BeOfType<UnauthorizedObjectResult>();
     }
-    
+
     [TestCase(FileType.Csv)]
     [TestCase(FileType.Xlsx)]
     public async Task GetLaFile_WhenCalledForMissingFile_ReturnsNotFound(FileType fileType)
@@ -58,10 +59,10 @@ public class FileControllerTests
         mockFileService
             .Setup(cfs => cfs.GetLocalAuthorityFileForDownloadAsync("115", 2023, 11, EmailAddress))
             .ThrowsAsync(new ArgumentOutOfRangeException());
-        
+
         // Act
         var result = await underTest.GetLaFile("115", 2023, 11, fileType.ToString());
-        
+
         // Assert
         result.Should().BeOfType<NotFoundResult>();
     }
@@ -74,14 +75,14 @@ public class FileControllerTests
         mockFileService
             .Setup(cfs => cfs.GetConsortiumFileForDownloadAsync("C_0001", 2023, 11, EmailAddress))
             .ThrowsAsync(new SecurityException());
-        
+
         // Act
         var result = await underTest.GetConsortiumFile("C_0001", 2023, 11, fileType.ToString());
-        
+
         // Assert
         result.Should().BeOfType<UnauthorizedObjectResult>();
     }
-    
+
     [TestCase(FileType.Csv)]
     [TestCase(FileType.Xlsx)]
     public async Task GetConsortiumFile_WhenCalledForMissingFile_ReturnsNotFound(FileType fileType)
@@ -90,10 +91,10 @@ public class FileControllerTests
         mockFileService
             .Setup(cfs => cfs.GetConsortiumFileForDownloadAsync("C_0001", 2023, 11, EmailAddress))
             .ThrowsAsync(new ArgumentOutOfRangeException());
-        
+
         // Act
         var result = await underTest.GetConsortiumFile("C_0001", 2023, 11, fileType.ToString());
-        
+
         // Assert
         result.Should().BeOfType<NotFoundResult>();
     }

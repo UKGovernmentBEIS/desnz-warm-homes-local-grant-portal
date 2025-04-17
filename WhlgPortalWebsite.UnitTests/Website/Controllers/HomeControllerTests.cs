@@ -63,12 +63,12 @@ public class HomeFileControllerTests
             .Setup(dap => dap.GetUserByEmailAsync(EmailAddress))
             .ReturnsAsync(user);
         mockFileRetrievalService
-            .Setup(cfg => cfg.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string> { "114"}, 1, 20))
+            .Setup(cfg => cfg.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string> { "114" }, 1, 20))
             .ReturnsAsync(fileData);
-        
+
         // Act
         var result = await underTest.Index(new List<string> { "114" });
-        
+
         // Assert
         mockDataAccessProvider.Verify(dap => dap.MarkUserAsHavingLoggedInAsync(13));
     }

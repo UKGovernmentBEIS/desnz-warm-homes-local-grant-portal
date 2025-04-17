@@ -12,14 +12,13 @@ public class FileRetrievalService(
     IStreamService streamService)
     : IFileRetrievalService
 {
-
     public async Task<IEnumerable<FileData>> GetFileDataForUserAsync(string userEmailAddress)
     {
         // Make sure that we only return file data for files that the user currently has access to
         var user = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
         var custodianCodes = user.GetAdministeredCustodianCodes();
         var consortiumCodes = user.GetAdministeredConsortiumCodes();
-        
+
         var localAuthoritiesFileData = await BuildCsvFileDataForLocalAuthorities(user, custodianCodes);
         var consortiaTransformedFileData = TransformFileDataForConsortia(consortiumCodes, localAuthoritiesFileData);
         var combinedFileData = localAuthoritiesFileData.Concat(consortiaTransformedFileData);
@@ -30,7 +29,8 @@ public class FileRetrievalService(
             .ThenBy(f => f.Name);
     }
 
-    private async Task<List<FileData>> BuildCsvFileDataForLocalAuthorities(User user, IEnumerable<string> currentCustodianCodes)
+    private async Task<List<FileData>> BuildCsvFileDataForLocalAuthorities(User user,
+        IEnumerable<string> currentCustodianCodes)
     {
         var laFileData = new List<FileData>();
         var downloads = await dataAccessProvider.GetCsvFileDownloadDataForUserAsync(user.Id);
@@ -59,12 +59,14 @@ public class FileRetrievalService(
 
         return laFileData;
     }
-    
-    private IEnumerable<FileData> TransformFileDataForConsortia(IEnumerable<string> consortiumCodes, IEnumerable<FileData> laFileData)
+
+    private IEnumerable<FileData> TransformFileDataForConsortia(IEnumerable<string> consortiumCodes,
+        IEnumerable<FileData> laFileData)
     {
         return laFileData
             .Where(fileRow => LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode.ContainsKey(fileRow.Code))
-            .GroupBy(fileRow => (LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode[fileRow.Code], fileRow.Month,
+            .GroupBy(fileRow => (LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode[fileRow.Code],
+                fileRow.Month,
                 fileRow.Year))
             .Where(grouping => consortiumCodes.Contains(grouping.Key.Item1))
             .Select(grouping => new ConsortiumFileData(
@@ -93,7 +95,7 @@ public class FileRetrievalService(
             .Where(cfd => custodianCodes.Count == 0 || custodianCodes.Contains(cfd.Code))
             .ToList();
 
-        var maxPage = ((filteredFileData.Count - 1) / pageSize) + 1;
+        var maxPage = (filteredFileData.Count - 1) / pageSize + 1;
         var currentPage = Math.Min(pageNumber, maxPage);
 
         return new PaginatedFileData
@@ -105,7 +107,8 @@ public class FileRetrievalService(
         };
     }
 
-    public async Task<Stream> GetLocalAuthorityFileForDownloadAsync(string custodianCode, int year, int month, string userEmailAddress)
+    public async Task<Stream> GetLocalAuthorityFileForDownloadAsync(string custodianCode, int year, int month,
+        string userEmailAddress)
     {
         // Important! First ensure the logged-in user is allowed to access this data
         var userData = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
@@ -115,7 +118,7 @@ public class FileRetrievalService(
             throw new SecurityException(
                 $"User {userData.Id} is not permitted to access file for custodian code: {custodianCode} year: {year} month: {month}.");
         }
-        
+
         if (!LocalAuthorityData.LocalAuthorityNamesByCustodianCode.ContainsKey(custodianCode))
         {
             throw new ArgumentOutOfRangeException(nameof(custodianCode), custodianCode,
@@ -123,7 +126,7 @@ public class FileRetrievalService(
         }
 
         var fileStream = await s3FileReader.ReadFileAsync(custodianCode, year, month);
-        
+
         // Notably, we can't confirm a download, so it's possible that we mark a file as downloaded
         //   but the user has some sort of issue and doesn't get it
         // We put this line as late as possible in the method for this reason
@@ -132,7 +135,8 @@ public class FileRetrievalService(
         return fileStream;
     }
 
-    public async Task<Stream> GetConsortiumFileForDownloadAsync(string consortiumCode, int year, int month, string userEmailAddress)
+    public async Task<Stream> GetConsortiumFileForDownloadAsync(string consortiumCode, int year, int month,
+        string userEmailAddress)
     {
         // Important! First ensure the logged-in user is allowed to access this data
         var userData = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
@@ -143,7 +147,7 @@ public class FileRetrievalService(
             throw new SecurityException(
                 $"User {userData.Id} is not permitted to access file for consortium code: {consortiumCode} year: {year} month: {month}.");
         }
-        
+
         if (!ConsortiumData.ConsortiumNamesByConsortiumCode.ContainsKey(consortiumCode))
         {
             throw new ArgumentOutOfRangeException(nameof(consortiumCode), consortiumCode,
@@ -158,6 +162,7 @@ public class FileRetrievalService(
             {
                 continue;
             }
+
             s3FileStreams.Add(
                 custodianCode, await GetLocalAuthorityFileForDownloadAsync(custodianCode, year, month, userEmailAddress)
             );

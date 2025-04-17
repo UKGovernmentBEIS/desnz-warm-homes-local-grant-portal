@@ -47,7 +47,9 @@ public class HomepageViewModel
         LocalAuthorityCheckboxLabels = new Dictionary<string, LabelViewModel>(checkboxLabels
             .OrderBy(kvp => kvp.Value.Text)
         );
-        FileList = paginatedFileData.FileData.Select(cf => new ReferralDownloadListing(cf, downloadLinkGenerator(cf, FileType.Csv), downloadLinkGenerator(cf, FileType.Xlsx)));
+        FileList = paginatedFileData.FileData.Select(cf =>
+            new ReferralDownloadListing(cf, downloadLinkGenerator(cf, FileType.Csv),
+                downloadLinkGenerator(cf, FileType.Xlsx)));
 
         UserHasNewUpdates = paginatedFileData.UserHasUndownloadedFiles;
 
@@ -99,7 +101,7 @@ public class HomepageViewModel
             CsvDownloadLink = csvDownloadLink;
             XlsxDownloadLink = xlsxDownloadLink;
         }
-        
+
         public string CustodianCode { get; }
         public int Year { get; }
         public int Month { get; }

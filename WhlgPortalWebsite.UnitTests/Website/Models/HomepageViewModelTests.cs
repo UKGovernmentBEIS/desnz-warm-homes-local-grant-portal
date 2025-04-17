@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using WhlgPortalWebsite.BusinessLogic.Models;
-using WhlgPortalWebsite.Models;
 using NUnit.Framework;
 using Tests.Helpers;
+using WhlgPortalWebsite.BusinessLogic.Models;
 using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 using WhlgPortalWebsite.Enums;
+using WhlgPortalWebsite.Models;
 
 namespace Tests.Website.Models;
 
@@ -34,7 +34,8 @@ public class HomepageViewModelTests
     (
         bool hasUserLoggedIn,
         bool shouldShowBanner
-    ) {
+    )
+    {
         // Arrange
         var user = new User
         {
@@ -42,10 +43,10 @@ public class HomepageViewModelTests
             LocalAuthorities = new List<LocalAuthority>(),
             Consortia = new List<Consortium>()
         };
-        
+
         // Act
         var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
-        
+
         // Assert
         viewModel.ShouldShowBanner.Should().Be(shouldShowBanner);
     }
@@ -59,7 +60,8 @@ public class HomepageViewModelTests
     (
         int numberOfLas,
         bool expected
-    ) {
+    )
+    {
         // Arrange
         var user = new User
         {
@@ -69,14 +71,14 @@ public class HomepageViewModelTests
                 .ToList(),
             Consortia = ValidConsortiumGenerator.GetConsortiaWithDifferentCodes(0).ToList()
         };
-        
+
         // Act
         var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
-        
+
         // Assert
         viewModel.ShouldShowFilters.Should().Be(expected);
     }
-    
+
     [TestCase(0, 1, true)]
     [TestCase(1, 1, true)]
     public void HomepageViewModel_WhenUserHasConsortium_ShouldShowFilters
@@ -84,7 +86,8 @@ public class HomepageViewModelTests
         int numberOfLas,
         int numberOfConsortia,
         bool expected
-    ) {
+    )
+    {
         // Arrange
         var user = new User
         {
@@ -94,10 +97,10 @@ public class HomepageViewModelTests
                 .ToList(),
             Consortia = ValidConsortiumGenerator.GetConsortiaWithDifferentCodes(numberOfConsortia).ToList()
         };
-        
+
         // Act
         var viewModel = new HomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
-        
+
         // Assert
         viewModel.ShouldShowFilters.Should().Be(expected);
     }
@@ -110,7 +113,8 @@ public class HomepageViewModelTests
         int month,
         int year,
         string expectedDateString
-    ) {
+    )
+    {
         // Arrange
         var fileData = new LocalAuthorityFileData
         (
@@ -120,14 +124,14 @@ public class HomepageViewModelTests
             new DateTime(2023, 1, 1),
             null
         );
-        
+
         // Act
         var viewModelFiles = new HomepageViewModel.ReferralDownloadListing(fileData, "", "");
-        
+
         // Assert
         viewModelFiles.MonthAndYearText.Should().Be(expectedDateString);
     }
-    
+
     [TestCase(26, 1, 2023, "26/01/23")]
     [TestCase(22, 5, 2020, "22/05/20")]
     [TestCase(19, 12, 2025, "19/12/25")]
@@ -137,7 +141,8 @@ public class HomepageViewModelTests
         int month,
         int year,
         string expectedLastUpdatedString
-    ) {
+    )
+    {
         // Arrange
         var fileData = new LocalAuthorityFileData
         (
@@ -147,14 +152,14 @@ public class HomepageViewModelTests
             new DateTime(year, month, day),
             null
         );
-        
+
         // Act
         var viewModelFiles = new HomepageViewModel.ReferralDownloadListing(fileData, "", "");
-        
+
         // Assert
         viewModelFiles.LastUpdatedText.Should().Be(expectedLastUpdatedString);
     }
-    
+
     [TestCase("5210", "Camden Council")]
     [TestCase("505", "Cambridge City Council")]
     [TestCase("4215", "Manchester City Council")]
@@ -162,7 +167,8 @@ public class HomepageViewModelTests
     (
         string custodianCode,
         string expectedLocalAuthorityName
-    ) {
+    )
+    {
         // Arrange
         var fileData = new LocalAuthorityFileData
         (
@@ -172,14 +178,14 @@ public class HomepageViewModelTests
             new DateTime(2023, 1, 1),
             null
         );
-        
+
         // Act
         var viewModelFiles = new HomepageViewModel.ReferralDownloadListing(fileData, "", "");
-        
+
         // Assert
         viewModelFiles.Name.Should().Be(expectedLocalAuthorityName);
     }
-    
+
     [Test]
     public void HomepageViewModelFile_WhenInvalidCustodianCodeIsGiven_ThrowsException()
     {
@@ -192,14 +198,14 @@ public class HomepageViewModelTests
             new DateTime(2023, 1, 1),
             null
         );
-        
+
         // Act
         var act = () => new HomepageViewModel.ReferralDownloadListing(fileData, "", "");
-        
+
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
-    
+
     [TestCase("C_0016", "Liverpool City Region Combined Authority (Consortium)")]
     [TestCase("C_0004", "Cambridge City Council (Consortium)")]
     [TestCase("C_0003", "Broadland District Council (Consortium)")]
@@ -207,7 +213,8 @@ public class HomepageViewModelTests
     (
         string consortiumCode,
         string expectedLocalAuthorityName
-    ) {
+    )
+    {
         // Arrange
         var fileData = new ConsortiumFileData
         (
@@ -217,14 +224,14 @@ public class HomepageViewModelTests
             new DateTime(2023, 1, 1),
             null
         );
-        
+
         // Act
         var viewModelFiles = new HomepageViewModel.ReferralDownloadListing(fileData, "", "");
-        
+
         // Assert
         viewModelFiles.Name.Should().Be(expectedLocalAuthorityName);
     }
-    
+
     [Test]
     public void HomepageViewModelFile_WhenInvalidConsortiumCodeIsGiven_ThrowsException()
     {
@@ -237,10 +244,10 @@ public class HomepageViewModelTests
             new DateTime(2023, 1, 1),
             null
         );
-        
+
         // Act
         var act = () => new HomepageViewModel.ReferralDownloadListing(fileData, "", "");
-        
+
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
