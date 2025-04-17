@@ -1,6 +1,6 @@
 using WhlgPortalWebsite.BusinessLogic.Models;
 
-namespace WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+namespace WhlgPortalWebsite.BusinessLogic.Services.FileService;
 
 public class ConsortiumFileData : FileData
 {

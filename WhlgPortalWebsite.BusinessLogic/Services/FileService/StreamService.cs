@@ -52,7 +52,7 @@ public class StreamService : IStreamService
         [Optional] [Name("Local Authority")] public string LocalAuthority { get; set; }
     }
 
-    public MemoryStream ConvertCsvToXlsx(Stream csvStream)
+    public Stream ConvertCsvToXlsx(Stream csvStream)
     {
         if (csvStream.CanSeek)
             csvStream.Position = 0;

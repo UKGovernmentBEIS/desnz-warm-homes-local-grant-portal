@@ -1,7 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 
 namespace Tests.BusinessLogic.Services.FileService;
 
@@ -9,7 +9,7 @@ namespace Tests.BusinessLogic.Services.FileService;
 public class FileDataTests
 {
     [Test]
-    public void CsvFileData_WhenLastDownloadedIsNull_SetsHasUpdatedSinceLastDownloadedToTrue()
+    public void FileData_WhenLastDownloadedIsNull_SetsHasUpdatedSinceLastDownloadedToTrue()
     {
         // Arrange/Act
         var underTest = new LocalAuthorityFileData
@@ -26,7 +26,7 @@ public class FileDataTests
     }
 
     [Test]
-    public void CsvFileData_WhenLastDownloadedIsEarlierThanLastUpdated_SetsHasUpdatedSinceLastDownloadedToTrue()
+    public void FileData_WhenLastDownloadedIsEarlierThanLastUpdated_SetsHasUpdatedSinceLastDownloadedToTrue()
     {
         // Arrange/Act
         var underTest = new LocalAuthorityFileData
@@ -43,7 +43,7 @@ public class FileDataTests
     }
 
     [Test]
-    public void CsvFileData_WhenLastDownloadedIsLaterThanLastUpdated_SetsHasUpdatedSinceLastDownloadedToFalse()
+    public void FileData_WhenLastDownloadedIsLaterThanLastUpdated_SetsHasUpdatedSinceLastDownloadedToFalse()
     {
         // Arrange/Act
         var underTest = new LocalAuthorityFileData
@@ -71,7 +71,7 @@ public class FileDataTests
     [TestCase(2, 2026, false)]
     [TestCase(3, 2026, false)]
     [TestCase(4, 2026, false)]
-    public void CsvFileData_WhenDatedBeforeHUG2Shutdown_ContainsLegacyReferralsIsTrue(int month, int year,
+    public void FileData_WhenDatedBeforeHUG2Shutdown_ContainsLegacyReferralsIsTrue(int month, int year,
         bool expectedContainsLegacyReferrals)
     {
         // Arrange/Act

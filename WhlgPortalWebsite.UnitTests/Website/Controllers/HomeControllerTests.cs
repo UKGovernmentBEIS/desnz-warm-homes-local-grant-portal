@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using WhlgPortalWebsite.BusinessLogic;
 using WhlgPortalWebsite.BusinessLogic.Models;
 using WhlgPortalWebsite.BusinessLogic.Services;
-using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 using WhlgPortalWebsite.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -19,7 +18,7 @@ public class HomeFileControllerTests
 {
     private HomeController underTest;
     private Mock<IDataAccessProvider> mockDataAccessProvider;
-    private Mock<IFileRetrievalService> mockCsvFileService;
+    private Mock<IFileRetrievalService> mockFileRetrievalService;
 
     private const string EmailAddress = "test@example.com";
 
@@ -27,10 +26,10 @@ public class HomeFileControllerTests
     public void Setup()
     {
         mockDataAccessProvider = new Mock<IDataAccessProvider>();
-        mockCsvFileService = new Mock<IFileRetrievalService>();
+        mockFileRetrievalService = new Mock<IFileRetrievalService>();
         var userDataStore = new UserService(mockDataAccessProvider.Object);
 
-        underTest = new HomeController(userDataStore, mockCsvFileService.Object);
+        underTest = new HomeController(userDataStore, mockFileRetrievalService.Object);
         underTest.ControllerContext.HttpContext = new HttpContextBuilder(EmailAddress).Build();
         underTest.Url = new Mock<IUrlHelper>().Object;
     }
@@ -63,7 +62,7 @@ public class HomeFileControllerTests
         mockDataAccessProvider
             .Setup(dap => dap.GetUserByEmailAsync(EmailAddress))
             .ReturnsAsync(user);
-        mockCsvFileService
+        mockFileRetrievalService
             .Setup(cfg => cfg.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string> { "114"}, 1, 20))
             .ReturnsAsync(fileData);
         

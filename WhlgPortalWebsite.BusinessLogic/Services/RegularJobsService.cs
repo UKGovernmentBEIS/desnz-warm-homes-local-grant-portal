@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using WhlgPortalWebsite.BusinessLogic.ExternalServices.EmailSending;
-using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 
 namespace WhlgPortalWebsite.BusinessLogic.Services;

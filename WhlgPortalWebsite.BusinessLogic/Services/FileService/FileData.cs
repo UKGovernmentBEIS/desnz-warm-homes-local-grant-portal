@@ -1,4 +1,4 @@
-namespace WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+namespace WhlgPortalWebsite.BusinessLogic.Services.FileService;
 
 public abstract class FileData
 {

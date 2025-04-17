@@ -21,7 +21,7 @@ public class FileController(
     [HttpGet("/la/{custodianCode}/{year:int}/{month:int}/{fileExtension}")]
     public async Task<IActionResult> GetLaFile(string custodianCode, int year, int month, string fileExtension)
     {
-        if (!Enum.TryParse(fileExtension.ToUpper(), true, out FileType fileType))
+        if (!Enum.TryParse(fileExtension, true, out FileType fileType))
         {
             throw new InvalidEnumArgumentException($"{fileExtension} is not a valid FileType");
         }
@@ -37,7 +37,6 @@ public class FileController(
     [HttpGet("/consortium/{custodianCode}/{year:int}/{month:int}/{fileExtension}")]
     public async Task<IActionResult> GetConsortiumFile(string consortiumCode, int year, int month, string fileExtension)
     {
-        fileExtension = fileExtension.ToUpper();
         if (!Enum.TryParse(fileExtension, true, out FileType fileType))
         {
             throw new InvalidEnumArgumentException($"{fileExtension} is not a valid FileType");

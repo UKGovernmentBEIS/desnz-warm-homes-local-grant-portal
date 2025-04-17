@@ -2,7 +2,7 @@
 
 public interface IStreamService
 {
-    public MemoryStream ConvertCsvToXlsx(Stream csvStream);
+    public Stream ConvertCsvToXlsx(Stream csvStream);
 
     public Task<Stream> ConvertLocalAuthorityS3StreamsIntoConsortiumStream(Dictionary<string, Stream> csvFileStreams);
 }

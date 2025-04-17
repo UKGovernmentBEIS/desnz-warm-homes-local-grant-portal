@@ -5,7 +5,6 @@ using WhlgPortalWebsite.BusinessLogic;
 using WhlgPortalWebsite.BusinessLogic.ExternalServices.EmailSending;
 using WhlgPortalWebsite.BusinessLogic.Models;
 using WhlgPortalWebsite.BusinessLogic.Services;
-using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Moq;
@@ -20,7 +19,7 @@ public class RegularJobsServiceTests
     private Mock<ILogger<RegularJobsService>> mockLogger;
     private Mock<IDataAccessProvider> mockDataAccessProvider;
     private Mock<IEmailSender> mockEmailSender;
-    private Mock<IFileRetrievalService> mockCsvFileService;
+    private Mock<IFileRetrievalService> mockFileRetrievalService;
     private RegularJobsService underTest;
     
     private const string EmailAddress = "test@example.com";
@@ -31,9 +30,9 @@ public class RegularJobsServiceTests
         mockLogger = new Mock<ILogger<RegularJobsService>>();
         mockDataAccessProvider = new Mock<IDataAccessProvider>();
         mockEmailSender = new Mock<IEmailSender>();
-        mockCsvFileService = new Mock<IFileRetrievalService>();
+        mockFileRetrievalService = new Mock<IFileRetrievalService>();
         
-        underTest = new RegularJobsService(mockDataAccessProvider.Object, mockEmailSender.Object, mockCsvFileService.Object, mockLogger.Object);
+        underTest = new RegularJobsService(mockDataAccessProvider.Object, mockEmailSender.Object, mockFileRetrievalService.Object, mockLogger.Object);
     }
     
     [Test]
@@ -76,7 +75,7 @@ public class RegularJobsServiceTests
                 .Build()
         };
         mockDataAccessProvider.Setup(dap => dap.GetAllActiveUsersAsync()).ReturnsAsync(users);
-        mockCsvFileService.Setup(cfg => cfg.GetFileDataForUserAsync(users[0].EmailAddress)).ReturnsAsync(files);
+        mockFileRetrievalService.Setup(cfg => cfg.GetFileDataForUserAsync(users[0].EmailAddress)).ReturnsAsync(files);
         
         // Act
         await underTest.SendReminderEmailsAsync();
@@ -124,8 +123,8 @@ public class RegularJobsServiceTests
                 .Build()
         };
         mockDataAccessProvider.Setup(dap => dap.GetAllActiveUsersAsync()).ReturnsAsync(users);
-        mockCsvFileService.Setup(cfg => cfg.GetFileDataForUserAsync(users[0].EmailAddress)).ReturnsAsync(user1Files);
-        mockCsvFileService.Setup(cfg => cfg.GetFileDataForUserAsync(users[1].EmailAddress)).ReturnsAsync(user2Files);
+        mockFileRetrievalService.Setup(cfg => cfg.GetFileDataForUserAsync(users[0].EmailAddress)).ReturnsAsync(user1Files);
+        mockFileRetrievalService.Setup(cfg => cfg.GetFileDataForUserAsync(users[1].EmailAddress)).ReturnsAsync(user2Files);
         
         // Act
         await underTest.SendReminderEmailsAsync();
@@ -174,8 +173,8 @@ public class RegularJobsServiceTests
                 .Build()
         };
         mockDataAccessProvider.Setup(dap => dap.GetAllActiveUsersAsync()).ReturnsAsync(users);
-        mockCsvFileService.Setup(cfg => cfg.GetFileDataForUserAsync(users[0].EmailAddress)).ReturnsAsync(user1Files);
-        mockCsvFileService.Setup(cfg => cfg.GetFileDataForUserAsync(users[1].EmailAddress)).ReturnsAsync(user2Files);
+        mockFileRetrievalService.Setup(cfg => cfg.GetFileDataForUserAsync(users[0].EmailAddress)).ReturnsAsync(user1Files);
+        mockFileRetrievalService.Setup(cfg => cfg.GetFileDataForUserAsync(users[1].EmailAddress)).ReturnsAsync(user2Files);
         mockEmailSender.Setup(es => es.SendNewReferralReminderEmail(users[0].EmailAddress)).Throws(new EmailSenderException(EmailSenderExceptionType.Other));
         
         // Act

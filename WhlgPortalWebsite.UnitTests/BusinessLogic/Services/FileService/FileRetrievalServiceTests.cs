@@ -12,7 +12,6 @@ using Tests.Builders;
 using WhlgPortalWebsite.BusinessLogic;
 using WhlgPortalWebsite.BusinessLogic.ExternalServices.S3FileReader;
 using WhlgPortalWebsite.BusinessLogic.Models;
-using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 using WhlgPortalWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 
