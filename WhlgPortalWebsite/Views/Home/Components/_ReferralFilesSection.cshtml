@@ -22,7 +22,8 @@
                 },
                 new()
                 {
-                  Text = "Downloads"
+                  Text = "Downloads",
+                  Colspan = 2
                 },
                 new()
                 {
@@ -53,7 +54,11 @@
                     },
                     new()
                     {
-                        Html = @<text><a class = "govuk-link" href = "@cf.CsvDownloadLink" download>CSV</a>, <a class = "govuk-link" href = "@cf.XlsxDownloadLink" download>XLSX</a></text>
+                        Html = @<a class = "govuk-link" href = "@cf.CsvDownloadLink" download>CSV</a>
+                    },
+                    new()
+                    {
+                      Html  = @<a class = "govuk-link" href = "@cf.XlsxDownloadLink" download>XLSX</a>
                     },
                     new()
                     {
