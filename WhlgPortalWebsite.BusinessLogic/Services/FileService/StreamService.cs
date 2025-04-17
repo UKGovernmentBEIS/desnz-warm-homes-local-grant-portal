@@ -104,8 +104,11 @@ public class StreamService : IStreamService
                         cell = new Cell
                         {
                             CellValue = new CellValue(oaDate.ToString(CultureInfo.InvariantCulture)),
+                            // Dates are "numbers" interpreted as dates (Similar to Unix Timestamps)
                             DataType = CellValues.Number,
-                            StyleIndex = 1
+                            // This index references the custom style we add in our stylesheet
+                            // 0 is default, 1 is the first custom style
+                            StyleIndex = 1 
                         };
                     }
                     else
