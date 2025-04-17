@@ -63,11 +63,12 @@ public class FileController(
         catch (SecurityException ex)
         {
             // If this is happening, someone is trying to get around the access controls or there's a bug
-            logger.LogWarning(ex.Message);
+            logger.LogError(ex.Message);
             return Unauthorized("The logged-in user is not permitted to access this resource.");
         }
-        catch (ArgumentOutOfRangeException)
+        catch (ArgumentOutOfRangeException ex)
         {
+            logger.LogError(ex.Message);
             return NotFound();
         }
         catch (Exception ex)

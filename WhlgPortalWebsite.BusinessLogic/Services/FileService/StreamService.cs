@@ -68,6 +68,8 @@ public class StreamService : IStreamService
 
         using (var spreadsheet = SpreadsheetDocument.Create(xlsxStream, SpreadsheetDocumentType.Workbook, true))
         {
+            // This section is somewhat boilerplate, and can be found here:
+            // https://learn.microsoft.com/en-us/office/open-xml/spreadsheet/how-to-create-a-spreadsheet-document-by-providing-a-file-name
             var workbookPart = spreadsheet.AddWorkbookPart();
             workbookPart.Workbook = new Workbook();
 
@@ -159,8 +161,6 @@ public class StreamService : IStreamService
             .Select(dateAndReferralRequest => dateAndReferralRequest.referralRequest)
             .ToList();
 
-        byte[] outBytes;
-
         using var stream = new MemoryStream();
         await using var writer = new StreamWriter(stream);
         await using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
@@ -168,8 +168,7 @@ public class StreamService : IStreamService
         await csv.WriteRecordsAsync(referralRequests);
         await writer.FlushAsync();
 
-        outBytes = stream.ToArray();
-        return new MemoryStream(outBytes);
+        return new MemoryStream(stream.ToArray());
     }
 
     private static bool IsValidDate(string input, out DateTime date)
@@ -181,31 +180,43 @@ public class StreamService : IStreamService
             out date);
     }
 
+    /// <summary>
+    ///     Adds a custom stylesheet for the custom date format
+    ///     This stylesheet will extend the basic styles available within excel to add an extra custom one
+    /// </summary>
+    /// <param name="workbookPart"></param>
     private static void AddStylesheet(WorkbookPart workbookPart)
     {
         var stylesPart = workbookPart.AddNewPart<WorkbookStylesPart>();
 
+        // Create a custom number format for our date to be formatted as "dd/MM/yyyy HH:mm:ss"
+        // We have to predefine here how many we will be including in this stylesheet, and so the count is set to 1
         var numberingFormats = new NumberingFormats { Count = 1 };
+        const uint dateFormatId = 164; // 164 is used, as 1-163 are reserved IDs
         var customDateFormat = new NumberingFormat
         {
-            NumberFormatId = 164,
+            NumberFormatId = dateFormatId,
             FormatCode = StringValue.FromString("dd\\/MM\\/yyyy HH:mm:ss")
         };
         numberingFormats.Append(customDateFormat);
 
+        // This section initialises each part of the stylesheet we need
+        // but which we have to add 1 empty entry to for it to apply correctly
         var fonts = new Fonts(new Font());
         var fills = new Fills(new Fill());
         var borders = new Borders(new Border());
         var cellStyleFormats = new CellStyleFormats(new CellFormat());
 
+        // Define a new cell format which we will add the new number format we made previously to
         var cellFormats = new CellFormats();
         cellFormats.Append(new CellFormat());
         cellFormats.Append(new CellFormat
         {
-            NumberFormatId = 164,
-            ApplyNumberFormat = true
+            NumberFormatId = dateFormatId,
+            ApplyNumberFormat = true // This flag tells Excel to use the variable above
         });
 
+        // Add our custom number format & cell format that uses it (and the other defaults)
         stylesPart.Stylesheet = new Stylesheet
         {
             NumberingFormats = numberingFormats,
