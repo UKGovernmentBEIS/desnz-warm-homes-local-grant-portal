@@ -12,9 +12,14 @@ namespace WhlgPortalWebsite.BusinessLogic.Services.FileService;
 
 public class StreamService : IStreamService
 {
+    /// <summary>
+    ///     Beware that some "set" accessors in this class have been removed by the linter, when they are necessary for the
+    ///     class to function
+    ///     Check the readme for more information about code auto-formatting.
+    /// </summary>
     private class CsvReferralRequest
     {
-        [Name("Referral date")] public string Date { get; }
+        [Name("Referral date")] public string Date { get; set; }
         [Optional] [Name("Referral code")] public string Code { get; set; }
         [Optional] public string Name { get; set; }
         [Optional] public string Email { get; set; }
@@ -108,7 +113,7 @@ public class StreamService : IStreamService
                             DataType = CellValues.Number,
                             // This index references the custom style we add in our stylesheet
                             // 0 is default, 1 is the first custom style
-                            StyleIndex = 1 
+                            StyleIndex = 1
                         };
                     }
                     else
