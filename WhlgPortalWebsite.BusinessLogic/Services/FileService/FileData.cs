@@ -1,13 +1,13 @@
-namespace WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+namespace WhlgPortalWebsite.BusinessLogic.Services.FileService;
 
-public abstract class CsvFileData
+public abstract class FileData
 {
     // Any referrals prior to March 2025 will be considered legacy
     // This is to ensure all referrals made during Private Beta (starting March 3rd) are not considered legacy
     private const int WhlgStartYear = 2025;
     private const int WhlgStartMonth = 3;
 
-    protected CsvFileData
+    protected FileData
     (
         string code,
         int month,
