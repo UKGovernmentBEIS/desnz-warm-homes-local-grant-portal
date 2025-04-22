@@ -153,7 +153,7 @@ For normal development:
 Doing a release to staging:
 - Merge `develop` into `staging`
 - Deploy this branch into the UAT environment
-- Run manual tests against this environment and gain sign-off to deploy
+- Gain sign-off to deploy
 
 Doing a release to production:
 - Ensure all sign-offs are in place
