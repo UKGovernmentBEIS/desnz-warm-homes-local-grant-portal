@@ -150,7 +150,7 @@ public class StreamService : IStreamService
         foreach (var kvp in csvFileStreams)
         {
             var localAuthorityName = LocalAuthorityData.LocalAuthorityNamesByCustodianCode[kvp.Key];
-            using var reader = new StreamReader(kvp.Value, leaveOpen: true);
+            using var reader = new StreamReader(kvp.Value);
             using var localAuthorityCsv = new CsvReader(reader, CultureInfo.InvariantCulture);
             referralRequests.AddRange(localAuthorityCsv
                 .GetRecords<CsvReferralRequest>()
