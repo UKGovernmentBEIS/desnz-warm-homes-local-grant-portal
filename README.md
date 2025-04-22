@@ -170,6 +170,11 @@ For critical bug fixes on production
 - If the PR is accepted, merge the branch into `main`
 - Then also merge the branch into `develop`
 
+## Auto-Formatter
+When using Rider to format the code, ensure you are using the DESNZ profile, and check the documentation:
+[JetBrains Reformat & Rearrange Code](https://www.jetbrains.com/help/idea/reformat-and-rearrange-code.html)
+
+
 ## Deployment
 
 The site is deployed using github actions.
