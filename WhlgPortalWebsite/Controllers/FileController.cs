@@ -35,7 +35,7 @@ public class FileController(
         );
     }
 
-    [HttpGet("/consortium/{custodianCode}/{year:int}/{month:int}/{fileExtension}")]
+    [HttpGet("/consortium/{consortiumCode}/{year:int}/{month:int}/{fileExtension}")]
     public async Task<IActionResult> GetConsortiumFile(string consortiumCode, int year, int month, string fileExtension)
     {
         if (!Enum.TryParse(fileExtension, true, out FileType fileType))
