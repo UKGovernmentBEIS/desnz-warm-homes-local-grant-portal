@@ -98,9 +98,7 @@ public class HomeController : Controller
 
     private IActionResult ServiceManagerIndex()
     {
-        var homepageViewModel = new ServiceManagerHomepageViewModel();
-
-        return View("ServiceManager/Index", homepageViewModel);
+        return View("ServiceManager/Index");
     }
 
     [HttpGet("/supporting-documents")]
