@@ -1,4 +1,6 @@
-﻿namespace WhlgPortalWebsite.BusinessLogic.Models;
+﻿using WhlgPortalWebsite.BusinessLogic.Models.Enums;
+
+namespace WhlgPortalWebsite.BusinessLogic.Models;
 
 public class User : IEntityWithRowVersioning
 {
@@ -9,6 +11,8 @@ public class User : IEntityWithRowVersioning
 
     public List<LocalAuthority> LocalAuthorities { get; set; }
     public List<Consortium> Consortia { get; set; }
+
+    public UserRole Role { get; set; }
 
     public IEnumerable<string> GetAdministeredCustodianCodes()
     {
