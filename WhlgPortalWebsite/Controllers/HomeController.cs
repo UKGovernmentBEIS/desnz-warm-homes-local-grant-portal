@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Models.Enums;
 using WhlgPortalWebsite.BusinessLogic.Services;
 using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 using WhlgPortalWebsite.Enums;
@@ -32,6 +35,16 @@ public class HomeController : Controller
         var userEmailAddress = HttpContext.User.GetEmailAddress();
         var userData = await userService.GetUserByEmailAsync(userEmailAddress);
 
+        return userData.Role switch
+        {
+            UserRole.AuthorityStaff => await AuthorityStaffIndex(codes, page, userEmailAddress, userData),
+            UserRole.ServiceManager => ServiceManagerIndex(),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    private async Task<IActionResult> AuthorityStaffIndex(List<string> codes, int page, string userEmailAddress, User userData)
+    {
         var csvFilePage =
             await fileRetrievalService.GetPaginatedFileDataForUserAsync(userEmailAddress, codes, page, PageSize);
 
@@ -67,7 +80,7 @@ public class HomeController : Controller
             };
         }
 
-        var homepageViewModel = new HomepageViewModel
+        var homepageViewModel = new AuthorityStaffHomepageViewModel
         (
             userData,
             csvFilePage,
@@ -81,6 +94,13 @@ public class HomeController : Controller
         }
 
         return View("ReferralFiles", homepageViewModel);
+    }
+
+    private IActionResult ServiceManagerIndex()
+    {
+        var homepageViewModel = new ServiceManagerHomepageViewModel();
+
+        return View("ServiceManager/Index", homepageViewModel);
     }
 
     [HttpGet("/supporting-documents")]
