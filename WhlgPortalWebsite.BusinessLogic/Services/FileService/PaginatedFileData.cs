@@ -1,8 +1,8 @@
-namespace WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+namespace WhlgPortalWebsite.BusinessLogic.Services.FileService;
 
 public class PaginatedFileData
 {
-    public IEnumerable<CsvFileData> FileData { get; set; } = new List<CsvFileData>();
+    public IEnumerable<FileData> FileData { get; set; } = new List<FileData>();
     public int CurrentPage { get; set; }
     public int MaximumPage { get; set; }
     

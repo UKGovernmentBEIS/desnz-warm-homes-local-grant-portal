@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using GovUkDesignSystem.GovUkDesignSystemComponents;
 using WhlgPortalWebsite.BusinessLogic.Models;
-using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+using WhlgPortalWebsite.BusinessLogic.Services.FileService;
+using WhlgPortalWebsite.Enums;
 
 namespace WhlgPortalWebsite.Models;
 
@@ -13,7 +14,7 @@ public class HomepageViewModel
         User user,
         PaginatedFileData paginatedFileData,
         Func<int, string> pageLinkGenerator,
-        Func<CsvFileData, string> downloadLinkGenerator
+        Func<FileData, FileType, string> downloadLinkGenerator
     )
     {
         var custodianCodes = user.GetAdministeredCustodianCodes().ToList();
@@ -46,7 +47,9 @@ public class HomepageViewModel
         LocalAuthorityCheckboxLabels = new Dictionary<string, LabelViewModel>(checkboxLabels
             .OrderBy(kvp => kvp.Value.Text)
         );
-        CsvFiles = paginatedFileData.FileData.Select(cf => new CsvFile(cf, downloadLinkGenerator(cf)));
+        FileList = paginatedFileData.FileData.Select(cf =>
+            new ReferralDownloadListing(cf, downloadLinkGenerator(cf, FileType.Csv),
+                downloadLinkGenerator(cf, FileType.Xlsx)));
 
         UserHasNewUpdates = paginatedFileData.UserHasUndownloadedFiles;
 
@@ -59,43 +62,44 @@ public class HomepageViewModel
     public bool UserHasNewUpdates { get; }
     public List<string> Codes { get; }
     public Dictionary<string, LabelViewModel> LocalAuthorityCheckboxLabels { get; }
-    public IEnumerable<CsvFile> CsvFiles { get; }
+    public IEnumerable<ReferralDownloadListing> FileList { get; }
     public int CurrentPage { get; }
     public string[] PageUrls { get; }
-    public bool ShowLegacyColumn => CsvFiles.Any(csvFile => csvFile.ContainsLegacyReferrals);
+    public bool ShowLegacyColumn => FileList.Any(file => file.ContainsLegacyReferrals);
 
-    public class CsvFile
+    public class ReferralDownloadListing
     {
-        public CsvFile(CsvFileData csvFileData, string downloadLink)
+        public ReferralDownloadListing(FileData fileData, string csvDownloadLink, string xlsxDownloadLink)
         {
-            switch (csvFileData)
+            switch (fileData)
             {
-                case LocalAuthorityCsvFileData:
-                    if (!LocalAuthorityData.LocalAuthorityNamesByCustodianCode.ContainsKey(csvFileData.Code))
+                case LocalAuthorityFileData:
+                    if (!LocalAuthorityData.LocalAuthorityNamesByCustodianCode.ContainsKey(fileData.Code))
                     {
-                        throw new ArgumentOutOfRangeException(nameof(csvFileData.Code), csvFileData.Code,
+                        throw new ArgumentOutOfRangeException(nameof(fileData.Code), fileData.Code,
                             "The given custodian code is not known.");
                     }
 
                     break;
-                case ConsortiumCsvFileData:
-                    if (!ConsortiumData.ConsortiumNamesByConsortiumCode.ContainsKey(csvFileData.Code))
+                case ConsortiumFileData:
+                    if (!ConsortiumData.ConsortiumNamesByConsortiumCode.ContainsKey(fileData.Code))
                     {
-                        throw new ArgumentOutOfRangeException(nameof(csvFileData.Code), csvFileData.Code,
+                        throw new ArgumentOutOfRangeException(nameof(fileData.Code), fileData.Code,
                             "The given consortium code is not known.");
                     }
 
                     break;
             }
 
-            CustodianCode = csvFileData.Code;
-            Year = csvFileData.Year;
-            Month = csvFileData.Month;
-            LastUpdatedText = csvFileData.LastUpdated.ToString("dd/MM/yy");
-            HasNewUpdates = csvFileData.HasUpdatedSinceLastDownload;
-            ContainsLegacyReferrals = csvFileData.ContainsLegacyReferrals;
-            Name = csvFileData is ConsortiumCsvFileData ? $"{csvFileData.Name} (Consortium)" : csvFileData.Name;
-            DownloadLink = downloadLink;
+            CustodianCode = fileData.Code;
+            Year = fileData.Year;
+            Month = fileData.Month;
+            LastUpdatedText = fileData.LastUpdated.ToString("dd/MM/yy");
+            HasNewUpdates = fileData.HasUpdatedSinceLastDownload;
+            ContainsLegacyReferrals = fileData.ContainsLegacyReferrals;
+            Name = fileData is ConsortiumFileData ? $"{fileData.Name} (Consortium)" : fileData.Name;
+            CsvDownloadLink = csvDownloadLink;
+            XlsxDownloadLink = xlsxDownloadLink;
         }
 
         public string CustodianCode { get; }
@@ -106,6 +110,7 @@ public class HomepageViewModel
         public string LastUpdatedText { get; }
         public bool HasNewUpdates { get; }
         public bool ContainsLegacyReferrals { get; }
-        public string DownloadLink { get; }
+        public string CsvDownloadLink { get; }
+        public string XlsxDownloadLink { get; }
     }
 }

@@ -1,54 +1,40 @@
 ﻿using Microsoft.Extensions.Logging;
 using WhlgPortalWebsite.BusinessLogic.ExternalServices.EmailSending;
-using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 
 namespace WhlgPortalWebsite.BusinessLogic.Services;
 
-public class RegularJobsService
+public class RegularJobsService(
+    IDataAccessProvider dataProvider,
+    IEmailSender emailSender,
+    IFileRetrievalService fileRetrievalService,
+    ILogger<RegularJobsService> logger)
 {
-    private readonly IDataAccessProvider dataProvider;
-    private readonly IEmailSender emailSender;
-    private readonly ICsvFileService csvFileService;
-
-    private readonly ILogger logger;
-
-    public RegularJobsService
-    (
-        IDataAccessProvider dataProvider,
-        IEmailSender emailSender,
-        ICsvFileService csvFileService,
-        ILogger<RegularJobsService> logger
-    ) {
-        this.dataProvider = dataProvider;
-        this.emailSender = emailSender;
-        this.csvFileService = csvFileService;
-
-        this.logger = logger;
-    }
+    private readonly ILogger logger = logger;
 
     public async Task SendReminderEmailsAsync()
     {
         logger.LogInformation("Sending reminder emails");
-        
+
         var activeUsers = await dataProvider.GetAllActiveUsersAsync();
         foreach (var user in activeUsers)
         {
-            IEnumerable<CsvFileData> userCsvFiles;
+            IEnumerable<FileData> userCsvFiles;
 
             try
             {
-                userCsvFiles = await csvFileService.GetFileDataForUserAsync(user.EmailAddress);
+                userCsvFiles = await fileRetrievalService.GetFileDataForUserAsync(user.EmailAddress);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error encountered while attempting to read files from S3");
                 throw;
             }
-            
+
             var hasUpdates = userCsvFiles.Any(cf => cf.HasUpdatedSinceLastDownload);
-            
+
             if (!hasUpdates) continue;
-            
+
             try
             {
                 emailSender.SendNewReferralReminderEmail(user.EmailAddress);

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.S3;
@@ -23,7 +24,7 @@ using WhlgPortalWebsite.BusinessLogic;
 using WhlgPortalWebsite.BusinessLogic.ExternalServices.EmailSending;
 using WhlgPortalWebsite.BusinessLogic.ExternalServices.S3FileReader;
 using WhlgPortalWebsite.BusinessLogic.Services;
-using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 using WhlgPortalWebsite.Data;
 using WhlgPortalWebsite.ErrorHandling;
 using WhlgPortalWebsite.Middleware;
@@ -51,7 +52,8 @@ namespace WhlgPortalWebsite
             services.AddMemoryCache();
             services.AddScoped<UserService>();
             services.AddScoped<IDataAccessProvider, DataAccessProvider>();
-            services.AddScoped<ICsvFileService, CsvFileService>();
+            services.AddScoped<IFileRetrievalService, FileRetrievalService>();
+            services.AddScoped<IStreamService, StreamService>();
             services.AddSingleton<StaticAssetsVersioningService>();
             // This allows encrypted cookies to be understood across multiple web server instances
             services.AddDataProtection().PersistKeysToDbContext<WhlgDbContext>();

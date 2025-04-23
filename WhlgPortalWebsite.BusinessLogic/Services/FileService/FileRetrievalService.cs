@@ -1,101 +1,38 @@
-using System.Globalization;
 using System.Security;
-using CsvHelper;
-using CsvHelper.Configuration.Attributes;
-using WhlgPortalWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using WhlgPortalWebsite.BusinessLogic.ExternalServices.S3FileReader;
 using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 
-namespace WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+namespace WhlgPortalWebsite.BusinessLogic.Services.FileService;
 
-public class CsvFileService : ICsvFileService
+public class FileRetrievalService(
+    IDataAccessProvider dataAccessProvider,
+    S3ReferralFileKeyService keyService,
+    IS3FileReader s3FileReader,
+    IStreamService streamService)
+    : IFileRetrievalService
 {
-    private readonly IDataAccessProvider dataAccessProvider;
-    private readonly S3ReferralFileKeyService keyService;
-    private readonly IS3FileReader s3FileReader;
-    
-    private class CsvReferralRequest
-    {
-        [Name("Referral date")]
-        public string Date { get; set; }
-        [Optional]
-        [Name("Referral code")]
-        public string Code { get; set; }
-        [Optional]
-        public string Name { get; set; }
-        [Optional]
-        public string Email { get; set; }
-        [Optional]
-        public string Telephone { get; set; }
-        [Optional]
-        public string Address1 { get; set; }
-        [Optional]
-        public string Address2 { get; set; }
-        [Optional]
-        public string Town { get; set; }
-        [Optional]
-        public string County { get; set; }
-        [Optional]
-        public string Postcode { get; set; }
-        [Optional]
-        [Name("UPRN")]
-        public string Uprn { get; set; }
-        [Optional]
-        [Name("EPC Band")]
-        public string EpcBand { get; set; }
-        [Optional]
-        [Name("EPC confirmed by homeowner")]
-        public string EpcConfirmedByHomeowner { get; set; }
-        [Optional]
-        [Name("EPC Lodgement Date")]
-        public string EpcLodgementDate { get; set; }
-        [Optional]
-        [Name("Household income band")]
-        public string HouseholdIncomeBand { get; set; }
-        [Optional]
-        [Name("Is eligible postcode")]
-        public string IsEligiblePostcode { get; set; }
-        [Optional]
-        public string Tenure { get; set; }
-        [Optional] // optional as it doesnt appear in input csv
-        [Name("Custodian Code")]
-        public string CustodianCode { get; set; }
-        [Optional]
-        [Name("Local Authority")]
-        public string LocalAuthority { get; set; }
-    }
-
-    public CsvFileService
-    (
-        IDataAccessProvider dataAccessProvider,
-        S3ReferralFileKeyService keyService,
-        IS3FileReader s3FileReader
-    ) {
-        this.dataAccessProvider = dataAccessProvider;
-        this.keyService = keyService;
-        this.s3FileReader = s3FileReader;
-    }
-
-    public async Task<IEnumerable<CsvFileData>> GetFileDataForUserAsync(string userEmailAddress)
+    public async Task<IEnumerable<FileData>> GetFileDataForUserAsync(string userEmailAddress)
     {
         // Make sure that we only return file data for files that the user currently has access to
         var user = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
         var custodianCodes = user.GetAdministeredCustodianCodes();
         var consortiumCodes = user.GetAdministeredConsortiumCodes();
-        
+
         var localAuthoritiesFileData = await BuildCsvFileDataForLocalAuthorities(user, custodianCodes);
         var consortiaTransformedFileData = TransformFileDataForConsortia(consortiumCodes, localAuthoritiesFileData);
         var combinedFileData = localAuthoritiesFileData.Concat(consortiaTransformedFileData);
 
         return combinedFileData
             .OrderByDescending(f => new DateOnly(f.Year, f.Month, 1))
-            .ThenByDescending(f => f is ConsortiumCsvFileData)
+            .ThenByDescending(f => f is ConsortiumFileData)
             .ThenBy(f => f.Name);
     }
 
-    private async Task<List<CsvFileData>> BuildCsvFileDataForLocalAuthorities(User user, IEnumerable<string> currentCustodianCodes)
+    private async Task<List<FileData>> BuildCsvFileDataForLocalAuthorities(User user,
+        IEnumerable<string> currentCustodianCodes)
     {
-        var laFileData = new List<CsvFileData>();
+        var laFileData = new List<FileData>();
         var downloads = await dataAccessProvider.GetCsvFileDownloadDataForUserAsync(user.Id);
         foreach (var custodianCode in currentCustodianCodes)
         {
@@ -108,7 +45,7 @@ public class CsvFileService : ICsvFileService
                         && d.Year == data.Year
                         && d.Month == data.Month
                     );
-                    return new LocalAuthorityCsvFileData
+                    return new LocalAuthorityFileData
                     (
                         data.CustodianCode,
                         data.Month,
@@ -122,15 +59,17 @@ public class CsvFileService : ICsvFileService
 
         return laFileData;
     }
-    
-    private IEnumerable<CsvFileData> TransformFileDataForConsortia(IEnumerable<string> consortiumCodes, IEnumerable<CsvFileData> laFileData)
+
+    private IEnumerable<FileData> TransformFileDataForConsortia(IEnumerable<string> consortiumCodes,
+        IEnumerable<FileData> laFileData)
     {
         return laFileData
             .Where(fileRow => LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode.ContainsKey(fileRow.Code))
-            .GroupBy(fileRow => (LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode[fileRow.Code], fileRow.Month,
+            .GroupBy(fileRow => (LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode[fileRow.Code],
+                fileRow.Month,
                 fileRow.Year))
             .Where(grouping => consortiumCodes.Contains(grouping.Key.Item1))
-            .Select(grouping => new ConsortiumCsvFileData(
+            .Select(grouping => new ConsortiumFileData(
                     grouping.Key.Item1,
                     grouping.Key.Month,
                     grouping.Key.Year,
@@ -156,7 +95,7 @@ public class CsvFileService : ICsvFileService
             .Where(cfd => custodianCodes.Count == 0 || custodianCodes.Contains(cfd.Code))
             .ToList();
 
-        var maxPage = ((filteredFileData.Count - 1) / pageSize) + 1;
+        var maxPage = (filteredFileData.Count - 1) / pageSize + 1;
         var currentPage = Math.Min(pageNumber, maxPage);
 
         return new PaginatedFileData
@@ -168,7 +107,8 @@ public class CsvFileService : ICsvFileService
         };
     }
 
-    public async Task<Stream> GetLocalAuthorityFileForDownloadAsync(string custodianCode, int year, int month, string userEmailAddress)
+    public async Task<Stream> GetLocalAuthorityFileForDownloadAsync(string custodianCode, int year, int month,
+        string userEmailAddress)
     {
         // Important! First ensure the logged-in user is allowed to access this data
         var userData = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
@@ -178,7 +118,7 @@ public class CsvFileService : ICsvFileService
             throw new SecurityException(
                 $"User {userData.Id} is not permitted to access file for custodian code: {custodianCode} year: {year} month: {month}.");
         }
-        
+
         if (!LocalAuthorityData.LocalAuthorityNamesByCustodianCode.ContainsKey(custodianCode))
         {
             throw new ArgumentOutOfRangeException(nameof(custodianCode), custodianCode,
@@ -186,7 +126,7 @@ public class CsvFileService : ICsvFileService
         }
 
         var fileStream = await s3FileReader.ReadFileAsync(custodianCode, year, month);
-        
+
         // Notably, we can't confirm a download, so it's possible that we mark a file as downloaded
         //   but the user has some sort of issue and doesn't get it
         // We put this line as late as possible in the method for this reason
@@ -195,7 +135,8 @@ public class CsvFileService : ICsvFileService
         return fileStream;
     }
 
-    public async Task<Stream> GetConsortiumFileForDownloadAsync(string consortiumCode, int year, int month, string userEmailAddress)
+    public async Task<Stream> GetConsortiumFileForDownloadAsync(string consortiumCode, int year, int month,
+        string userEmailAddress)
     {
         // Important! First ensure the logged-in user is allowed to access this data
         var userData = await dataAccessProvider.GetUserByEmailAsync(userEmailAddress);
@@ -206,54 +147,27 @@ public class CsvFileService : ICsvFileService
             throw new SecurityException(
                 $"User {userData.Id} is not permitted to access file for consortium code: {consortiumCode} year: {year} month: {month}.");
         }
-        
+
         if (!ConsortiumData.ConsortiumNamesByConsortiumCode.ContainsKey(consortiumCode))
         {
             throw new ArgumentOutOfRangeException(nameof(consortiumCode), consortiumCode,
                 "Given consortium code is not valid");
         }
 
-        var referralRequests = new List<CsvReferralRequest>();
-        
+        var s3FileStreams = new Dictionary<string, Stream>(); //Custodian Code and corresponding Stream
+
         foreach (var custodianCode in ConsortiumData.ConsortiumCustodianCodesIdsByConsortiumCode[consortiumCode])
         {
             if (!await s3FileReader.FileExistsAsync(custodianCode, year, month))
             {
                 continue;
             }
-            
-            var localAuthorityFile = await GetLocalAuthorityFileForDownloadAsync(custodianCode, year, month, userEmailAddress);
-            var localAuthorityName = LocalAuthorityData.LocalAuthorityNamesByCustodianCode[custodianCode];
 
-            using var reader = new StreamReader(localAuthorityFile);
-            using var localAuthorityCsv = new CsvReader(reader, CultureInfo.InvariantCulture);
-            referralRequests.AddRange(localAuthorityCsv
-                .GetRecords<CsvReferralRequest>()
-                .Select(record =>
-                {
-                    record.CustodianCode = custodianCode;
-                    record.LocalAuthority = localAuthorityName;
-                    return record;
-                })
+            s3FileStreams.Add(
+                custodianCode, await GetLocalAuthorityFileForDownloadAsync(custodianCode, year, month, userEmailAddress)
             );
         }
 
-        referralRequests = referralRequests
-            .Select(referralRequest => (DateTime.Parse(referralRequest.Date), referralRequest))
-            .OrderBy(dateAndReferralRequest => dateAndReferralRequest.Item1)
-            .Select(dateAndReferralRequest => dateAndReferralRequest.referralRequest)
-            .ToList();
-
-        byte[] outBytes;
-
-        using var stream = new MemoryStream();
-        await using var writer = new StreamWriter(stream);
-        await using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
-        
-        await csv.WriteRecordsAsync(referralRequests);
-        await writer.FlushAsync();
-        
-        outBytes = stream.ToArray();
-        return new MemoryStream(outBytes);
+        return await streamService.ConvertLocalAuthorityS3StreamsIntoConsortiumStream(s3FileStreams);
     }
 }

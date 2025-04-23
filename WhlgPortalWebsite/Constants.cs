@@ -6,4 +6,6 @@ public static class Constants
 
     // This must be kept in sync with the corresponding variable in app.scss
     public const string BASE_PATH = "/portal";
+    
+    public const string FEEDBACK_URL_DEFAULT = "https://forms.office.com/e/Jq59uDX1WR";
 }
