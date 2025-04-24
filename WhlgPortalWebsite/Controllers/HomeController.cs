@@ -93,7 +93,7 @@ public class HomeController : Controller
             await userService.MarkUserAsHavingLoggedInAsync(userData.Id);
         }
 
-        return View("ReferralFiles", homepageViewModel);
+        return View("AuthorityStaff/ReferralFiles", homepageViewModel);
     }
 
     private IActionResult ServiceManagerIndex()
@@ -104,6 +104,6 @@ public class HomeController : Controller
     [HttpGet("/supporting-documents")]
     public IActionResult SupportingDocuments()
     {
-        return View("SupportingDocuments");
+        return View("AuthorityStaff/SupportingDocuments");
     }
 }
