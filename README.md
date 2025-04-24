@@ -153,7 +153,7 @@ For normal development:
 Doing a release to staging:
 - Merge `develop` into `staging`
 - Deploy this branch into the UAT environment
-- Run manual tests against this environment and gain sign-off to deploy
+- Gain sign-off to deploy
 
 Doing a release to production:
 - Ensure all sign-offs are in place
@@ -169,6 +169,11 @@ For critical bug fixes on production
     - To merge to main, the `production release` label must be applied to your pull request
 - If the PR is accepted, merge the branch into `main`
 - Then also merge the branch into `develop`
+
+### Auto-Formatter
+When using Rider to format the code, ensure you are using the DESNZ profile, and check the documentation:
+[JetBrains Reformat & Rearrange Code](https://www.jetbrains.com/help/idea/reformat-and-rearrange-code.html)
+
 
 ## Deployment
 

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using WhlgPortalWebsite.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using WhlgPortalWebsite.BusinessLogic.Services;
-using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
+using WhlgPortalWebsite.BusinessLogic.Services.FileService;
+using WhlgPortalWebsite.Enums;
+using WhlgPortalWebsite.Helpers;
 using WhlgPortalWebsite.Models;
 
 namespace WhlgPortalWebsite.Controllers;
@@ -12,47 +13,55 @@ namespace WhlgPortalWebsite.Controllers;
 public class HomeController : Controller
 {
     private readonly UserService userService;
-    private readonly ICsvFileService csvFileService;
+    private readonly IFileRetrievalService fileRetrievalService;
     private const int PageSize = 20;
 
     public HomeController
     (
         UserService userService,
-        ICsvFileService csvFileService
-    ) {
+        IFileRetrievalService fileRetrievalService
+    )
+    {
         this.userService = userService;
-        this.csvFileService = csvFileService;
+        this.fileRetrievalService = fileRetrievalService;
     }
-    
+
     [HttpGet("/")]
     public async Task<IActionResult> Index([FromQuery] List<string> codes, int page = 1)
     {
         var userEmailAddress = HttpContext.User.GetEmailAddress();
         var userData = await userService.GetUserByEmailAsync(userEmailAddress);
 
-        var csvFilePage = await csvFileService.GetPaginatedFileDataForUserAsync(userEmailAddress, codes, page, PageSize);
+        var csvFilePage =
+            await fileRetrievalService.GetPaginatedFileDataForUserAsync(userEmailAddress, codes, page, PageSize);
 
-        string GetPageLink(int pageNumber) => Url.Action(nameof(Index), "Home", new RouteValueDictionary() { { "custodianCodes", codes }, { "page", pageNumber } });
-
-        string GetDownloadLink(CsvFileData abstractCsvFileData)
+        string GetPageLink(int pageNumber)
         {
-            return abstractCsvFileData switch
+            return Url.Action(nameof(Index), "Home",
+                new RouteValueDictionary { { "custodianCodes", codes }, { "page", pageNumber } });
+        }
+
+        string GetDownloadLink(FileData abstractFileData, FileType fileType)
+        {
+            return abstractFileData switch
             {
-                LocalAuthorityCsvFileData localAuthorityCsvFileData => Url.Action(
-                    nameof(CsvFileController.GetLaCsvFile), "CsvFile",
-                    new RouteValueDictionary()
+                LocalAuthorityFileData localAuthorityFileData => Url.Action(
+                    nameof(FileController.GetLaFile), "File",
+                    new RouteValueDictionary
                     {
-                        { "custodianCode", localAuthorityCsvFileData.Code },
-                        { "year", localAuthorityCsvFileData.Year },
-                        { "month", localAuthorityCsvFileData.Month }
+                        { "custodianCode", localAuthorityFileData.Code },
+                        { "year", localAuthorityFileData.Year },
+                        { "month", localAuthorityFileData.Month },
+                        { "fileExtension", fileType.ToString().ToLower() }
                     }),
-                ConsortiumCsvFileData consortiumCsvFileData => Url.Action(nameof(CsvFileController.GetConsortiumCsvFile),
-                    "CsvFile",
-                    new RouteValueDictionary()
+                ConsortiumFileData consortiumFileData => Url.Action(nameof(FileController.GetConsortiumFile),
+                    "File",
+                    new RouteValueDictionary
                     {
-                        { "consortiumCode", consortiumCsvFileData.Code },
-                        { "year", consortiumCsvFileData.Year },
-                        { "month", consortiumCsvFileData.Month }
+                        { "consortiumCode", consortiumFileData.Code },
+                        { "year", consortiumFileData.Year },
+                        { "month", consortiumFileData.Month },
+                        { "fileExtension", fileType.ToString().ToLower() }
                     }),
                 _ => ""
             };
@@ -70,6 +79,7 @@ public class HomeController : Controller
         {
             await userService.MarkUserAsHavingLoggedInAsync(userData.Id);
         }
+
         return View("ReferralFiles", homepageViewModel);
     }
 

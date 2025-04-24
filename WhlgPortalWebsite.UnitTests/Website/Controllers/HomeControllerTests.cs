@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 using WhlgPortalWebsite.BusinessLogic;
 using WhlgPortalWebsite.BusinessLogic.Models;
 using WhlgPortalWebsite.BusinessLogic.Services;
-using WhlgPortalWebsite.BusinessLogic.Services.CsvFileService;
 using WhlgPortalWebsite.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using Tests.Builders;
+using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 
 namespace Tests.Website.Controllers;
 
@@ -18,7 +18,7 @@ public class HomeFileControllerTests
 {
     private HomeController underTest;
     private Mock<IDataAccessProvider> mockDataAccessProvider;
-    private Mock<ICsvFileService> mockCsvFileService;
+    private Mock<IFileRetrievalService> mockFileRetrievalService;
 
     private const string EmailAddress = "test@example.com";
 
@@ -26,10 +26,10 @@ public class HomeFileControllerTests
     public void Setup()
     {
         mockDataAccessProvider = new Mock<IDataAccessProvider>();
-        mockCsvFileService = new Mock<ICsvFileService>();
+        mockFileRetrievalService = new Mock<IFileRetrievalService>();
         var userDataStore = new UserService(mockDataAccessProvider.Object);
 
-        underTest = new HomeController(userDataStore, mockCsvFileService.Object);
+        underTest = new HomeController(userDataStore, mockFileRetrievalService.Object);
         underTest.ControllerContext.HttpContext = new HttpContextBuilder(EmailAddress).Build();
         underTest.Url = new Mock<IUrlHelper>().Object;
     }
@@ -42,7 +42,7 @@ public class HomeFileControllerTests
         {
             CurrentPage = 1,
             MaximumPage = 1,
-            FileData = new List<LocalAuthorityCsvFileData>()
+            FileData = new List<LocalAuthorityFileData>()
             {
                 new("114", 1, 2023, new DateTime(2023, 1, 31), null)
             }
@@ -62,13 +62,13 @@ public class HomeFileControllerTests
         mockDataAccessProvider
             .Setup(dap => dap.GetUserByEmailAsync(EmailAddress))
             .ReturnsAsync(user);
-        mockCsvFileService
-            .Setup(cfg => cfg.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string> { "114"}, 1, 20))
+        mockFileRetrievalService
+            .Setup(cfg => cfg.GetPaginatedFileDataForUserAsync(user.EmailAddress, new List<string> { "114" }, 1, 20))
             .ReturnsAsync(fileData);
-        
+
         // Act
         var result = await underTest.Index(new List<string> { "114" });
-        
+
         // Assert
         mockDataAccessProvider.Verify(dap => dap.MarkUserAsHavingLoggedInAsync(13));
     }
