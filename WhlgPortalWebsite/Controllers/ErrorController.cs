@@ -20,6 +20,7 @@ public class ErrorController: Controller
     {
         return code switch
         {
+            401 => View("Unauthorised"),
             404 => View("PageNotFound"),
             _ => throw new ArgumentOutOfRangeException()
         };
