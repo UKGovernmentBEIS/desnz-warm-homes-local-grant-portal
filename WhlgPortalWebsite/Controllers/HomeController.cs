@@ -13,21 +13,12 @@ using WhlgPortalWebsite.Models;
 
 namespace WhlgPortalWebsite.Controllers;
 
-public class HomeController : Controller
+public class HomeController(
+    UserService userService,
+    IFileRetrievalService fileRetrievalService)
+    : Controller
 {
-    private readonly UserService userService;
-    private readonly IFileRetrievalService fileRetrievalService;
     private const int PageSize = 20;
-
-    public HomeController
-    (
-        UserService userService,
-        IFileRetrievalService fileRetrievalService
-    )
-    {
-        this.userService = userService;
-        this.fileRetrievalService = fileRetrievalService;
-    }
 
     [HttpGet("/")]
     public async Task<IActionResult> Index([FromQuery] List<string> codes, int page = 1)
@@ -43,7 +34,8 @@ public class HomeController : Controller
         };
     }
 
-    private async Task<IActionResult> AuthorityStaffIndex(List<string> codes, int page, string userEmailAddress, User userData)
+    private async Task<IActionResult> AuthorityStaffIndex(List<string> codes, int page, string userEmailAddress,
+        User userData)
     {
         var csvFilePage =
             await fileRetrievalService.GetPaginatedFileDataForUserAsync(userEmailAddress, codes, page, PageSize);
