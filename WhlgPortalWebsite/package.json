@@ -1,7 +1,7 @@
 {
   "name": "homeenergyretrofitpublicwebsite",
   "version": "1.0.0",
-  "description": "The public-facing website of the Home Energy Retrofit service",
+  "description": "The public-facing website of the Warm Homes: Local Grant service",
   "dependencies": {
     "govuk-frontend": "4.8.0",
     "html5shiv": "^3.7.3",
