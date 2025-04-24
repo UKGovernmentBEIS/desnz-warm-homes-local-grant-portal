@@ -45,7 +45,8 @@ public class AuthorityStaffHomepageViewModelTests
         };
 
         // Act
-        var viewModel = new AuthorityStaffHomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
+        var viewModel =
+            new AuthorityStaffHomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
 
         // Assert
         viewModel.ShouldShowBanner.Should().Be(shouldShowBanner);
@@ -73,7 +74,8 @@ public class AuthorityStaffHomepageViewModelTests
         };
 
         // Act
-        var viewModel = new AuthorityStaffHomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
+        var viewModel =
+            new AuthorityStaffHomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
 
         // Assert
         viewModel.ShouldShowFilters.Should().Be(expected);
@@ -99,7 +101,8 @@ public class AuthorityStaffHomepageViewModelTests
         };
 
         // Act
-        var viewModel = new AuthorityStaffHomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
+        var viewModel =
+            new AuthorityStaffHomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
 
         // Assert
         viewModel.ShouldShowFilters.Should().Be(expected);
