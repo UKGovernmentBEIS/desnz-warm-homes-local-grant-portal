@@ -39,7 +39,7 @@ public class CommandHandlerTests
         var returnedUser = underTest.GetUser(userEmailAddress);
 
         // Assert
-        Assert.AreEqual(users[0].EmailAddress, returnedUser!.EmailAddress);
+        Assert.That(users[0].EmailAddress, Is.EqualTo(returnedUser!.EmailAddress));
     }
 
     [Test]
