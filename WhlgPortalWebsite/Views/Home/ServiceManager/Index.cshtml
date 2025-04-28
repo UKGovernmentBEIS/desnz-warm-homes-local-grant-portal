@@ -1,13 +1,73 @@
-﻿@{
-    ViewBag.Title = $"Warm Homes: Local Grant Portal";
+﻿@using GovUkDesignSystem
+@using GovUkDesignSystem.GovUkDesignSystemComponents
+@model WhlgPortalWebsite.Models.ServiceManagerHomepageViewModel
+
+@{
+    ViewBag.Title = "Warm Homes: Local Grant Portal";
 }
 
 <h1 class="govuk-heading-xl">Warm Homes: Local Grant Service Manager Portal</h1>
-<p class="govuk-body">
-    Functionality will be added soon...
-</p>
-<p class="govuk-body">
-    QA: Service Managers should be able to access
-    <a href="@Url.Action("ServiceManagerTestPage", "ServiceManager")" class="govuk-link">this page</a>,
-    but Delivery Partners should not.
-</p>
+
+<h2 class="govuk-heading-l">Manage Local Authority/Consortia Users</h2>
+<h3 class="govuk-heading-m">Add a new user</h3>
+@(await Html.GovUkButton(new ButtonViewModel
+{
+    Text = "Add new user",
+    Href = Url.Action("ServiceManagerTestPage", "ServiceManager")
+}))
+
+<h3 class="govuk-heading-m">View existing users</h3>
+<form method="get">
+    @(await Html.GovUkTextInputFor(
+        m => m.UserSearch,
+        labelOptions: new LabelViewModel
+        {
+            Text = "Search for a user"
+        },
+        placeholder: "User email"))
+
+    @(await Html.GovUkButton(new ButtonViewModel
+    {
+        Text = "Search"
+    }))
+</form>
+
+@await Html.GovUkTable(new TableGovUkViewModel
+{
+    Head =
+    [
+        new TableCellViewModel
+        {
+            Text = "Email"
+        },
+        new TableCellViewModel
+        {
+            Text = "Manages"
+        },
+        new TableCellViewModel
+        {
+            Text = "Actions"
+        }
+    ],
+    Rows =
+    [
+        new TableRowViewModel
+        {
+            Row =
+            [
+                new TableCellViewModel
+                {
+                    Text = "user@example.com"
+                },
+                new TableCellViewModel
+                {
+                    Text = "Turner & Townsend"
+                },
+                new TableCellViewModel
+                {
+                    Html = @<a class="govuk-link" href="@Url.Action("ServiceManagerTestPage", "ServiceManager")">Assign to authority</a>
+                }
+            ]
+        }
+    ]
+})
