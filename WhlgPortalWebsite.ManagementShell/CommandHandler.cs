@@ -1,4 +1,5 @@
 using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Models.Enums;
 
 namespace WhlgPortalWebsite.ManagementShell;
 
@@ -59,7 +60,7 @@ public class CommandHandler
                     TryAddLas(user, custodianCodes);
                     break;
                 case UserAccountStatus.New:
-                    TryCreateUser(userEmailAddress, custodianCodes, null);
+                    TryCreateUser(userEmailAddress, UserRole.AuthorityStaff, custodianCodes, null);
                     break;
             }
     }
@@ -105,7 +106,7 @@ public class CommandHandler
                     TryAddConsortia(user, consortiumCodes);
                     break;
                 case UserAccountStatus.New:
-                    TryCreateUser(userEmailAddress, null, consortiumCodes);
+                    TryCreateUser(userEmailAddress, UserRole.AuthorityStaff, null, consortiumCodes);
                     break;
             }
     }
@@ -341,12 +342,12 @@ public class CommandHandler
         }
     }
 
-    private void TryCreateUser(string userEmailAddress, IReadOnlyCollection<string>? custodianCodes,
+    private void TryCreateUser(string userEmailAddress, UserRole userRole, IReadOnlyCollection<string>? custodianCodes,
         IReadOnlyCollection<string>? consortiumCodes)
     {
         try
         {
-            adminAction.CreateUser(userEmailAddress, custodianCodes, consortiumCodes);
+            adminAction.CreateUser(userEmailAddress, userRole, custodianCodes, consortiumCodes);
         }
         catch (CouldNotFindAuthorityException couldNotFindAuthorityException)
         {

@@ -1,4 +1,5 @@
 using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Models.Enums;
 
 namespace WhlgPortalWebsite.ManagementShell;
 
@@ -57,13 +58,13 @@ public class AdminAction
         return userOrNull == null ? UserAccountStatus.New : UserAccountStatus.Active;
     }
 
-    public void CreateUser(string userEmailAddress, IReadOnlyCollection<string>? custodianCodes,
+    public void CreateUser(string userEmailAddress, UserRole userRole, IReadOnlyCollection<string>? custodianCodes,
         IReadOnlyCollection<string>? consortiumCodes)
     {
         var lasToAdd = dbOperation.GetLas(custodianCodes ?? Array.Empty<string>());
         var consortiaToAdd = dbOperation.GetConsortia(consortiumCodes ?? Array.Empty<string>());
 
-        dbOperation.CreateUserOrLogError(userEmailAddress, lasToAdd, consortiaToAdd);
+        dbOperation.CreateUserOrLogError(userEmailAddress, userRole, lasToAdd, consortiaToAdd);
     }
 
     public void RemoveUser(User user)

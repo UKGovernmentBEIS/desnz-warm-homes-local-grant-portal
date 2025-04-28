@@ -5,6 +5,7 @@ using WhlgPortalWebsite.ManagementShell;
 using Moq;
 using NUnit.Framework;
 using Tests.Builders;
+using WhlgPortalWebsite.BusinessLogic.Models.Enums;
 
 namespace Tests.ManagementShell;
 
@@ -90,7 +91,7 @@ public class CommandHandlerTests
 
         // Assert
         mockDatabaseOperation.Verify(
-            mock => mock.CreateUserOrLogError(userEmailAddress, las, It.IsAny<List<Consortium>>()), Times.Once());
+            mock => mock.CreateUserOrLogError(userEmailAddress, UserRole.AuthorityStaff, las, It.IsAny<List<Consortium>>()), Times.Once());
     }
 
     [Test]
@@ -352,7 +353,7 @@ public class CommandHandlerTests
         // Assert
         mockOutputProvider.Verify(mock => mock.Output("Process cancelled, no changes were made to the database"));
         mockDatabaseOperation.Verify(
-            mock => mock.CreateUserOrLogError(userEmailAddress, lasToAdd, It.IsAny<List<Consortium>>()), Times.Never());
+            mock => mock.CreateUserOrLogError(userEmailAddress, UserRole.AuthorityStaff, lasToAdd, It.IsAny<List<Consortium>>()), Times.Never());
     }
 
     [Test]
@@ -480,7 +481,7 @@ public class CommandHandlerTests
 
         // Assert
         mockDatabaseOperation.Verify(
-            mock => mock.CreateUserOrLogError(userEmailAddress, It.IsAny<List<LocalAuthority>>(), consortia),
+            mock => mock.CreateUserOrLogError(userEmailAddress, UserRole.AuthorityStaff,It.IsAny<List<LocalAuthority>>(), consortia),
             Times.Once());
     }
 
@@ -594,7 +595,7 @@ public class CommandHandlerTests
         // Assert
         mockOutputProvider.Verify(mock => mock.Output("Process cancelled, no changes were made to the database"));
         mockDatabaseOperation.Verify(
-            mock => mock.CreateUserOrLogError(userEmailAddress, It.IsAny<List<LocalAuthority>>(), consortiaToAdd),
+            mock => mock.CreateUserOrLogError(userEmailAddress, UserRole.AuthorityStaff, It.IsAny<List<LocalAuthority>>(), consortiaToAdd),
             Times.Never());
     }
 

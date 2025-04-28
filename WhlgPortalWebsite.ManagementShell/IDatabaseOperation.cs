@@ -1,4 +1,5 @@
 using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Models.Enums;
 
 namespace WhlgPortalWebsite.ManagementShell;
 
@@ -9,7 +10,7 @@ public interface IDatabaseOperation
     public List<Consortium> GetConsortia(IReadOnlyCollection<string> consortiumCodes);
     public void RemoveUserOrLogError(User user);
 
-    public void CreateUserOrLogError(string userEmailAddress, List<LocalAuthority> localAuthorities,
+    public void CreateUserOrLogError(string userEmailAddress, UserRole userRole, List<LocalAuthority> localAuthorities,
         List<Consortium> consortia);
 
     public void AddLasToUser(User user, List<LocalAuthority> localAuthorities);

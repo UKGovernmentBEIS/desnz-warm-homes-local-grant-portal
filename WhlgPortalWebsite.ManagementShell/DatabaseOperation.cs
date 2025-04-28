@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Models.Enums;
 using WhlgPortalWebsite.Data;
 
 namespace WhlgPortalWebsite.ManagementShell;
@@ -63,19 +64,20 @@ public class DatabaseOperation : IDatabaseOperation
         });
     }
 
-    public void CreateUserOrLogError(string userEmailAddress, List<LocalAuthority> localAuthorities,
+    public void CreateUserOrLogError(string userEmailAddress, UserRole userRole, List<LocalAuthority> localAuthorities,
         List<Consortium> consortia)
     {
         PerformTransaction(() =>
         {
-            var newLaUser = new User
+            var newUser = new User
             {
                 EmailAddress = userEmailAddress,
+                Role = userRole,
                 HasLoggedIn = false,
                 LocalAuthorities = localAuthorities,
                 Consortia = consortia
             };
-            dbContext.Add(newLaUser);
+            dbContext.Add(newUser);
         });
     }
 
