@@ -138,7 +138,43 @@ public class CommandHandler
                 couldNotFindAuthorityException);
         }
     }
+    
+    public void TryAddServiceManager(string userEmailAddress)
+    {
+        var (user, userStatus) = CheckUserStatus(userEmailAddress, "Service Manager");
+        
+        if (user == null)
+        {
+            outputProvider.Output("User not found");
+            return;
+        }
+        
+        var confirmation = outputProvider.Confirm(
+            $"Are you sure you want to make {user.EmailAddress} a Service Manager? (y/n)");
 
+        if (userStatus == UserAccountStatus.New && confirmation)
+        {
+            TryCreateUser(userEmailAddress, UserRole.ServiceManager, null, null);
+        }
+    }
+    
+    public void TryRemoveServiceManager(User? user)
+    {
+        if (user == null)
+        {
+            outputProvider.Output("User not found");
+            return;
+        }
+
+        var confirmation = outputProvider.Confirm(
+            $"Are you sure you want to remove {user.EmailAddress} as a Service Manager? (y/n)");
+
+        if (confirmation)
+        {
+            adminAction.RemoveUser(user);
+        }
+    }
+    
     public void FixAllUserOwnedConsortia()
     {
         outputProvider.Output("!!! User Migration Script !!!");

@@ -66,6 +66,12 @@ public static class Program
             case Subcommand.RemoveConsortia:
                 commandHandler.TryRemoveConsortia(commandHandler.GetUser(userEmailAddress), codes);
                 break;
+            case Subcommand.AddServiceManager:
+                commandHandler.TryAddServiceManager(userEmailAddress);
+                return;
+            case Subcommand.RemoveServiceManager:
+                commandHandler.TryRemoveServiceManager(commandHandler.GetUser(userEmailAddress));
+                return;
             case Subcommand.FixAllUserOwnedConsortia:
                 commandHandler.FixAllUserOwnedConsortia();
                 break;
@@ -85,6 +91,8 @@ public static class Program
         RemoveUser,
         AddConsortia,
         RemoveConsortia,
+        AddServiceManager,
+        RemoveServiceManager,
         FixAllUserOwnedConsortia,
         AddAllMissingAuthoritiesToDatabase
     }
