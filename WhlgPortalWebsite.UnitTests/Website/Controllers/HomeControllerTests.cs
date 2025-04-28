@@ -67,7 +67,7 @@ public class HomeFileControllerTests
             .ReturnsAsync(fileData);
 
         // Act
-        var result = await underTest.Index(new List<string> { "114" });
+        var result = await underTest.Index(new List<string> { "114" }, "");
 
         // Assert
         mockDataAccessProvider.Verify(dap => dap.MarkUserAsHavingLoggedInAsync(13));

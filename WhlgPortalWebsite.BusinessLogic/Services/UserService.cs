@@ -22,4 +22,14 @@ public class UserService
     {
         await dataAccessProvider.MarkUserAsHavingLoggedInAsync(userId);
     }
+
+    public async Task<IList<User>> GetAllDeliveryPartnersAsync()
+    {
+        return await dataAccessProvider.GetAllDeliveryPartnersAsync();
+    }
+
+    public async Task<IList<User>> GetAllDeliveryPartnersWhereEmailContainsAsync(string partialEmailAddress)
+    {
+        return await dataAccessProvider.GetAllDeliveryPartnersWhereEmailContainsAsync(partialEmailAddress);
+    }
 }

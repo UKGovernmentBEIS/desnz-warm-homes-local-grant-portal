@@ -1,10 +1,39 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using WhlgPortalWebsite.BusinessLogic.Models;
+
 namespace WhlgPortalWebsite.Models;
 
 public class ServiceManagerHomepageViewModel
 {
     public string UserSearch { get; }
+    public IEnumerable<AuthorityUserListing> UserList { get; }
 
-    public ServiceManagerHomepageViewModel()
+    public ServiceManagerHomepageViewModel(IEnumerable<User> users)
     {
+        UserSearch = "";
+        UserList = users
+            .OrderBy(user => user.EmailAddress)
+            .Select(user => new AuthorityUserListing(user));
+    }
+
+    public class AuthorityUserListing
+    {
+        public int Id { get; }
+        public string EmailAddress { get; }
+        public string Manages { get; }
+
+        public AuthorityUserListing(User user)
+        {
+            Id = user.Id;
+            EmailAddress = user.EmailAddress;
+            var authorityNames = new List<string>();
+            authorityNames.AddRange(user.Consortia.Select(la =>
+                ConsortiumData.ConsortiumNamesByConsortiumCode[la.ConsortiumCode]));
+            authorityNames.AddRange(user.LocalAuthorities.Select(la =>
+                LocalAuthorityData.LocalAuthorityNamesByCustodianCode[la.CustodianCode]));
+            Manages = string.Join(", ", authorityNames);
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WhlgPortalWebsite.BusinessLogic;
 using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Models.Enums;
 
 namespace WhlgPortalWebsite.Data;
 
@@ -101,5 +102,33 @@ public class DataAccessProvider : IDataAccessProvider
         await context.AuditDownloads.AddAsync(auditDownload);
         
         await context.SaveChangesAsync();
+    }
+
+    public async Task<IList<User>> GetAllDeliveryPartnersAsync()
+    {
+        return await context
+            .Users
+            .Where(u => u.Role == UserRole.DeliveryPartner)
+            .Include(u => u.LocalAuthorities)
+            .Include(u => u.Consortia)
+            .ToListAsync();
+    }
+
+    public async Task<IList<User>> GetAllDeliveryPartnersWhereEmailContainsAsync(string partialEmailAddress)
+    {
+        var users = await context
+            .Users
+            .Where(u => u.Role == UserRole.DeliveryPartner)
+            .Include(u => u.LocalAuthorities)
+            .Include(u => u.Consortia)
+            .ToListAsync();
+        // similar to GetUserByEmailAsync, we must pull in the table to compare case insensitively
+        return users
+            .Where(u => u.EmailAddress.Contains
+            (
+                partialEmailAddress,
+                StringComparison.CurrentCultureIgnoreCase
+            ))
+            .ToList();
     }
 }

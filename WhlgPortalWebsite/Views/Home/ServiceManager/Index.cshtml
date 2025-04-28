@@ -49,25 +49,22 @@
             Text = "Actions"
         }
     ],
-    Rows =
-    [
-        new TableRowViewModel
-        {
-            Row =
-            [
-                new TableCellViewModel
-                {
-                    Text = "user@example.com"
-                },
-                new TableCellViewModel
-                {
-                    Text = "Turner & Townsend"
-                },
-                new TableCellViewModel
-                {
-                    Html = @<a class="govuk-link" href="@Url.Action("ServiceManagerTestPage", "ServiceManager")">Assign to authority</a>
-                }
-            ]
-        }
-    ]
+    Rows = Model.UserList.Select(user => new TableRowViewModel
+    {
+        Row =
+        [
+            new TableCellViewModel
+            {
+                Text = user.EmailAddress
+            },
+            new TableCellViewModel
+            {
+                Text = user.Manages
+            },
+            new TableCellViewModel
+            {
+                Html = @<a class="govuk-link" href="@Url.Action("ServiceManagerTestPage", "ServiceManager")">Assign to authority</a>
+            }
+        ]
+    }).ToList()
 })

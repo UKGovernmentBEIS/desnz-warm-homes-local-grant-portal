@@ -29,7 +29,7 @@ public class HomeController(
         return userData.Role switch
         {
             UserRole.DeliveryPartner => await RenderDeliveryPartnerHomepage(codes, page, userEmailAddress, userData),
-            UserRole.ServiceManager => RenderServiceManagerHomepage(userSearch),
+            UserRole.ServiceManager => await RenderServiceManagerHomepage(userSearch),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
@@ -88,9 +88,15 @@ public class HomeController(
         return View("DeliveryPartner/ReferralFiles", homepageViewModel);
     }
 
-    private IActionResult RenderServiceManagerHomepage(string userSearch)
+    private async Task<IActionResult> RenderServiceManagerHomepage(string userSearch)
     {
-        var homepageViewModel = new ServiceManagerHomepageViewModel();
+        var users = string.IsNullOrWhiteSpace(userSearch) switch
+        {
+            true => await userService.GetAllDeliveryPartnersAsync(),
+            false => await userService.GetAllDeliveryPartnersWhereEmailContainsAsync(userSearch)
+        };
+
+        var homepageViewModel = new ServiceManagerHomepageViewModel(users);
 
         return View("ServiceManager/Index", homepageViewModel);
     }
