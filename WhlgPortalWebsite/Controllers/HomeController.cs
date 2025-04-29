@@ -28,13 +28,13 @@ public class HomeController(
 
         return userData.Role switch
         {
-            UserRole.DeliveryPartner => await DeliveryPartnerIndex(codes, page, userEmailAddress, userData),
-            UserRole.ServiceManager => ServiceManagerIndex(),
+            UserRole.DeliveryPartner => await RenderDeliveryPartnerHomepage(codes, page, userEmailAddress, userData),
+            UserRole.ServiceManager => RenderServiceManagerHomepage(),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
 
-    private async Task<IActionResult> DeliveryPartnerIndex(List<string> codes, int page, string userEmailAddress,
+    private async Task<IActionResult> RenderDeliveryPartnerHomepage(List<string> codes, int page, string userEmailAddress,
         User userData)
     {
         var csvFilePage =
@@ -88,7 +88,7 @@ public class HomeController(
         return View("DeliveryPartner/ReferralFiles", homepageViewModel);
     }
 
-    private IActionResult ServiceManagerIndex()
+    private IActionResult RenderServiceManagerHomepage()
     {
         return View("ServiceManager/Index");
     }
