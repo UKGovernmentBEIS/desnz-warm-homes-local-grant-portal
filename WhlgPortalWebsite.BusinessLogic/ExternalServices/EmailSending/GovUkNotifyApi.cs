@@ -36,7 +36,8 @@ namespace WhlgPortalWebsite.BusinessLogic.ExternalServices.EmailSending
                     emailModel.TemplateId,
                     emailModel.Personalisation,
                     emailModel.Reference,
-                    emailModel.EmailReplyToId);
+                    emailModel.EmailReplyToId,
+                    emailModel.OneClickUnsubscribeUrl);
                 return response;
             }
             catch (NotifyClientException e)
@@ -75,5 +76,6 @@ namespace WhlgPortalWebsite.BusinessLogic.ExternalServices.EmailSending
         public Dictionary<string, dynamic> Personalisation { get; set; }
         public string Reference { get; set; }
         public string EmailReplyToId { get; set; }
+        public string OneClickUnsubscribeUrl { get; set; }
     }
 }
