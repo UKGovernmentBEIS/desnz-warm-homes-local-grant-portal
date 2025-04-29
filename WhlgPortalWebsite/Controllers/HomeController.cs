@@ -28,13 +28,13 @@ public class HomeController(
 
         return userData.Role switch
         {
-            UserRole.AuthorityStaff => await AuthorityStaffIndex(codes, page, userEmailAddress, userData),
+            UserRole.DeliveryPartner => await DeliveryPartnerIndex(codes, page, userEmailAddress, userData),
             UserRole.ServiceManager => ServiceManagerIndex(),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
 
-    private async Task<IActionResult> AuthorityStaffIndex(List<string> codes, int page, string userEmailAddress,
+    private async Task<IActionResult> DeliveryPartnerIndex(List<string> codes, int page, string userEmailAddress,
         User userData)
     {
         var csvFilePage =
@@ -72,7 +72,7 @@ public class HomeController(
             };
         }
 
-        var homepageViewModel = new AuthorityStaffHomepageViewModel
+        var homepageViewModel = new DeliveryPartnerHomepageViewModel
         (
             userData,
             csvFilePage,
@@ -85,7 +85,7 @@ public class HomeController(
             await userService.MarkUserAsHavingLoggedInAsync(userData.Id);
         }
 
-        return View("AuthorityStaff/ReferralFiles", homepageViewModel);
+        return View("DeliveryPartner/ReferralFiles", homepageViewModel);
     }
 
     private IActionResult ServiceManagerIndex()
@@ -96,6 +96,6 @@ public class HomeController(
     [HttpGet("/supporting-documents")]
     public IActionResult SupportingDocuments()
     {
-        return View("AuthorityStaff/SupportingDocuments");
+        return View("DeliveryPartner/SupportingDocuments");
     }
 }

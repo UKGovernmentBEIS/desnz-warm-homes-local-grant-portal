@@ -14,7 +14,7 @@ namespace WhlgPortalWebsite.Data.Migrations
                 table: "Users",
                 type: "integer",
                 nullable: false,
-                defaultValue: UserRole.AuthorityStaff);
+                defaultValue: UserRole.DeliveryPartner);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

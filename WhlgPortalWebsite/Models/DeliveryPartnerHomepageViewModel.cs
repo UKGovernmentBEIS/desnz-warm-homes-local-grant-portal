@@ -8,9 +8,9 @@ using WhlgPortalWebsite.Enums;
 
 namespace WhlgPortalWebsite.Models;
 
-public class AuthorityStaffHomepageViewModel
+public class DeliveryPartnerHomepageViewModel
 {
-    public AuthorityStaffHomepageViewModel(
+    public DeliveryPartnerHomepageViewModel(
         User user,
         PaginatedFileData paginatedFileData,
         Func<int, string> pageLinkGenerator,

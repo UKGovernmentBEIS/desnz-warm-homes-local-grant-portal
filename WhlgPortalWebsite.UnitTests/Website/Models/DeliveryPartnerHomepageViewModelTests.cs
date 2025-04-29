@@ -12,7 +12,7 @@ using WhlgPortalWebsite.Models;
 namespace Tests.Website.Models;
 
 [TestFixture]
-public class AuthorityStaffHomepageViewModelTests
+public class DeliveryPartnerHomepageViewModelTests
 {
     private const string ValidCustodianCode = "505";
     private const string InvalidCustodianCode = "a";
@@ -46,7 +46,7 @@ public class AuthorityStaffHomepageViewModelTests
 
         // Act
         var viewModel =
-            new AuthorityStaffHomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
+            new DeliveryPartnerHomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
 
         // Assert
         viewModel.ShouldShowBanner.Should().Be(shouldShowBanner);
@@ -75,7 +75,7 @@ public class AuthorityStaffHomepageViewModelTests
 
         // Act
         var viewModel =
-            new AuthorityStaffHomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
+            new DeliveryPartnerHomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
 
         // Assert
         viewModel.ShouldShowFilters.Should().Be(expected);
@@ -102,7 +102,7 @@ public class AuthorityStaffHomepageViewModelTests
 
         // Act
         var viewModel =
-            new AuthorityStaffHomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
+            new DeliveryPartnerHomepageViewModel(user, new PaginatedFileData(), GetDummyPageLink, GetDummyDownloadLink);
 
         // Assert
         viewModel.ShouldShowFilters.Should().Be(expected);
@@ -129,7 +129,7 @@ public class AuthorityStaffHomepageViewModelTests
         );
 
         // Act
-        var viewModelFiles = new AuthorityStaffHomepageViewModel.ReferralDownloadListing(fileData, "", "");
+        var viewModelFiles = new DeliveryPartnerHomepageViewModel.ReferralDownloadListing(fileData, "", "");
 
         // Assert
         viewModelFiles.MonthAndYearText.Should().Be(expectedDateString);
@@ -157,7 +157,7 @@ public class AuthorityStaffHomepageViewModelTests
         );
 
         // Act
-        var viewModelFiles = new AuthorityStaffHomepageViewModel.ReferralDownloadListing(fileData, "", "");
+        var viewModelFiles = new DeliveryPartnerHomepageViewModel.ReferralDownloadListing(fileData, "", "");
 
         // Assert
         viewModelFiles.LastUpdatedText.Should().Be(expectedLastUpdatedString);
@@ -183,7 +183,7 @@ public class AuthorityStaffHomepageViewModelTests
         );
 
         // Act
-        var viewModelFiles = new AuthorityStaffHomepageViewModel.ReferralDownloadListing(fileData, "", "");
+        var viewModelFiles = new DeliveryPartnerHomepageViewModel.ReferralDownloadListing(fileData, "", "");
 
         // Assert
         viewModelFiles.Name.Should().Be(expectedLocalAuthorityName);
@@ -203,7 +203,7 @@ public class AuthorityStaffHomepageViewModelTests
         );
 
         // Act
-        var act = () => new AuthorityStaffHomepageViewModel.ReferralDownloadListing(fileData, "", "");
+        var act = () => new DeliveryPartnerHomepageViewModel.ReferralDownloadListing(fileData, "", "");
 
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>();
@@ -229,7 +229,7 @@ public class AuthorityStaffHomepageViewModelTests
         );
 
         // Act
-        var viewModelFiles = new AuthorityStaffHomepageViewModel.ReferralDownloadListing(fileData, "", "");
+        var viewModelFiles = new DeliveryPartnerHomepageViewModel.ReferralDownloadListing(fileData, "", "");
 
         // Assert
         viewModelFiles.Name.Should().Be(expectedLocalAuthorityName);
@@ -249,7 +249,7 @@ public class AuthorityStaffHomepageViewModelTests
         );
 
         // Act
-        var act = () => new AuthorityStaffHomepageViewModel.ReferralDownloadListing(fileData, "", "");
+        var act = () => new DeliveryPartnerHomepageViewModel.ReferralDownloadListing(fileData, "", "");
 
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>();
