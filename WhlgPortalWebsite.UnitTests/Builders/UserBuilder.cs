@@ -47,4 +47,10 @@ public class UserBuilder
         user.EmailAddress = email;
         return this;
     }
+
+    public UserBuilder WithId(int id)
+    {
+        user.Id = id;
+        return this;
+    }
 }
