@@ -26,11 +26,11 @@ public class DataAccessProvider : IDataAccessProvider
             .ToListAsync();
         return users
             .Single(u => string.Equals
-                (
-                    u.EmailAddress,
-                    emailAddress,
-                    StringComparison.CurrentCultureIgnoreCase
-                ));
+            (
+                u.EmailAddress,
+                emailAddress,
+                StringComparison.CurrentCultureIgnoreCase
+            ));
     }
 
     public async Task MarkUserAsHavingLoggedInAsync(int userId)
@@ -65,7 +65,7 @@ public class DataAccessProvider : IDataAccessProvider
         {
             throw new ArgumentOutOfRangeException($"No user found with ID {userId}", ex);
         }
-        
+
         CsvFileDownload download;
         try
         {
@@ -100,7 +100,7 @@ public class DataAccessProvider : IDataAccessProvider
             Timestamp = DateTime.Now,
         };
         await context.AuditDownloads.AddAsync(auditDownload);
-        
+
         await context.SaveChangesAsync();
     }
 
