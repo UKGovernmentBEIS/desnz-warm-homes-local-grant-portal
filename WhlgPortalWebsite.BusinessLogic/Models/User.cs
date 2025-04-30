@@ -1,10 +1,11 @@
 ﻿namespace WhlgPortalWebsite.BusinessLogic.Models;
 
-public class User
+public class User : IEntityWithRowVersioning
 {
     public int Id { get; set; }
     public string EmailAddress { get; set; }
     public bool HasLoggedIn { get; set; }
+    public uint Version { get; set; }
 
     public List<LocalAuthority> LocalAuthorities { get; set; }
     public List<Consortium> Consortia { get; set; }
