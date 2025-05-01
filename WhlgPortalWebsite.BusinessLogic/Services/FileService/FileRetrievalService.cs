@@ -46,7 +46,11 @@ public class FileRetrievalService(
                         && d.Year == data.Year
                         && d.Month == data.Month
                     );
-                    Debug.Assert(s3O.LastModified != null, "LastModified of S3Object was null");
+                    if (s3O.LastModified == null)
+                    {
+                        throw new InvalidOperationException("LastModified of S3Object was null");
+                    }
+                        
                     return new LocalAuthorityFileData
                     (
                         data.CustodianCode,
