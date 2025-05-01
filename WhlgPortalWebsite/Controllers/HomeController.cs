@@ -21,7 +21,7 @@ public class HomeController(
     private const int PageSize = 20;
 
     [HttpGet("/")]
-    public async Task<IActionResult> Index([FromQuery] List<string> codes, [FromQuery] string userSearch, int page = 1)
+    public async Task<IActionResult> Index([FromQuery] List<string> codes, [FromQuery] string searchEmailAddress, int page = 1)
     {
         var userEmailAddress = HttpContext.User.GetEmailAddress();
         var userData = await userService.GetUserByEmailAsync(userEmailAddress);
@@ -29,7 +29,7 @@ public class HomeController(
         return userData.Role switch
         {
             UserRole.DeliveryPartner => await RenderDeliveryPartnerHomepage(codes, page, userEmailAddress, userData),
-            UserRole.ServiceManager => await RenderServiceManagerHomepage(userSearch),
+            UserRole.ServiceManager => await RenderServiceManagerHomepage(searchEmailAddress),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
@@ -89,13 +89,9 @@ public class HomeController(
         return View("DeliveryPartner/ReferralFiles", homepageViewModel);
     }
 
-    private async Task<IActionResult> RenderServiceManagerHomepage(string userSearch)
+    private async Task<IActionResult> RenderServiceManagerHomepage(string searchEmailAddress)
     {
-        var users = string.IsNullOrWhiteSpace(userSearch) switch
-        {
-            true => await userService.GetAllDeliveryPartnersAsync(),
-            false => await userService.GetAllDeliveryPartnersWhereEmailContainsAsync(userSearch)
-        };
+        var users = await userService.SearchAllDeliveryPartnersAsync(searchEmailAddress);
 
         var homepageViewModel = new ServiceManagerHomepageViewModel(users);
 
