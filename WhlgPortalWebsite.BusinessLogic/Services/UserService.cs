@@ -28,6 +28,11 @@ public class UserService
         return await dataAccessProvider.GetAllDeliveryPartnersAsync();
     }
 
+    public async Task<IEnumerable<User>> GetAllActiveDeliveryPartnersAsync()
+    {
+        return await dataAccessProvider.GetAllActiveDeliveryPartnersAsync();
+    }
+
     public async Task<IList<User>> GetAllDeliveryPartnersWhereEmailContainsAsync(string partialEmailAddress)
     {
         return await dataAccessProvider.GetAllDeliveryPartnersWhereEmailContainsAsync(partialEmailAddress);

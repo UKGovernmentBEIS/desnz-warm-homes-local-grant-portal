@@ -42,10 +42,10 @@ public class DataAccessProvider : IDataAccessProvider
         await context.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<User>> GetAllActiveUsersAsync()
+    public async Task<IEnumerable<User>> GetAllActiveDeliveryPartnersAsync()
     {
         return await context.Users
-            .Where(u => u.HasLoggedIn)
+            .Where(u => u.HasLoggedIn && u.Role == UserRole.DeliveryPartner)
             .ToListAsync();
     }
 
