@@ -186,6 +186,9 @@ namespace WhlgPortalWebsite.Data.Migrations
                     b.Property<bool>("HasLoggedIn")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
