@@ -12,8 +12,8 @@ namespace Tests.Website.Models;
 [TestFixture]
 public class ServiceManagerHomepageViewModelTests
 {
-    private string exampleEmail1 = "email@example.com";
-    private string exampleEmail2 = "email2@example.com";
+    private const string ExampleEmail1 = "email@example.com";
+    private const string ExampleEmail2 = "email2@example.com";
 
     [Test]
     public void HomepageViewModel_ContainsUsers()
@@ -21,8 +21,8 @@ public class ServiceManagerHomepageViewModelTests
         // Arrange
         var users = new List<User>
         {
-            new UserBuilder(exampleEmail1).Build(),
-            new UserBuilder(exampleEmail2).Build()
+            new UserBuilder(ExampleEmail1).Build(),
+            new UserBuilder(ExampleEmail2).Build()
         };
 
         // Act
@@ -39,10 +39,10 @@ public class ServiceManagerHomepageViewModelTests
         // Arrange
         var users = new List<User>
         {
-            new UserBuilder(exampleEmail1)
+            new UserBuilder(ExampleEmail1)
                 .WithId(1)
                 .Build(),
-            new UserBuilder(exampleEmail2)
+            new UserBuilder(ExampleEmail2)
                 .WithId(2)
                 .Build()
         };
@@ -62,8 +62,8 @@ public class ServiceManagerHomepageViewModelTests
         // Arrange
         var users = new List<User>
         {
-            new UserBuilder(exampleEmail1).Build(),
-            new UserBuilder(exampleEmail2).Build()
+            new UserBuilder(ExampleEmail1).Build(),
+            new UserBuilder(ExampleEmail2).Build()
         };
 
         // Act
@@ -71,8 +71,8 @@ public class ServiceManagerHomepageViewModelTests
 
         // Assert
         var userListings = viewModel.UserList.ToList();
-        userListings[0].EmailAddress.Should().Be(exampleEmail1);
-        userListings[1].EmailAddress.Should().Be(exampleEmail2);
+        userListings[0].EmailAddress.Should().Be(ExampleEmail1);
+        userListings[1].EmailAddress.Should().Be(ExampleEmail2);
     }
 
     [Test]
@@ -83,7 +83,7 @@ public class ServiceManagerHomepageViewModelTests
 
         var users = new List<User>
         {
-            new UserBuilder(exampleEmail1)
+            new UserBuilder(ExampleEmail1)
                 .WithLocalAuthorities(las)
                 .Build()
         };
@@ -107,13 +107,14 @@ public class ServiceManagerHomepageViewModelTests
 
         var users = new List<User>
         {
-            new UserBuilder(exampleEmail1)
+            new UserBuilder(ExampleEmail1)
                 .WithConsortia(consortia)
                 .Build()
         };
 
         var namesCombined = string.Join(", ",
-            consortia.Select(la => ConsortiumData.ConsortiumNamesByConsortiumCode[la.ConsortiumCode]));
+            consortia.Select(la =>
+                $"{ConsortiumData.ConsortiumNamesByConsortiumCode[la.ConsortiumCode]} (Consortium)"));
 
         // Act
         var viewModel = new ServiceManagerHomepageViewModel(users);
@@ -132,7 +133,7 @@ public class ServiceManagerHomepageViewModelTests
 
         var users = new List<User>
         {
-            new UserBuilder(exampleEmail1)
+            new UserBuilder(ExampleEmail1)
                 .WithLocalAuthorities(las)
                 .WithConsortia(consortia)
                 .Build()
@@ -141,7 +142,7 @@ public class ServiceManagerHomepageViewModelTests
         var laNamesCombined = string.Join(", ",
             las.Select(la => LocalAuthorityData.LocalAuthorityNamesByCustodianCode[la.CustodianCode]));
         var consortiumNamesCombined = string.Join(", ",
-            consortia.Select(la => ConsortiumData.ConsortiumNamesByConsortiumCode[la.ConsortiumCode]));
+            consortia.Select(la => $"{ConsortiumData.ConsortiumNamesByConsortiumCode[la.ConsortiumCode]} (Consortium)"));
         var namesCombined = $"{consortiumNamesCombined}, {laNamesCombined}";
 
         // Act

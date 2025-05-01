@@ -30,7 +30,7 @@ public class ServiceManagerHomepageViewModel
             EmailAddress = user.EmailAddress;
             var authorityNames = new List<string>();
             authorityNames.AddRange(user.Consortia.Select(la =>
-                ConsortiumData.ConsortiumNamesByConsortiumCode[la.ConsortiumCode]));
+                $"{ConsortiumData.ConsortiumNamesByConsortiumCode[la.ConsortiumCode]} (Consortium)"));
             authorityNames.AddRange(user.LocalAuthorities.Select(la =>
                 LocalAuthorityData.LocalAuthorityNamesByCustodianCode[la.CustodianCode]));
             Manages = string.Join(", ", authorityNames);
