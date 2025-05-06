@@ -5,7 +5,7 @@ using WhlgPortalWebsite.BusinessLogic.Models;
 
 namespace WhlgPortalWebsite.Data;
 
-public class WhlgDbContext : DbContext, IDataProtectionKeyContext
+public class WhlgDbContext(DbContextOptions<WhlgDbContext> options) : DbContext(options), IDataProtectionKeyContext
 {
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
     public DbSet<AuditDownload> AuditDownloads { get; set; }
@@ -13,10 +13,6 @@ public class WhlgDbContext : DbContext, IDataProtectionKeyContext
     public DbSet<LocalAuthority> LocalAuthorities { get; set; }
     public DbSet<Consortium> Consortia { get; set; }
     public DbSet<User> Users { get; set; }
-
-    public WhlgDbContext(DbContextOptions<WhlgDbContext> options) : base(options)
-    {
-    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,7 +35,7 @@ public class WhlgDbContext : DbContext, IDataProtectionKeyContext
         modelBuilder
             .Entity<AuditDownload>()
             .HasKey("Id");
-        
+
         modelBuilder
             .Entity<AuditDownload>()
             .Property(cf => cf.Timestamp)
@@ -49,12 +45,12 @@ public class WhlgDbContext : DbContext, IDataProtectionKeyContext
             .Entity<AuditDownload>()
             .Property(cf => cf.UserEmail)
             .IsRequired();
-        
+
         modelBuilder
             .Entity<AuditDownload>()
             .Property(cf => cf.CustodianCode)
             .IsRequired();
-        
+
         modelBuilder
             .Entity<CsvFileDownload>()
             .HasKey(cf => new
@@ -64,12 +60,12 @@ public class WhlgDbContext : DbContext, IDataProtectionKeyContext
                 cf.Month,
                 cf.UserId,
             });
-        
+
         modelBuilder
             .Entity<CsvFileDownload>()
             .Property(cf => cf.LastDownloaded)
             .HasColumnType("timestamp without time zone");
-        
+
         AddAllRowVersioning(modelBuilder);
     }
 
@@ -80,9 +76,12 @@ public class WhlgDbContext : DbContext, IDataProtectionKeyContext
         AddRowVersionColumn(modelBuilder.Entity<User>());
     }
 
-    private void AddRowVersionColumn<T>(EntityTypeBuilder<T> builder) where T : class
+    private void AddRowVersionColumn<T>(EntityTypeBuilder<T> builder) where T : class, IEntityWithRowVersioning
     {
-        // This is a PostgreSQL specific implementation of row versioning
-        builder.UseXminAsConcurrencyToken();
+        // Instruct EF to use Postgres specific implementation of row versioning
+        // See https://www.npgsql.org/efcore/modeling/concurrency.html
+        builder
+            .Property(b => b.Version)
+            .IsRowVersion();
     }
 }

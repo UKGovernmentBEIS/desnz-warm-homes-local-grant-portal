@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Models.Enums;
 using WhlgPortalWebsite.BusinessLogic.Services;
 using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 using WhlgPortalWebsite.Enums;
@@ -10,28 +13,31 @@ using WhlgPortalWebsite.Models;
 
 namespace WhlgPortalWebsite.Controllers;
 
-public class HomeController : Controller
+public class HomeController(
+    UserService userService,
+    IFileRetrievalService fileRetrievalService)
+    : Controller
 {
-    private readonly UserService userService;
-    private readonly IFileRetrievalService fileRetrievalService;
     private const int PageSize = 20;
 
-    public HomeController
-    (
-        UserService userService,
-        IFileRetrievalService fileRetrievalService
-    )
-    {
-        this.userService = userService;
-        this.fileRetrievalService = fileRetrievalService;
-    }
-
     [HttpGet("/")]
-    public async Task<IActionResult> Index([FromQuery] List<string> codes, int page = 1)
+    public async Task<IActionResult> Index([FromQuery] List<string> codes, [FromQuery] string searchEmailAddress, int page = 1)
     {
         var userEmailAddress = HttpContext.User.GetEmailAddress();
         var userData = await userService.GetUserByEmailAsync(userEmailAddress);
 
+        return userData.Role switch
+        {
+            UserRole.DeliveryPartner => await RenderDeliveryPartnerHomepage(codes, page, userEmailAddress, userData),
+            UserRole.ServiceManager => await RenderServiceManagerHomepage(searchEmailAddress),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    private async Task<IActionResult> RenderDeliveryPartnerHomepage(List<string> codes, int page,
+        string userEmailAddress,
+        User userData)
+    {
         var csvFilePage =
             await fileRetrievalService.GetPaginatedFileDataForUserAsync(userEmailAddress, codes, page, PageSize);
 
@@ -67,7 +73,7 @@ public class HomeController : Controller
             };
         }
 
-        var homepageViewModel = new HomepageViewModel
+        var homepageViewModel = new DeliveryPartnerHomepageViewModel
         (
             userData,
             csvFilePage,
@@ -80,12 +86,21 @@ public class HomeController : Controller
             await userService.MarkUserAsHavingLoggedInAsync(userData.Id);
         }
 
-        return View("ReferralFiles", homepageViewModel);
+        return View("DeliveryPartner/ReferralFiles", homepageViewModel);
+    }
+
+    private async Task<IActionResult> RenderServiceManagerHomepage(string searchEmailAddress)
+    {
+        var users = await userService.SearchAllDeliveryPartnersAsync(searchEmailAddress);
+
+        var homepageViewModel = new ServiceManagerHomepageViewModel(users);
+
+        return View("ServiceManager/Index", homepageViewModel);
     }
 
     [HttpGet("/supporting-documents")]
     public IActionResult SupportingDocuments()
     {
-        return View("SupportingDocuments");
+        return View("DeliveryPartner/SupportingDocuments");
     }
 }

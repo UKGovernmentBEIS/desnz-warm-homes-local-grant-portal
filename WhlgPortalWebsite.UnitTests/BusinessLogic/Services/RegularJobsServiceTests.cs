@@ -31,8 +31,9 @@ public class RegularJobsServiceTests
         mockDataAccessProvider = new Mock<IDataAccessProvider>();
         mockEmailSender = new Mock<IEmailSender>();
         mockFileRetrievalService = new Mock<IFileRetrievalService>();
+        var userService = new UserService(mockDataAccessProvider.Object);
 
-        underTest = new RegularJobsService(mockDataAccessProvider.Object, mockEmailSender.Object,
+        underTest = new RegularJobsService(userService, mockEmailSender.Object,
             mockFileRetrievalService.Object, mockLogger.Object);
     }
 
@@ -44,7 +45,7 @@ public class RegularJobsServiceTests
         {
             new UserBuilder(EmailAddress).Build()
         };
-        mockDataAccessProvider.Setup(dap => dap.GetAllActiveUsersAsync()).ReturnsAsync(users);
+        mockDataAccessProvider.Setup(dap => dap.GetAllActiveDeliveryPartnersAsync()).ReturnsAsync(users);
 
         // Act
         await underTest.SendReminderEmailsAsync();
@@ -75,7 +76,7 @@ public class RegularJobsServiceTests
                 })
                 .Build()
         };
-        mockDataAccessProvider.Setup(dap => dap.GetAllActiveUsersAsync()).ReturnsAsync(users);
+        mockDataAccessProvider.Setup(dap => dap.GetAllActiveDeliveryPartnersAsync()).ReturnsAsync(users);
         mockFileRetrievalService.Setup(cfg => cfg.GetFileDataForUserAsync(users[0].EmailAddress)).ReturnsAsync(files);
 
         // Act
@@ -123,7 +124,7 @@ public class RegularJobsServiceTests
                 .WithEmail("user2@example.com")
                 .Build()
         };
-        mockDataAccessProvider.Setup(dap => dap.GetAllActiveUsersAsync()).ReturnsAsync(users);
+        mockDataAccessProvider.Setup(dap => dap.GetAllActiveDeliveryPartnersAsync()).ReturnsAsync(users);
         mockFileRetrievalService.Setup(cfg => cfg.GetFileDataForUserAsync(users[0].EmailAddress))
             .ReturnsAsync(user1Files);
         mockFileRetrievalService.Setup(cfg => cfg.GetFileDataForUserAsync(users[1].EmailAddress))
@@ -175,7 +176,7 @@ public class RegularJobsServiceTests
                 .WithEmail("user2@example.com")
                 .Build()
         };
-        mockDataAccessProvider.Setup(dap => dap.GetAllActiveUsersAsync()).ReturnsAsync(users);
+        mockDataAccessProvider.Setup(dap => dap.GetAllActiveDeliveryPartnersAsync()).ReturnsAsync(users);
         mockFileRetrievalService.Setup(cfg => cfg.GetFileDataForUserAsync(users[0].EmailAddress))
             .ReturnsAsync(user1Files);
         mockFileRetrievalService.Setup(cfg => cfg.GetFileDataForUserAsync(users[1].EmailAddress))

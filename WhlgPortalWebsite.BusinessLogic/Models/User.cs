@@ -1,13 +1,18 @@
-﻿namespace WhlgPortalWebsite.BusinessLogic.Models;
+﻿using WhlgPortalWebsite.BusinessLogic.Models.Enums;
 
-public class User
+namespace WhlgPortalWebsite.BusinessLogic.Models;
+
+public class User : IEntityWithRowVersioning
 {
     public int Id { get; set; }
     public string EmailAddress { get; set; }
     public bool HasLoggedIn { get; set; }
+    public uint Version { get; set; }
 
     public List<LocalAuthority> LocalAuthorities { get; set; }
     public List<Consortium> Consortia { get; set; }
+
+    public UserRole Role { get; set; }
 
     public IEnumerable<string> GetAdministeredCustodianCodes()
     {
