@@ -904,7 +904,7 @@ public class CommandHandlerTests
     }
 
     [Test]
-    public void RemoveServiceManager_IfUserInDatabase()
+    public void TryRemoveUser_IfUserInDatabase()
     {
         // Arrange
         var users = new List<User>
@@ -928,7 +928,7 @@ public class CommandHandlerTests
     }
 
     [Test]
-    public void RemoveServiceManager_IfUserNotInDatabase()
+    public void TryRemoveUser_IfUserNotInDatabase()
     {
         // Arrange
         var users = new List<User>();
