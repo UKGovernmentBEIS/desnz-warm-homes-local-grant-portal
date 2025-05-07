@@ -967,7 +967,7 @@ public class CommandHandlerTests
                 "This email address already exists in the database and does not have the correct role to execute this command. Check the database & documentation to ensure the correct command is being executed."),
             Times.Once());
     }
-    
+
     [Test]
     public void CreateOrUpdateUserWithConsortia_WhereServiceManagerAlreadyExists()
     {
@@ -992,7 +992,7 @@ public class CommandHandlerTests
                 "This email address already exists in the database and does not have the correct role to execute this command. Check the database & documentation to ensure the correct command is being executed."),
             Times.Once());
     }
-    
+
     [Test]
     public void RemoveLas_IfUserHasServiceManagerRole()
     {
@@ -1013,7 +1013,7 @@ public class CommandHandlerTests
         mockDatabaseOperation.Setup(db => db.GetUsersIncludingLocalAuthoritiesAndConsortia()).Returns(users);
 
         var custodianCodes = new[] { laToRemove.CustodianCode };
-        
+
         // Act
         underTest.TryRemoveLas("servicemanager@email.com", custodianCodes);
 
@@ -1023,7 +1023,7 @@ public class CommandHandlerTests
                 "This email address is associated with a user which does not have the correct role to execute this command. Check the database & documentation to ensure the correct command is being executed."),
             Times.Once());
     }
-    
+
     [Test]
     public void RemoveConsortia_IfUserHasServiceManagerRole()
     {
@@ -1033,7 +1033,7 @@ public class CommandHandlerTests
             ConsortiumCode = "C_0002",
             Id = 123
         };
-        
+
         var users = new List<User>
         {
             new UserBuilder("servicemanager@email.com")
@@ -1043,7 +1043,7 @@ public class CommandHandlerTests
         mockDatabaseOperation.Setup(db => db.GetUsersIncludingLocalAuthoritiesAndConsortia()).Returns(users);
 
         var custodianCodes = new[] { consortiumToRemove.ConsortiumCode };
-        
+
         // Act
         underTest.TryRemoveConsortia("servicemanager@email.com", custodianCodes);
 
@@ -1053,5 +1053,4 @@ public class CommandHandlerTests
                 "This email address is associated with a user which does not have the correct role to execute this command. Check the database & documentation to ensure the correct command is being executed."),
             Times.Once());
     }
-
 }

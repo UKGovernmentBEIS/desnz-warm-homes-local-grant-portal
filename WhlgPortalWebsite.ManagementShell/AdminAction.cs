@@ -59,6 +59,7 @@ public class AdminAction
         {
             return UserAccountStatus.New;
         }
+
         return userOrNull.Role != proposedUserRole ? UserAccountStatus.IncorrectRole : UserAccountStatus.Active;
     }
 

@@ -9,7 +9,6 @@ namespace WhlgPortalWebsite.ManagementShell;
 [ExcludeFromCodeCoverage]
 public class DatabaseOperation(WhlgDbContext dbContext, OutputProvider outputProvider) : IDatabaseOperation
 {
-
     public List<User> GetUsersIncludingLocalAuthoritiesAndConsortia()
     {
         return dbContext.Users

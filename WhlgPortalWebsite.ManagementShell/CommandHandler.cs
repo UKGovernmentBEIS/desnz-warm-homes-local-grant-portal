@@ -43,7 +43,7 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
         var (user, userStatus) = CheckUserStatus(userEmailAddress, UserRole.DeliveryPartner);
 
         DisplayDeliveryPartnerStatusAndWarning(userStatus, "LAs");
-        
+
         if (userStatus is UserAccountStatus.IncorrectRole) return;
 
         var confirmation = ConfirmAddCustodianCodes(userEmailAddress, custodianCodes, user);
@@ -129,7 +129,7 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
                 "This email address is associated with a user which does not have the correct role to execute this command. Check the database & documentation to ensure the correct command is being executed.");
             return;
         }
-        
+
         if (user == null)
         {
             outputProvider.Output("User not found");
