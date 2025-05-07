@@ -33,12 +33,19 @@ public static class Program
                     Subcommand.AddLas,
                     Subcommand.AddConsortia,
                     Subcommand.RemoveLas,
-                    Subcommand.RemoveConsortia,
-                    Subcommand.RemoveUser
+                    Subcommand.RemoveConsortia
                 }.Contains(command))
             {
                 userEmailAddress = args[1];
                 codes = args.Skip(2).ToArray();
+            }
+            else if (new List<Subcommand>
+                     {
+                         Subcommand.AddServiceManager,
+                         Subcommand.RemoveUser
+                     }.Contains(command))
+            {
+                userEmailAddress = args[1];
             }
         }
         catch (Exception)
@@ -66,6 +73,9 @@ public static class Program
             case Subcommand.RemoveConsortia:
                 commandHandler.TryRemoveConsortia(commandHandler.GetUser(userEmailAddress), codes);
                 break;
+            case Subcommand.AddServiceManager:
+                commandHandler.TryAddServiceManager(userEmailAddress);
+                return;
             case Subcommand.FixAllUserOwnedConsortia:
                 commandHandler.FixAllUserOwnedConsortia();
                 break;
@@ -85,6 +95,7 @@ public static class Program
         RemoveUser,
         AddConsortia,
         RemoveConsortia,
+        AddServiceManager,
         FixAllUserOwnedConsortia,
         AddAllMissingAuthoritiesToDatabase
     }
