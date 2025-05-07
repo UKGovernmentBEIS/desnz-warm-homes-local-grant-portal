@@ -59,7 +59,7 @@ public static class Program
         switch (command)
         {
             case Subcommand.RemoveUser:
-                commandHandler.TryRemoveUser(commandHandler.GetUser(userEmailAddress));
+                commandHandler.TryRemoveUser(userEmailAddress);
                 return;
             case Subcommand.AddLas:
                 commandHandler.CreateOrUpdateUserWithLas(userEmailAddress, codes);
@@ -68,10 +68,10 @@ public static class Program
                 commandHandler.CreateOrUpdateUserWithConsortia(userEmailAddress, codes);
                 break;
             case Subcommand.RemoveLas:
-                commandHandler.TryRemoveLas(commandHandler.GetUser(userEmailAddress), codes);
+                commandHandler.TryRemoveLas(userEmailAddress, codes);
                 return;
             case Subcommand.RemoveConsortia:
-                commandHandler.TryRemoveConsortia(commandHandler.GetUser(userEmailAddress), codes);
+                commandHandler.TryRemoveConsortia(userEmailAddress, codes);
                 break;
             case Subcommand.AddServiceManager:
                 commandHandler.TryAddServiceManager(userEmailAddress);

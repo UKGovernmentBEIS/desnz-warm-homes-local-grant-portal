@@ -22,8 +22,9 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
         return adminAction.GetUser(emailAddress);
     }
 
-    public void TryRemoveUser(User? user)
+    public void TryRemoveUser(string userEmailAddress)
     {
+        var user = adminAction.GetUser(userEmailAddress);
         if (user == null)
         {
             outputProvider.Output("User not found");
@@ -59,8 +60,17 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
             }
     }
 
-    public void TryRemoveLas(User? user, IReadOnlyCollection<string> custodianCodes)
+    public void TryRemoveLas(string userEmailAddress, IReadOnlyCollection<string> custodianCodes)
     {
+        var (user, userStatus) = CheckUserStatus(userEmailAddress, UserRole.DeliveryPartner);
+
+        if (userStatus is UserAccountStatus.IncorrectRole)
+        {
+            outputProvider.Output(
+                "This email address is associated with a user which does not have the correct role to execute this command. Check the database & documentation to ensure the correct command is being executed.");
+            return;
+        }
+
         if (user == null)
         {
             outputProvider.Output("User not found");
@@ -109,8 +119,17 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
             }
     }
 
-    public void TryRemoveConsortia(User? user, IReadOnlyCollection<string> consortiumCodes)
+    public void TryRemoveConsortia(string userEmailAddress, IReadOnlyCollection<string> consortiumCodes)
     {
+        var (user, userStatus) = CheckUserStatus(userEmailAddress, UserRole.DeliveryPartner);
+
+        if (userStatus is UserAccountStatus.IncorrectRole)
+        {
+            outputProvider.Output(
+                "This email address is associated with a user which does not have the correct role to execute this command. Check the database & documentation to ensure the correct command is being executed.");
+            return;
+        }
+        
         if (user == null)
         {
             outputProvider.Output("User not found");
