@@ -117,6 +117,18 @@ Before signing up to the portal and viewing referrals there are a few steps requ
    2. `AddLas` using your login email and the custodian codes of LAs you want to view referrals for
    3. `AddConsortia` using your login email and the consortium codes of Consortia you want to view referrals for
 
+### CLI commands
+There are several CLI commands that can be run to help with local development. These are:
+
+- AddLas [userEmail] [custodianCode] - Adds a Local Authority to the user in the database
+- RemoveLas [userEmail] [custodianCode] - Removes a Local Authority from the user in the database
+- RemoveUser [userEmail] - Removes a user from the database
+- AddConsortia [userEmail] [consortiumCode] - Adds a Consortium to the user in the database 
+- RemoveConsortia [userEmail] [consortiumCode] - Removes a Consortium from the user in the database
+- AddServiceManager [userEmail] - Adds a Service Manager to the user in the database
+- FixAllUserOwnedConsortia - Fixes all user owned consortia in the database
+- AddAllMissingAuthoritiesToDatabase - Adds all Local Authorities to the database
+
 ### Running the service locally
 
 - In your Minio folder run Minio `.\minio.exe server <path to data folder> --console-address :9090`
