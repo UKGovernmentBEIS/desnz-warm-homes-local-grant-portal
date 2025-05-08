@@ -396,7 +396,7 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
                 outputProvider.Output("!!! ATTENTION! READ CAREFULLY OR RISK A DATA BREACH !!!");
                 outputProvider.Output("");
                 outputProvider.Output(
-                    "You are about to grant a user permission to read all PERSONALLY IDENTIFIABLE INFORMATION and grant access to anyone else.");
+                    "You are about to give this user permission to grant Delivery Partner level access to other users.");
                 outputProvider.Output(
                     "Take a moment to double check and only continue if you are certain this user should have Service Manager level access.");
                 outputProvider.Output("");
