@@ -1,11 +1,10 @@
 using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Models.Enums;
 
 namespace WhlgPortalWebsite.ManagementShell;
 
-public class CommandHandler
+public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvider)
 {
-    private readonly AdminAction adminAction;
-
     private readonly Dictionary<string, string> consortiumCodeToConsortiumNameDict =
         ConsortiumData.ConsortiumNamesByConsortiumCode;
 
@@ -18,21 +17,14 @@ public class CommandHandler
     private readonly Dictionary<string, string> custodianCodeToLaNameDict =
         LocalAuthorityData.LocalAuthorityNamesByCustodianCode;
 
-    private readonly IOutputProvider outputProvider;
-
-    public CommandHandler(AdminAction adminAction, IOutputProvider outputProvider)
-    {
-        this.adminAction = adminAction;
-        this.outputProvider = outputProvider;
-    }
-
     public User? GetUser(string emailAddress)
     {
         return adminAction.GetUser(emailAddress);
     }
 
-    public void TryRemoveUser(User? user)
+    public void TryRemoveUser(string userEmailAddress)
     {
+        var user = adminAction.GetUser(userEmailAddress);
         if (user == null)
         {
             outputProvider.Output("User not found");
@@ -48,7 +40,11 @@ public class CommandHandler
 
     public void CreateOrUpdateUserWithLas(string userEmailAddress, IReadOnlyCollection<string> custodianCodes)
     {
-        var (user, userStatus) = CheckUserStatus(userEmailAddress, "LAs");
+        var (user, userStatus) = GetUserAndStatus(userEmailAddress, UserRole.DeliveryPartner);
+
+        DisplayDeliveryPartnerStatusAndWarning(userStatus, "LAs");
+
+        if (userStatus is UserAccountStatus.IncorrectRole) return;
 
         var confirmation = ConfirmAddCustodianCodes(userEmailAddress, custodianCodes, user);
 
@@ -59,13 +55,20 @@ public class CommandHandler
                     TryAddLas(user, custodianCodes);
                     break;
                 case UserAccountStatus.New:
-                    TryCreateUser(userEmailAddress, custodianCodes, null);
+                    TryCreateUser(userEmailAddress, UserRole.DeliveryPartner, custodianCodes, null);
                     break;
             }
     }
 
-    public void TryRemoveLas(User? user, IReadOnlyCollection<string> custodianCodes)
+    public void TryRemoveLas(string userEmailAddress, IReadOnlyCollection<string> custodianCodes)
     {
+        var (user, userStatus) = GetUserAndStatus(userEmailAddress, UserRole.DeliveryPartner);
+
+        if (userStatus is UserAccountStatus.IncorrectRole)
+        {
+            DisplayIncorrectRoleError(UserRole.DeliveryPartner);
+        }
+
         if (user == null)
         {
             outputProvider.Output("User not found");
@@ -94,7 +97,11 @@ public class CommandHandler
 
     public void CreateOrUpdateUserWithConsortia(string userEmailAddress, IReadOnlyCollection<string> consortiumCodes)
     {
-        var (user, userStatus) = CheckUserStatus(userEmailAddress, "Consortia");
+        var (user, userStatus) = GetUserAndStatus(userEmailAddress, UserRole.DeliveryPartner);
+
+        DisplayDeliveryPartnerStatusAndWarning(userStatus, "Consortia");
+
+        if (userStatus is UserAccountStatus.IncorrectRole) return;
 
         var confirmation = ConfirmAddConsortiumCodes(userEmailAddress, consortiumCodes, user);
 
@@ -105,13 +112,20 @@ public class CommandHandler
                     TryAddConsortia(user, consortiumCodes);
                     break;
                 case UserAccountStatus.New:
-                    TryCreateUser(userEmailAddress, null, consortiumCodes);
+                    TryCreateUser(userEmailAddress, UserRole.DeliveryPartner, null, consortiumCodes);
                     break;
             }
     }
 
-    public void TryRemoveConsortia(User? user, IReadOnlyCollection<string> consortiumCodes)
+    public void TryRemoveConsortia(string userEmailAddress, IReadOnlyCollection<string> consortiumCodes)
     {
+        var (user, userStatus) = GetUserAndStatus(userEmailAddress, UserRole.DeliveryPartner);
+
+        if (userStatus is UserAccountStatus.IncorrectRole)
+        {
+            DisplayIncorrectRoleError(UserRole.DeliveryPartner);
+        }
+
         if (user == null)
         {
             outputProvider.Output("User not found");
@@ -138,6 +152,23 @@ public class CommandHandler
         }
     }
 
+    public void TryAddServiceManager(string userEmailAddress)
+    {
+        var (_, userStatus) = GetUserAndStatus(userEmailAddress, UserRole.ServiceManager);
+
+        DisplayServiceManagerStatusAndWarning(userStatus);
+
+        if (userStatus is UserAccountStatus.Active or UserAccountStatus.IncorrectRole) return;
+
+        var confirmation = outputProvider.Confirm(
+            $"Are you sure you want to make {userEmailAddress} a Service Manager? (y/n)");
+
+        if (confirmation)
+        {
+            TryCreateUser(userEmailAddress, UserRole.ServiceManager, null, null);
+        }
+    }
+
     public void FixAllUserOwnedConsortia()
     {
         outputProvider.Output("!!! User Migration Script !!!");
@@ -145,7 +176,7 @@ public class CommandHandler
         outputProvider.Output(
             "If a user owns all LAs in a Consortium, they will be made a Consortium Admin and the LAs will be removed.");
 
-        var users = adminAction.GetUsers();
+        var users = adminAction.GetUsersIncludingLocalAuthoritiesAndConsortia();
 
         foreach (var user in users)
         {
@@ -328,25 +359,77 @@ public class CommandHandler
         return hasUserConfirmed;
     }
 
-    private void DisplayUserStatus(UserAccountStatus userAccountStatus, string authorityType)
+    private void DisplayDeliveryPartnerStatusAndWarning(UserAccountStatus userAccountStatus, string authorityType)
     {
         switch (userAccountStatus)
         {
             case UserAccountStatus.New:
-                outputProvider.Output("User not found in database. A new user will be created");
+                outputProvider.Output("User not found in database. A new user will be created.");
                 break;
             case UserAccountStatus.Active:
-                outputProvider.Output($"User found in database. {authorityType} will be added to their account");
+                outputProvider.Output($"User found in database. {authorityType} will be added to their account.");
                 break;
+            case UserAccountStatus.IncorrectRole:
+                DisplayIncorrectRoleError(UserRole.DeliveryPartner);
+                return;
+        }
+
+        outputProvider.Output("");
+        outputProvider.Output("!!! ATTENTION! READ CAREFULLY OR RISK A DATA BREACH !!!");
+        outputProvider.Output("");
+        outputProvider.Output(
+            "You are about to grant a user permission to read PERSONALLY IDENTIFIABLE INFORMATION submitted to LAs.");
+        outputProvider.Output(
+            "Take a moment to double check the following list and only continue if you are certain this user should have access to these LAs.");
+        outputProvider.Output(
+            "NB: in particular, you should only do this for LAs that have signed their DSA contracts!");
+        outputProvider.Output("");
+    }
+
+    private void DisplayServiceManagerStatusAndWarning(UserAccountStatus userAccountStatus)
+    {
+        switch (userAccountStatus)
+        {
+            case UserAccountStatus.New:
+                outputProvider.Output("User not found in database. A new user will be created.");
+                outputProvider.Output("");
+                outputProvider.Output("!!! ATTENTION! READ CAREFULLY OR RISK A DATA BREACH !!!");
+                outputProvider.Output("");
+                outputProvider.Output(
+                    "You are about to give this user permission to grant Delivery Partner level access to other users.");
+                outputProvider.Output(
+                    "Take a moment to double check and only continue if you are certain this user should have Service Manager level access.");
+                outputProvider.Output("");
+                break;
+            case UserAccountStatus.Active:
+                outputProvider.Output(
+                    "A Service Manager user is already associated with this email address in the database. No changes have been made to their account.");
+                break;
+            case UserAccountStatus.IncorrectRole:
+                DisplayIncorrectRoleError(UserRole.ServiceManager);
+                return;
         }
     }
 
-    private void TryCreateUser(string userEmailAddress, IReadOnlyCollection<string>? custodianCodes,
+    private void DisplayIncorrectRoleError(UserRole proposedUserRole)
+    {
+        var proposedUserRoleString = proposedUserRole switch
+        {
+            UserRole.DeliveryPartner => "Delivery Partner",
+            UserRole.ServiceManager => "Service Manager",
+            _ => throw new ArgumentOutOfRangeException(nameof(proposedUserRole), proposedUserRole, null)
+        };
+
+        outputProvider.Output(
+            $"This email address is associated with a user that is not a {proposedUserRoleString}. Check the database & documentation to ensure the correct command is being executed.");
+    }
+
+    private void TryCreateUser(string userEmailAddress, UserRole userRole, IReadOnlyCollection<string>? custodianCodes,
         IReadOnlyCollection<string>? consortiumCodes)
     {
         try
         {
-            adminAction.CreateUser(userEmailAddress, custodianCodes, consortiumCodes);
+            adminAction.CreateUser(userEmailAddress, userRole, custodianCodes, consortiumCodes);
         }
         catch (CouldNotFindAuthorityException couldNotFindAuthorityException)
         {
@@ -405,22 +488,11 @@ public class CommandHandler
         }
     }
 
-    private (User? user, UserAccountStatus userStatus) CheckUserStatus(string userEmailAddress, string authorityType)
+    private (User? user, UserAccountStatus userStatus) GetUserAndStatus(string userEmailAddress,
+        UserRole proposedUserRole)
     {
         var user = adminAction.GetUser(userEmailAddress);
-        var userStatus = adminAction.GetUserStatus(user);
-        DisplayUserStatus(userStatus, authorityType);
-        outputProvider.Output("");
-
-        outputProvider.Output("!!! ATTENTION! READ CAREFULLY OR RISK A DATA BREACH !!!");
-        outputProvider.Output("");
-        outputProvider.Output(
-            "You are about to grant a user permission to read PERSONALLY IDENTIFIABLE INFORMATION submitted to LAs.");
-        outputProvider.Output(
-            "Take a moment to double check the following list and only continue if you are certain this user should have access to these LAs.");
-        outputProvider.Output(
-            "NB: in particular, you should only do this for LAs that have signed their DSA contracts!");
-        outputProvider.Output("");
+        var userStatus = adminAction.GetUserStatus(user, proposedUserRole);
 
         return (user, userStatus);
     }
