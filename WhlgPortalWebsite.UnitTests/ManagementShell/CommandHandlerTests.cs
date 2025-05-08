@@ -899,7 +899,7 @@ public class CommandHandlerTests
         // Assert
         mockOutputProvider.Verify(
             mock => mock.Output(
-                "Another user with the same email address and a different role already exists in the database. No changes have been made to their account."),
+                "This email address is associated with a user that is not a Service Manager. Check the database & documentation to ensure the correct command is being executed."),
             Times.Once());
     }
 
@@ -964,7 +964,7 @@ public class CommandHandlerTests
         // Assert
         mockOutputProvider.Verify(
             mock => mock.Output(
-                "This email address already exists in the database and does not have the correct role to execute this command. Check the database & documentation to ensure the correct command is being executed."),
+                "This email address is associated with a user that is not a Delivery Partner. Check the database & documentation to ensure the correct command is being executed."),
             Times.Once());
     }
 
@@ -989,7 +989,7 @@ public class CommandHandlerTests
         // Assert
         mockOutputProvider.Verify(
             mock => mock.Output(
-                "This email address already exists in the database and does not have the correct role to execute this command. Check the database & documentation to ensure the correct command is being executed."),
+                "This email address is associated with a user that is not a Delivery Partner. Check the database & documentation to ensure the correct command is being executed."),
             Times.Once());
     }
 
@@ -1020,7 +1020,7 @@ public class CommandHandlerTests
         // Assert
         mockOutputProvider.Verify(
             mock => mock.Output(
-                "This email address is associated with a user which does not have the correct role to execute this command. Check the database & documentation to ensure the correct command is being executed."),
+                "This email address is associated with a user that is not a Delivery Partner. Check the database & documentation to ensure the correct command is being executed."),
             Times.Once());
     }
 
@@ -1050,7 +1050,7 @@ public class CommandHandlerTests
         // Assert
         mockOutputProvider.Verify(
             mock => mock.Output(
-                "This email address is associated with a user which does not have the correct role to execute this command. Check the database & documentation to ensure the correct command is being executed."),
+                "This email address is associated with a user that is not a Delivery Partner. Check the database & documentation to ensure the correct command is being executed."),
             Times.Once());
     }
 }

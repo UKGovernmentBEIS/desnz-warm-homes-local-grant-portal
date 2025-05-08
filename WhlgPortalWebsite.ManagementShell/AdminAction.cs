@@ -3,20 +3,13 @@ using WhlgPortalWebsite.BusinessLogic.Models.Enums;
 
 namespace WhlgPortalWebsite.ManagementShell;
 
-public class AdminAction
+public class AdminAction(IDatabaseOperation dbOperation)
 {
     private readonly Dictionary<string, List<string>> consortiumCodeToCustodianCodesDict =
         ConsortiumData.ConsortiumCustodianCodesIdsByConsortiumCode;
 
     private readonly Dictionary<string, string> custodianCodeToConsortiumCodeDict =
         LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode;
-
-    private readonly IDatabaseOperation dbOperation;
-
-    public AdminAction(IDatabaseOperation dbOperation)
-    {
-        this.dbOperation = dbOperation;
-    }
 
     public User? GetUser(string emailAddress)
     {
