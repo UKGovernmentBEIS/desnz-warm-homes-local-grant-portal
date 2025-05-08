@@ -64,12 +64,7 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
     {
         var (user, userStatus) = GetUserAndStatus(userEmailAddress, UserRole.DeliveryPartner);
 
-        if (userStatus is UserAccountStatus.IncorrectRole)
-        {
-            outputProvider.Output(
-                "This email address is associated with a user that is not a Delivery Partner. Check the database & documentation to ensure the correct command is being executed.");
-            return;
-        }
+        if (userStatus is UserAccountStatus.IncorrectRole) {DisplayIncorrectRoleError(UserRole.DeliveryPartner);}
 
         if (user == null)
         {
@@ -123,12 +118,7 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
     {
         var (user, userStatus) = GetUserAndStatus(userEmailAddress, UserRole.DeliveryPartner);
 
-        if (userStatus is UserAccountStatus.IncorrectRole)
-        {
-            outputProvider.Output(
-                "This email address is associated with a user that is not a Delivery Partner. Check the database & documentation to ensure the correct command is being executed.");
-            return;
-        }
+        if (userStatus is UserAccountStatus.IncorrectRole) {DisplayIncorrectRoleError(UserRole.DeliveryPartner);}
 
         if (user == null)
         {
@@ -374,8 +364,7 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
                 outputProvider.Output($"User found in database. {authorityType} will be added to their account.");
                 break;
             case UserAccountStatus.IncorrectRole:
-                outputProvider.Output(
-                    "This email address is associated with a user that is not a Delivery Partner. Check the database & documentation to ensure the correct command is being executed.");
+                DisplayIncorrectRoleError(UserRole.DeliveryPartner);
                 return;
         }
 
@@ -411,10 +400,22 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
                     "A Service Manager user is already associated with this email address in the database. No changes have been made to their account.");
                 break;
             case UserAccountStatus.IncorrectRole:
-                outputProvider.Output(
-                    "This email address is associated with a user that is not a Service Manager. Check the database & documentation to ensure the correct command is being executed.");
-                break;
+                DisplayIncorrectRoleError(UserRole.ServiceManager);
+                return;
         }
+    }
+
+    private void DisplayIncorrectRoleError(UserRole proposedUserRole)
+    {
+        var proposedUserRoleString = proposedUserRole switch
+        {
+            UserRole.DeliveryPartner => "Delivery Partner",
+            UserRole.ServiceManager => "Service Manager",
+            _ => throw new ArgumentOutOfRangeException(nameof(proposedUserRole), proposedUserRole, null)
+        };
+        
+        outputProvider.Output(
+            $"This email address is associated with a user that is not a {proposedUserRoleString}. Check the database & documentation to ensure the correct command is being executed.");
     }
 
     private void TryCreateUser(string userEmailAddress, UserRole userRole, IReadOnlyCollection<string>? custodianCodes,
