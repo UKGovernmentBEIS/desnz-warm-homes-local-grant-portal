@@ -64,7 +64,10 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
     {
         var (user, userStatus) = GetUserAndStatus(userEmailAddress, UserRole.DeliveryPartner);
 
-        if (userStatus is UserAccountStatus.IncorrectRole) {DisplayIncorrectRoleError(UserRole.DeliveryPartner);}
+        if (userStatus is UserAccountStatus.IncorrectRole)
+        {
+            DisplayIncorrectRoleError(UserRole.DeliveryPartner);
+        }
 
         if (user == null)
         {
@@ -118,7 +121,10 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
     {
         var (user, userStatus) = GetUserAndStatus(userEmailAddress, UserRole.DeliveryPartner);
 
-        if (userStatus is UserAccountStatus.IncorrectRole) {DisplayIncorrectRoleError(UserRole.DeliveryPartner);}
+        if (userStatus is UserAccountStatus.IncorrectRole)
+        {
+            DisplayIncorrectRoleError(UserRole.DeliveryPartner);
+        }
 
         if (user == null)
         {
@@ -413,7 +419,7 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
             UserRole.ServiceManager => "Service Manager",
             _ => throw new ArgumentOutOfRangeException(nameof(proposedUserRole), proposedUserRole, null)
         };
-        
+
         outputProvider.Output(
             $"This email address is associated with a user that is not a {proposedUserRoleString}. Check the database & documentation to ensure the correct command is being executed.");
     }
