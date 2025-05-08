@@ -67,6 +67,7 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
         if (userStatus is UserAccountStatus.IncorrectRole)
         {
             DisplayIncorrectRoleError(UserRole.DeliveryPartner);
+            return;
         }
 
         if (user == null)
@@ -124,6 +125,7 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
         if (userStatus is UserAccountStatus.IncorrectRole)
         {
             DisplayIncorrectRoleError(UserRole.DeliveryPartner);
+            return;
         }
 
         if (user == null)
