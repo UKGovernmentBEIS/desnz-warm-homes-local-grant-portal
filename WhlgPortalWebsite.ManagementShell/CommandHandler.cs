@@ -40,7 +40,7 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
 
     public void CreateOrUpdateUserWithLas(string userEmailAddress, IReadOnlyCollection<string> custodianCodes)
     {
-        var (user, userStatus) = CheckUserStatus(userEmailAddress, UserRole.DeliveryPartner);
+        var (user, userStatus) = GetUserAndStatus(userEmailAddress, UserRole.DeliveryPartner);
 
         DisplayDeliveryPartnerStatusAndWarning(userStatus, "LAs");
 
@@ -62,7 +62,7 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
 
     public void TryRemoveLas(string userEmailAddress, IReadOnlyCollection<string> custodianCodes)
     {
-        var (user, userStatus) = CheckUserStatus(userEmailAddress, UserRole.DeliveryPartner);
+        var (user, userStatus) = GetUserAndStatus(userEmailAddress, UserRole.DeliveryPartner);
 
         if (userStatus is UserAccountStatus.IncorrectRole)
         {
@@ -99,7 +99,7 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
 
     public void CreateOrUpdateUserWithConsortia(string userEmailAddress, IReadOnlyCollection<string> consortiumCodes)
     {
-        var (user, userStatus) = CheckUserStatus(userEmailAddress, UserRole.DeliveryPartner);
+        var (user, userStatus) = GetUserAndStatus(userEmailAddress, UserRole.DeliveryPartner);
 
         DisplayDeliveryPartnerStatusAndWarning(userStatus, "Consortia");
 
@@ -121,7 +121,7 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
 
     public void TryRemoveConsortia(string userEmailAddress, IReadOnlyCollection<string> consortiumCodes)
     {
-        var (user, userStatus) = CheckUserStatus(userEmailAddress, UserRole.DeliveryPartner);
+        var (user, userStatus) = GetUserAndStatus(userEmailAddress, UserRole.DeliveryPartner);
 
         if (userStatus is UserAccountStatus.IncorrectRole)
         {
@@ -158,7 +158,7 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
 
     public void TryAddServiceManager(string userEmailAddress)
     {
-        var (_, userStatus) = CheckUserStatus(userEmailAddress, UserRole.ServiceManager);
+        var (_, userStatus) = GetUserAndStatus(userEmailAddress, UserRole.ServiceManager);
 
         DisplayServiceManagerStatusAndWarning(userStatus);
 
@@ -481,7 +481,7 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
         }
     }
 
-    private (User? user, UserAccountStatus userStatus) CheckUserStatus(string userEmailAddress,
+    private (User? user, UserAccountStatus userStatus) GetUserAndStatus(string userEmailAddress,
         UserRole proposedUserRole)
     {
         var user = adminAction.GetUser(userEmailAddress);
