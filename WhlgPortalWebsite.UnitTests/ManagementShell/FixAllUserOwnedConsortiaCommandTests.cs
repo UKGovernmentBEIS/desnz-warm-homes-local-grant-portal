@@ -40,7 +40,7 @@ public class FixAllUserOwnedConsortiaCommandTests
         underTest.FixAllUserOwnedConsortia();
 
         // Assert
-        mockDatabaseOperation.Verify(db => db.GetUsersWithLocalAuthoritiesAndConsortia());
+        mockDatabaseOperation.Verify(db => db.GetUsersIncludingLocalAuthoritiesAndConsortia());
         mockDatabaseOperation.Verify(db => db.GetLas(custodianCodes));
         mockDatabaseOperation.Verify(db => db.GetConsortia(new List<string> { consortiumCodes }));
         mockDatabaseOperation.Verify(
@@ -65,7 +65,7 @@ public class FixAllUserOwnedConsortiaCommandTests
         underTest.FixAllUserOwnedConsortia();
 
         // Assert
-        mockDatabaseOperation.Verify(db => db.GetUsersWithLocalAuthoritiesAndConsortia());
+        mockDatabaseOperation.Verify(db => db.GetUsersIncludingLocalAuthoritiesAndConsortia());
         mockDatabaseOperation.Verify(
             db => db.AddConsortiaAndRemoveLasFromUser(
                 user, It.IsAny<List<Consortium>>(), It.IsAny<List<LocalAuthority>>()),
@@ -95,7 +95,7 @@ public class FixAllUserOwnedConsortiaCommandTests
         underTest.FixAllUserOwnedConsortia();
 
         // Assert
-        mockDatabaseOperation.Verify(db => db.GetUsersWithLocalAuthoritiesAndConsortia());
+        mockDatabaseOperation.Verify(db => db.GetUsersIncludingLocalAuthoritiesAndConsortia());
         mockDatabaseOperation.Verify(db => db.GetLas(userCustodianCodes));
         mockDatabaseOperation.Verify(db => db.GetConsortia(expectedConsortiumCodesToAdd));
         mockDatabaseOperation.Verify(
@@ -125,7 +125,7 @@ public class FixAllUserOwnedConsortiaCommandTests
         underTest.FixAllUserOwnedConsortia();
 
         // Assert
-        mockDatabaseOperation.Verify(db => db.GetUsersWithLocalAuthoritiesAndConsortia());
+        mockDatabaseOperation.Verify(db => db.GetUsersIncludingLocalAuthoritiesAndConsortia());
         mockDatabaseOperation.Verify(db => db.GetLas(custodianCodes1));
         mockDatabaseOperation.Verify(db => db.GetConsortia(expectedConsortiumCodesToAdd));
         mockDatabaseOperation.Verify(
@@ -149,7 +149,7 @@ public class FixAllUserOwnedConsortiaCommandTests
         underTest.FixAllUserOwnedConsortia();
 
         // Assert
-        mockDatabaseOperation.Verify(db => db.GetUsersWithLocalAuthoritiesAndConsortia());
+        mockDatabaseOperation.Verify(db => db.GetUsersIncludingLocalAuthoritiesAndConsortia());
         mockDatabaseOperation.Verify(
             db => db.AddConsortiaAndRemoveLasFromUser(
                 user, It.IsAny<List<Consortium>>(), It.IsAny<List<LocalAuthority>>()),
@@ -173,7 +173,7 @@ public class FixAllUserOwnedConsortiaCommandTests
         underTest.FixAllUserOwnedConsortia();
 
         // Assert
-        mockDatabaseOperation.Verify(db => db.GetUsersWithLocalAuthoritiesAndConsortia());
+        mockDatabaseOperation.Verify(db => db.GetUsersIncludingLocalAuthoritiesAndConsortia());
         mockDatabaseOperation.Verify(
             db => db.AddConsortiaAndRemoveLasFromUser(
                 user, It.IsAny<List<Consortium>>(), It.IsAny<List<LocalAuthority>>()),
@@ -215,7 +215,7 @@ public class FixAllUserOwnedConsortiaCommandTests
             .WithConsortia(consortia)
             .Build();
         mockDatabaseOperation
-            .Setup(db => db.GetUsersWithLocalAuthoritiesAndConsortia())
+            .Setup(db => db.GetUsersIncludingLocalAuthoritiesAndConsortia())
             .Returns(new List<User> { user });
         mockDatabaseOperation
             .Setup(db => db.GetConsortia(userTestSetup.ExpectedConsortiumCodesToAdd))
