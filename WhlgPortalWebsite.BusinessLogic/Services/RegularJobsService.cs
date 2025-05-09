@@ -5,7 +5,7 @@ using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 namespace WhlgPortalWebsite.BusinessLogic.Services;
 
 public class RegularJobsService(
-    IDataAccessProvider dataProvider,
+    UserService userService,
     IEmailSender emailSender,
     IFileRetrievalService fileRetrievalService,
     ILogger<RegularJobsService> logger)
@@ -16,7 +16,7 @@ public class RegularJobsService(
     {
         logger.LogInformation("Sending reminder emails");
 
-        var activeUsers = await dataProvider.GetAllActiveUsersAsync();
+        var activeUsers = await userService.GetAllActiveDeliveryPartnersAsync();
         foreach (var user in activeUsers)
         {
             IEnumerable<FileData> userCsvFiles;

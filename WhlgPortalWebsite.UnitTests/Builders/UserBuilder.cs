@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Models.Enums;
 
 namespace Tests.Builders;
 
@@ -15,7 +16,8 @@ public class UserBuilder
             EmailAddress = emailAddress,
             HasLoggedIn = true,
             LocalAuthorities = new List<LocalAuthority>(),
-            Consortia = new List<Consortium>()
+            Consortia = new List<Consortium>(),
+            Role = UserRole.DeliveryPartner
         };
     }
 
@@ -45,6 +47,18 @@ public class UserBuilder
     public UserBuilder WithEmail(string email)
     {
         user.EmailAddress = email;
+        return this;
+    }
+
+    public UserBuilder WithId(int id)
+    {
+        user.Id = id;
+        return this;
+    }
+    
+    public UserBuilder WithRole(UserRole role)
+    {
+        user.Role = role;
         return this;
     }
 }

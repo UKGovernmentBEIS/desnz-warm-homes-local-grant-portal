@@ -22,4 +22,23 @@ public class UserService
     {
         await dataAccessProvider.MarkUserAsHavingLoggedInAsync(userId);
     }
+
+    public async Task<IEnumerable<User>> GetAllActiveDeliveryPartnersAsync()
+    {
+        return await dataAccessProvider.GetAllActiveDeliveryPartnersAsync();
+    }
+
+    /// <summary>
+    /// Search all users in the database with an email that includes the search term. Matches case-insensitively
+    /// </summary>
+    /// <param name="searchEmailAddress">Fragment of email to search with. Leave as blank or null to return all users</param>
+    /// <returns>All matching users</returns>
+    public async Task<IEnumerable<User>> SearchAllDeliveryPartnersAsync(string searchEmailAddress)
+    {
+        return string.IsNullOrWhiteSpace(searchEmailAddress) switch
+        {
+            true => await dataAccessProvider.GetAllDeliveryPartnersAsync(),
+            false => await dataAccessProvider.GetAllDeliveryPartnersWhereEmailContainsAsync(searchEmailAddress)
+        };
+    }
 }

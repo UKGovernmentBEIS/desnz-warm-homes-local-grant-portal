@@ -1,23 +1,15 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Models.Enums;
 using WhlgPortalWebsite.Data;
 
 namespace WhlgPortalWebsite.ManagementShell;
 
 [ExcludeFromCodeCoverage]
-public class DatabaseOperation : IDatabaseOperation
+public class DatabaseOperation(WhlgDbContext dbContext, OutputProvider outputProvider) : IDatabaseOperation
 {
-    private readonly WhlgDbContext dbContext;
-    private readonly OutputProvider outputProvider;
-
-    public DatabaseOperation(WhlgDbContext dbContext, OutputProvider outputProvider)
-    {
-        this.dbContext = dbContext;
-        this.outputProvider = outputProvider;
-    }
-
-    public List<User> GetUsersWithLocalAuthoritiesAndConsortia()
+    public List<User> GetUsersIncludingLocalAuthoritiesAndConsortia()
     {
         return dbContext.Users
             .Include(user => user.LocalAuthorities)
@@ -63,19 +55,20 @@ public class DatabaseOperation : IDatabaseOperation
         });
     }
 
-    public void CreateUserOrLogError(string userEmailAddress, List<LocalAuthority> localAuthorities,
+    public void CreateUserOrLogError(string userEmailAddress, UserRole userRole, List<LocalAuthority> localAuthorities,
         List<Consortium> consortia)
     {
         PerformTransaction(() =>
         {
-            var newLaUser = new User
+            var newUser = new User
             {
                 EmailAddress = userEmailAddress,
+                Role = userRole,
                 HasLoggedIn = false,
                 LocalAuthorities = localAuthorities,
                 Consortia = consortia
             };
-            dbContext.Add(newLaUser);
+            dbContext.Add(newUser);
         });
     }
 

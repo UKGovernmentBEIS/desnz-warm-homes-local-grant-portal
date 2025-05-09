@@ -3,5 +3,6 @@
 public enum UserAccountStatus
 {
     New,
-    Active
+    Active,
+    IncorrectRole
 }

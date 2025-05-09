@@ -7,10 +7,11 @@
 ///     The full data for LAs (including an LAs relationship to a Consortium) can also be found in the WH:LG Public Website codebase.
 ///     <seealso href="https://github.com/UKGovernmentBEIS/desnz-warm-homes-local-grant/blob/develop/WhlgPublicWebsite.BusinessLogic/Models/LocalAuthorityData.cs">Link to WH:LG Public Website codebase's LocalAuthorityData.cs</seealso>
 /// </summary>
-public class LocalAuthority
+public class LocalAuthority : IEntityWithRowVersioning
 {
     public int Id { get; set; }
     public string CustodianCode { get; set; }
-    
+    public uint Version { get; set; }
+
     public List<User> Users { get; set; }
 }

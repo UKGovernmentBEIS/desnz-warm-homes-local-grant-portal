@@ -1,8 +1,9 @@
 using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.BusinessLogic.Models.Enums;
 
 namespace WhlgPortalWebsite.ManagementShell;
 
-public class AdminAction
+public class AdminAction(IDatabaseOperation dbOperation)
 {
     private readonly Dictionary<string, List<string>> consortiumCodeToCustodianCodesDict =
         ConsortiumData.ConsortiumCustodianCodesIdsByConsortiumCode;
@@ -10,16 +11,9 @@ public class AdminAction
     private readonly Dictionary<string, string> custodianCodeToConsortiumCodeDict =
         LocalAuthorityData.LocalAuthorityConsortiumCodeByCustodianCode;
 
-    private readonly IDatabaseOperation dbOperation;
-
-    public AdminAction(IDatabaseOperation dbOperation)
-    {
-        this.dbOperation = dbOperation;
-    }
-
     public User? GetUser(string emailAddress)
     {
-        var portalUsers = dbOperation.GetUsersWithLocalAuthoritiesAndConsortia();
+        var portalUsers = dbOperation.GetUsersIncludingLocalAuthoritiesAndConsortia();
         return
             portalUsers.SingleOrDefault(user => string.Equals
             (
@@ -52,18 +46,23 @@ public class AdminAction
         return consortiumCodes.SelectMany(consortiumCode => consortiumCodeToCustodianCodesDict[consortiumCode]);
     }
 
-    public UserAccountStatus GetUserStatus(User? userOrNull)
+    public UserAccountStatus GetUserStatus(User? userOrNull, UserRole proposedUserRole)
     {
-        return userOrNull == null ? UserAccountStatus.New : UserAccountStatus.Active;
+        if (userOrNull == null)
+        {
+            return UserAccountStatus.New;
+        }
+
+        return userOrNull.Role != proposedUserRole ? UserAccountStatus.IncorrectRole : UserAccountStatus.Active;
     }
 
-    public void CreateUser(string userEmailAddress, IReadOnlyCollection<string>? custodianCodes,
+    public void CreateUser(string userEmailAddress, UserRole userRole, IReadOnlyCollection<string>? custodianCodes,
         IReadOnlyCollection<string>? consortiumCodes)
     {
         var lasToAdd = dbOperation.GetLas(custodianCodes ?? Array.Empty<string>());
         var consortiaToAdd = dbOperation.GetConsortia(consortiumCodes ?? Array.Empty<string>());
 
-        dbOperation.CreateUserOrLogError(userEmailAddress, lasToAdd, consortiaToAdd);
+        dbOperation.CreateUserOrLogError(userEmailAddress, userRole, lasToAdd, consortiaToAdd);
     }
 
     public void RemoveUser(User user)
@@ -126,9 +125,9 @@ public class AdminAction
         dbOperation.RemoveConsortiaFromUser(user, consortiaToRemove);
     }
 
-    public List<User> GetUsers()
+    public List<User> GetUsersIncludingLocalAuthoritiesAndConsortia()
     {
-        return dbOperation.GetUsersWithLocalAuthoritiesAndConsortia();
+        return dbOperation.GetUsersIncludingLocalAuthoritiesAndConsortia();
     }
 
     public void FixUserOwnedConsortia(User user)

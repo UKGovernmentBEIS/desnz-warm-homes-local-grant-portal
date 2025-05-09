@@ -12,7 +12,7 @@ public static class Program
         var contextOptions = new DbContextOptionsBuilder<WhlgDbContext>()
             .UseNpgsql(
                 Environment.GetEnvironmentVariable("ConnectionStrings__PostgreSQLConnection") ??
-                @"UserId=postgres;Password=postgres;Server=localhost;Port=5432;Database=whlgportaldev;Integrated Security=true;Include Error Detail=true;Pooling=true")
+                @"UserId=postgres;Password=postgres;Server=localhost;Port=5432;Database=whlgportaldev;Include Error Detail=true;Pooling=true")
             .Options;
 
         using var context = new WhlgDbContext(contextOptions);
@@ -33,12 +33,19 @@ public static class Program
                     Subcommand.AddLas,
                     Subcommand.AddConsortia,
                     Subcommand.RemoveLas,
-                    Subcommand.RemoveConsortia,
-                    Subcommand.RemoveUser
+                    Subcommand.RemoveConsortia
                 }.Contains(command))
             {
                 userEmailAddress = args[1];
                 codes = args.Skip(2).ToArray();
+            }
+            else if (new List<Subcommand>
+                     {
+                         Subcommand.AddServiceManager,
+                         Subcommand.RemoveUser
+                     }.Contains(command))
+            {
+                userEmailAddress = args[1];
             }
         }
         catch (Exception)
@@ -52,7 +59,7 @@ public static class Program
         switch (command)
         {
             case Subcommand.RemoveUser:
-                commandHandler.TryRemoveUser(commandHandler.GetUser(userEmailAddress));
+                commandHandler.TryRemoveUser(userEmailAddress);
                 return;
             case Subcommand.AddLas:
                 commandHandler.CreateOrUpdateUserWithLas(userEmailAddress, codes);
@@ -61,11 +68,14 @@ public static class Program
                 commandHandler.CreateOrUpdateUserWithConsortia(userEmailAddress, codes);
                 break;
             case Subcommand.RemoveLas:
-                commandHandler.TryRemoveLas(commandHandler.GetUser(userEmailAddress), codes);
+                commandHandler.TryRemoveLas(userEmailAddress, codes);
                 return;
             case Subcommand.RemoveConsortia:
-                commandHandler.TryRemoveConsortia(commandHandler.GetUser(userEmailAddress), codes);
+                commandHandler.TryRemoveConsortia(userEmailAddress, codes);
                 break;
+            case Subcommand.AddServiceManager:
+                commandHandler.TryAddServiceManager(userEmailAddress);
+                return;
             case Subcommand.FixAllUserOwnedConsortia:
                 commandHandler.FixAllUserOwnedConsortia();
                 break;
@@ -85,6 +95,7 @@ public static class Program
         RemoveUser,
         AddConsortia,
         RemoveConsortia,
+        AddServiceManager,
         FixAllUserOwnedConsortia,
         AddAllMissingAuthoritiesToDatabase
     }
