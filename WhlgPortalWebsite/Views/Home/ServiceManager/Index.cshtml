@@ -19,7 +19,7 @@
 <h3 class="govuk-heading-m">View existing users</h3>
 <form method="get">
     @(await Html.GovUkTextInputFor(
-        m => m.UserSearch,
+        m => m.SearchEmailAddress,
         labelOptions: new LabelViewModel
         {
             Text = "Search for a user"
