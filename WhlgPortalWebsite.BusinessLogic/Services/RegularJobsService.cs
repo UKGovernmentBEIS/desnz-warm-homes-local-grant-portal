@@ -5,7 +5,7 @@ using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 namespace WhlgPortalWebsite.BusinessLogic.Services;
 
 public class RegularJobsService(
-    UserService userService,
+    IUserService userService,
     IEmailSender emailSender,
     IFileRetrievalService fileRetrievalService,
     ILogger<RegularJobsService> logger)

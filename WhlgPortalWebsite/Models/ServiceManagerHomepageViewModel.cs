@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using WhlgPortalWebsite.BusinessLogic.Models;
@@ -7,12 +6,12 @@ namespace WhlgPortalWebsite.Models;
 
 public class ServiceManagerHomepageViewModel
 {
-    public string UserSearch { get; }
+    public string SearchEmailAddress { get; }
     public IEnumerable<AuthorityUserListing> UserList { get; }
 
     public ServiceManagerHomepageViewModel(IEnumerable<User> users)
     {
-        UserSearch = "";
+        SearchEmailAddress = "";
         UserList = users
             .OrderBy(user => user.EmailAddress)
             .Select(user => new AuthorityUserListing(user));

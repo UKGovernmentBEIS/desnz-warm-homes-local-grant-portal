@@ -1,0 +1,18 @@
+﻿@using GovUkDesignSystem
+@using GovUkDesignSystem.GovUkDesignSystemComponents
+@model WhlgPortalWebsite.Models.OnboardNewDeliveryPartnerViewModel
+
+@{
+    ViewBag.Title = "Warm Homes: Local Grant Portal - Onboard a Deliver Partner";
+}
+
+<h3 class="govuk-heading-m">What is their email?</h3>
+<form method="post">
+    @(await Html.GovUkTextInputFor(
+        m => m.EmailAddress))
+
+    @(await Html.GovUkButton(new ButtonViewModel
+    {
+        Text = "Add"
+    }))
+</form>
