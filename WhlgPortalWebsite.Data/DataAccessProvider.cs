@@ -16,7 +16,8 @@ public class DataAccessProvider : IDataAccessProvider
 
     public async Task<User> GetUserByEmailAsync(string emailAddress)
     {
-        var users = await context.Users
+        var users = await context
+            .Users
             .Include(u => u.LocalAuthorities)
             .Include(u => u.Consortia)
             // In order to compare email addresses case-insensitively, we bring the whole table into memory here
@@ -84,7 +85,7 @@ public class DataAccessProvider : IDataAccessProvider
                 CustodianCode = custodianCode,
                 Year = year,
                 Month = month,
-                UserId = userId,
+                UserId = userId
             };
             await context.CsvFileDownloads.AddAsync(download);
         }
@@ -97,7 +98,7 @@ public class DataAccessProvider : IDataAccessProvider
             Year = year,
             Month = month,
             UserEmail = user.EmailAddress,
-            Timestamp = DateTime.Now,
+            Timestamp = DateTime.Now
         };
         await context.AuditDownloads.AddAsync(auditDownload);
 
@@ -130,5 +131,34 @@ public class DataAccessProvider : IDataAccessProvider
                 StringComparison.CurrentCultureIgnoreCase
             ))
             .ToList();
+    }
+
+    public async Task CreateDeliveryPartnerAsync(string userEmailAddress)
+    {
+        var newUser = new User
+        {
+            EmailAddress = userEmailAddress,
+            Role = UserRole.DeliveryPartner,
+            HasLoggedIn = false,
+            LocalAuthorities = new List<LocalAuthority>(),
+            Consortia = new List<Consortium>()
+        };
+
+        await context.Users.AddAsync(newUser);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task<bool> IsEmailAddressInUseAsync(string emailAddress)
+    {
+        var users = await context
+            .Users
+            .ToListAsync();
+
+        return users.Any(u => string.Equals
+        (
+            u.EmailAddress,
+            emailAddress,
+            StringComparison.CurrentCultureIgnoreCase
+        ));
     }
 }
