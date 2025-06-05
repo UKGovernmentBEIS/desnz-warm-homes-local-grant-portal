@@ -50,7 +50,7 @@ namespace WhlgPortalWebsite
             ConfigureHangfire(services);
 
             services.AddMemoryCache();
-            services.AddScoped<UserService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IDataAccessProvider, DataAccessProvider>();
             services.AddScoped<IFileRetrievalService, FileRetrievalService>();
             services.AddScoped<IStreamService, StreamService>();

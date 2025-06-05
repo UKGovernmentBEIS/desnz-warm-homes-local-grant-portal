@@ -11,4 +11,6 @@ public interface IDataAccessProvider
     public Task MarkCsvFileAsDownloadedAsync(string custodianCode, int year, int month, int userId);
     public Task<IList<User>> GetAllDeliveryPartnersAsync();
     public Task<IList<User>> GetAllDeliveryPartnersWhereEmailContainsAsync(string partialEmailAddress);
+    public Task CreateDeliveryPartnerAsync(string userEmailAddress);
+    public Task<bool> IsEmailAddressInUseAsync(string emailAddress);
 }
