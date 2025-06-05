@@ -2,20 +2,28 @@
 
 namespace WhlgPortalWebsite.BusinessLogic.Services;
 
-public class UserService
+public interface IUserService
 {
-    private readonly IDataAccessProvider dataAccessProvider;
+    Task<User> GetUserByEmailAsync(string email);
+    Task MarkUserAsHavingLoggedInAsync(int userId);
+    Task<IEnumerable<User>> GetAllActiveDeliveryPartnersAsync();
+    Task<IEnumerable<User>> SearchAllDeliveryPartnersAsync(string searchEmailAddress);
+    Task CreateDeliveryPartnerAsync(string emailAddress);
+    Task<bool> IsEmailAddressInUseAsync(string emailAddress);
+}
 
-    public UserService(IDataAccessProvider dataAccessProvider)
-    {
-        this.dataAccessProvider = dataAccessProvider;
-    }
-
+public class UserService(IDataAccessProvider dataAccessProvider) : IUserService
+{
     public async Task<User> GetUserByEmailAsync(string emailAddress)
     {
-        var user = await dataAccessProvider.GetUserByEmailAsync(emailAddress);
-
-        return user;
+        try
+        {
+            return await dataAccessProvider.GetUserByEmailAsync(emailAddress);
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new InvalidOperationException("User not found.", ex);
+        }
     }
 
     public async Task MarkUserAsHavingLoggedInAsync(int userId)
@@ -40,5 +48,15 @@ public class UserService
             true => await dataAccessProvider.GetAllDeliveryPartnersAsync(),
             false => await dataAccessProvider.GetAllDeliveryPartnersWhereEmailContainsAsync(searchEmailAddress)
         };
+    }
+
+    public async Task CreateDeliveryPartnerAsync(string emailAddress)
+    {
+        await dataAccessProvider.CreateDeliveryPartnerAsync(emailAddress);
+    }
+
+    public async Task<bool> IsEmailAddressInUseAsync(string emailAddress)
+    {
+        return await dataAccessProvider.IsEmailAddressInUseAsync(emailAddress);
     }
 }

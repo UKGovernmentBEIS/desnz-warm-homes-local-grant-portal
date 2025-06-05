@@ -14,14 +14,15 @@ using WhlgPortalWebsite.Models;
 namespace WhlgPortalWebsite.Controllers;
 
 public class HomeController(
-    UserService userService,
+    IUserService userService,
     IFileRetrievalService fileRetrievalService)
     : Controller
 {
     private const int PageSize = 20;
 
     [HttpGet("/")]
-    public async Task<IActionResult> Index([FromQuery] List<string> codes, [FromQuery] string searchEmailAddress, int page = 1)
+    public async Task<IActionResult> Index([FromQuery] List<string> codes, [FromQuery] string searchEmailAddress,
+        int page = 1)
     {
         var userEmailAddress = HttpContext.User.GetEmailAddress();
         var userData = await userService.GetUserByEmailAsync(userEmailAddress);
