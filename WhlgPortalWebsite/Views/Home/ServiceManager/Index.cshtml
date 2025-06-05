@@ -34,37 +34,37 @@
 
 @await Html.GovUkTable(new TableGovUkViewModel
 {
-    Head =
-    [
-        new TableCellViewModel
+    Head = new List<TableCellViewModel>
+    {
+        new()
         {
             Text = "Email"
         },
-        new TableCellViewModel
+        new()
         {
             Text = "Manages"
         },
-        new TableCellViewModel
+        new()
         {
             Text = "Actions"
         }
-    ],
+    },
     Rows = Model.UserList.Select(user => new TableRowViewModel
     {
-        Row =
-        [
-            new TableCellViewModel
+        Row = new List<TableCellViewModel>
+        {
+            new()
             {
                 Text = user.EmailAddress
             },
-            new TableCellViewModel
+            new()
             {
                 Text = user.Manages
             },
-            new TableCellViewModel
+            new()
             {
                 Html = @<a class="govuk-link" href="@Url.Action("ServiceManagerTestPage", "ServiceManager")">Assign to authority</a>
             }
-        ]
+        }
     }).ToList()
 })
