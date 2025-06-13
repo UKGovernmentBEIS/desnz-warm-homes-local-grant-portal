@@ -1,6 +1,8 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WhlgPortalWebsite.BusinessLogic.Services;
+using WhlgPortalWebsite.Enums;
 using WhlgPortalWebsite.Filters;
 using WhlgPortalWebsite.Models;
 
@@ -11,13 +13,13 @@ namespace WhlgPortalWebsite.Controllers;
 public class ServiceManagerController(IUserService userService) : Controller
 {
     [HttpGet("onboard-delivery-partner")]
-    public IActionResult OnboardDeliveryPartnerPage()
+    public IActionResult OnboardDeliveryPartner_Get()
     {
         return View("OnboardDeliveryPartner", new OnboardNewDeliveryPartnerViewModel());
     }
 
     [HttpPost("onboard-delivery-partner")]
-    public async Task<IActionResult> OnboardDeliveryPartnerAsync(
+    public async Task<IActionResult> OnboardDeliveryPartner_Post(
         OnboardNewDeliveryPartnerViewModel viewModel)
     {
         if (!ModelState.IsValid)
@@ -31,7 +33,54 @@ public class ServiceManagerController(IUserService userService) : Controller
             return View("OnboardDeliveryPartner", viewModel);
         }
 
-        await userService.CreateDeliveryPartnerAsync(viewModel.EmailAddress);
+        var newUser = await userService.CreateDeliveryPartnerAsync(viewModel.EmailAddress);
+        return RedirectToAction("AssignCodesToDeliveryPartner_Get", "ServiceManager",
+            new { userId = newUser.Id });
+    }
+
+    [HttpGet("assign-codes-to-delivery-partner/{userId:int}")]
+    public async Task<IActionResult> AssignCodesToDeliveryPartner_Get([FromRoute] int userId)
+    {
+        var user = await userService.GetUserByIdAsync(userId);
+
+        var viewModel = new AssignCodesToDeliveryPartnerViewModel
+        {
+            User = user,
+            LocalAuthorities = (await userService.GetAllLasAsync()).ToList(),
+            Consortia = (await userService.GetAllConsortiaAsync()).ToList()
+        };
+
+        return View("AssignCodesToDeliveryPartner", viewModel);
+    }
+
+    [HttpGet("confirm-add-LA-to-delivery-partner/{userId:int}/{authorityType}/{code}")]
+    public async Task<IActionResult> ConfirmLaCodeToDeliveryPartner_Get([FromRoute] int userId,
+        [FromRoute] AuthorityType authorityType, [FromRoute] string code)
+    {
+        var viewModel = new ConfirmCodesToDeliveryPartnerViewModel
+        {
+            User = await userService.GetUserByIdAsync(userId),
+            Code = code,
+            AuthorityType = authorityType
+        };
+
+        return View("ConfirmCodeToDeliveryPartner", viewModel);
+    }
+
+    [HttpPost("confirm-add-LA-to-delivery-partner/{userId:int}/{authorityType}/{code}")]
+    public async Task<IActionResult> ConfirmLaCodeToDeliveryPartner_Post(
+        ConfirmCodesToDeliveryPartnerViewModel viewModel, [FromRoute] int userId,
+        [FromRoute] AuthorityType authorityType, [FromRoute] string code)
+    {
+        if (!ModelState.IsValid)
+        {
+            // ModelState.AddModelError(nameof(viewModel.IsConfirmed), "You must confirm the user has signed the DSA contract to onboard.");
+            return await ConfirmLaCodeToDeliveryPartner_Get(userId, authorityType, code);
+        }
+
+        var user = await userService.GetUserByIdAsync(userId);
+
+        await userService.AssignCodesToDeliveryPartnerAsync(user, code);
         return RedirectToAction("Index", "Home");
     }
 }

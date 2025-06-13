@@ -34,6 +34,16 @@ public class DataAccessProvider : IDataAccessProvider
             ));
     }
 
+    public async Task<User> GetUserByIdAsync(int userId)
+    {
+        return await context
+            .Users
+            .Where(u => u.Id == userId)
+            .Include(u => u.LocalAuthorities)
+            .Include(u => u.Consortia)
+            .SingleAsync();
+    }
+
     public async Task MarkUserAsHavingLoggedInAsync(int userId)
     {
         var user = await context.Users
@@ -133,7 +143,7 @@ public class DataAccessProvider : IDataAccessProvider
             .ToList();
     }
 
-    public async Task CreateDeliveryPartnerAsync(string userEmailAddress)
+    public async Task<User> CreateDeliveryPartnerAsync(string userEmailAddress)
     {
         var newUser = new User
         {
@@ -146,6 +156,8 @@ public class DataAccessProvider : IDataAccessProvider
 
         await context.Users.AddAsync(newUser);
         await context.SaveChangesAsync();
+
+        return newUser;
     }
 
     public async Task<bool> IsEmailAddressInUseAsync(string emailAddress)
@@ -160,5 +172,39 @@ public class DataAccessProvider : IDataAccessProvider
             emailAddress,
             StringComparison.CurrentCultureIgnoreCase
         ));
+    }
+
+    public async Task<IEnumerable<LocalAuthority>> GetAllLasAsync()
+    {
+        return await context.LocalAuthorities.ToListAsync();
+    }
+
+    public async Task<IEnumerable<Consortium>> GetAllConsortiaAsync()
+    {
+        return await context.Consortia.ToListAsync();
+    }
+
+    public async Task AddLaToDeliveryPartnerAsync(User user, LocalAuthority localAuthority)
+    {
+        user.LocalAuthorities.Add(localAuthority);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task AddConsortiumToDeliveryPartnerAsync(User user, Consortium consortium)
+    {
+        user.Consortia.Add(consortium);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task<LocalAuthority> GetLocalAuthorityByCustodianCodeAsync(string custodianCode)
+    {
+        return await context.LocalAuthorities
+            .SingleAsync(la => la.CustodianCode == custodianCode);
+    }
+
+    public async Task<Consortium> GetConsortiumByConsortiumCodeAsync(string consortiumCode)
+    {
+        return await context.Consortia
+            .SingleAsync(c => c.ConsortiumCode == consortiumCode);
     }
 }

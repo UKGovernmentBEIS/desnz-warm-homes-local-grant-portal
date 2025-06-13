@@ -1,0 +1,29 @@
+@using GovUkDesignSystem
+@using GovUkDesignSystem.GovUkDesignSystemComponents
+@model WhlgPortalWebsite.Models.ConfirmCodesToDeliveryPartnerViewModel
+
+@{
+    ViewBag.Title = "Warm Homes: Local Grant Portal - Confirm to Delivery Partner";
+}
+
+<h2 class="govuk-heading-l">Are you sure?</h2>
+
+@await Html.GovUkWarningText(new WarningTextViewModel()
+{
+    Text = "Please ensure this user has signed their DSA contract."
+})
+<form method="post">
+    @(await Html.GovUkCheckboxFromBoolFor(
+        m => m.IsConfirmed,
+        new LabelViewModel()
+        {
+            Text = $"Add {Model.User.EmailAddress} to {Model.GetAuthorityName()}"
+        }
+    ))
+
+    @(await Html.GovUkButton(new ButtonViewModel
+    {
+        Text = "Onboard"
+    }))
+
+</form>
