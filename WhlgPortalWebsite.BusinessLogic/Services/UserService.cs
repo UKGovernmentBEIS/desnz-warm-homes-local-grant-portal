@@ -11,15 +11,8 @@ public interface IUserService
     Task<IEnumerable<User>> SearchAllDeliveryPartnersAsync(string searchEmailAddress);
     Task<User> CreateDeliveryPartnerAsync(string emailAddress);
     Task<bool> IsEmailAddressInUseAsync(string emailAddress);
-    Task<IEnumerable<LocalAuthority>> GetAllLasAsync();
 
-    Task<IEnumerable<Consortium>> GetAllConsortiaAsync();
-
-    // Task AddLaToDeliveryPartnerAsync(User user, LocalAuthority localAuthority);
-    // Task AddConsortiumToDeliveryPartnerAsync(User user, Consortium consortium);
     Task AssignCodesToDeliveryPartnerAsync(User user, string codeToBeAssigned);
-    // string GetLocalAuthorityName(string custodianCode);
-    // string GetConsortiumName(string consortiumCode);
 
     IEnumerable<string> SearchAllLocalAuthoritiesAsync(string searchTerm);
     IEnumerable<string> SearchAllConsortiaAsync(string searchTerm);
@@ -83,16 +76,6 @@ public class UserService(IDataAccessProvider dataAccessProvider) : IUserService
     public async Task<bool> IsEmailAddressInUseAsync(string emailAddress)
     {
         return await dataAccessProvider.IsEmailAddressInUseAsync(emailAddress);
-    }
-
-    public async Task<IEnumerable<LocalAuthority>> GetAllLasAsync()
-    {
-        return await dataAccessProvider.GetAllLasAsync();
-    }
-
-    public async Task<IEnumerable<Consortium>> GetAllConsortiaAsync()
-    {
-        return await dataAccessProvider.GetAllConsortiaAsync();
     }
 
     public async Task AddLasToDeliveryPartnerAsync(User user, LocalAuthority localAuthority)

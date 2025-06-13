@@ -10,7 +10,7 @@ namespace WhlgPortalWebsite.Controllers;
 
 [TypeFilter(typeof(RequiresServiceManagerFilter))]
 [Route("service-manager")]
-public class ServiceManagerController(IUserService userService) : Controller
+public class ServiceManagerController(IUserService userService, IAuthorityService authorityService) : Controller
 {
     [HttpGet("onboard-delivery-partner")]
     public IActionResult OnboardDeliveryPartner_Get()
@@ -46,8 +46,8 @@ public class ServiceManagerController(IUserService userService) : Controller
         var viewModel = new AssignCodesToDeliveryPartnerViewModel
         {
             User = user,
-            LocalAuthorities = (await userService.GetAllLasAsync()).ToList(),
-            Consortia = (await userService.GetAllConsortiaAsync()).ToList()
+            LocalAuthorities = (await authorityService.GetAllLasAsync()).ToList(),
+            Consortia = (await authorityService.GetAllConsortiaAsync()).ToList()
         };
 
         return View("AssignCodesToDeliveryPartner", viewModel);
@@ -74,7 +74,6 @@ public class ServiceManagerController(IUserService userService) : Controller
     {
         if (!ModelState.IsValid)
         {
-            // ModelState.AddModelError(nameof(viewModel.IsConfirmed), "You must confirm the user has signed the DSA contract to onboard.");
             return await ConfirmLaCodeToDeliveryPartner_Get(userId, authorityType, code);
         }
 
