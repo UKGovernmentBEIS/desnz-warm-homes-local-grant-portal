@@ -22,7 +22,7 @@ public class ConfirmCodesToDeliveryPartnerViewModel: IValidatableObject
     {
         return AuthorityType switch
         {
-            AuthorityType.LA => LocalAuthorityData.LocalAuthorityNamesByCustodianCode[Code],
+            AuthorityType.LocalAuthority => LocalAuthorityData.LocalAuthorityNamesByCustodianCode[Code],
             AuthorityType.Consortium => ConsortiumData.ConsortiumNamesByConsortiumCode[Code],
             _ => throw new InvalidOperationException("Unknown authority type")
         };

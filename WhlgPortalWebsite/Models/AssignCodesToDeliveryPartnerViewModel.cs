@@ -25,7 +25,7 @@ public class AssignCodesToDeliveryPartnerViewModel
     {
         return Consortia.Select(consortium => new AssignAuthorityViewModel
         {
-            Name = LocalAuthorityData.LocalAuthorityNamesByCustodianCode[consortium.ConsortiumCode],
+            Name = ConsortiumData.ConsortiumNamesByConsortiumCode[consortium.ConsortiumCode],
             Code = consortium.ConsortiumCode,
             AlreadyAssigned = User.Consortia.Any(userConsortium => userConsortium.ConsortiumCode == consortium.ConsortiumCode)
         });
