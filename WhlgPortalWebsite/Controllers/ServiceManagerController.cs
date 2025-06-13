@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -79,7 +80,22 @@ public class ServiceManagerController(IUserService userService, IAuthorityServic
 
         var user = await userService.GetUserByIdAsync(userId);
 
-        await userService.AssignCodesToDeliveryPartnerAsync(user, code);
+        switch (authorityType)
+        {
+            case AuthorityType.LocalAuthority:
+            {
+                await userService.AddLaToDeliveryPartnerAsync(user, code);
+                break;
+            }
+            case AuthorityType.Consortium:
+            {
+                await userService.AddConsortiumToDeliveryPartnerAsync(user, code);
+                break;
+            }
+            default:
+                throw new ArgumentOutOfRangeException(nameof(authorityType), authorityType.ToString());
+        }
+
         return RedirectToAction("Index", "Home");
     }
 }

@@ -12,7 +12,8 @@ public interface IUserService
     Task<User> CreateDeliveryPartnerAsync(string emailAddress);
     Task<bool> IsEmailAddressInUseAsync(string emailAddress);
 
-    Task AssignCodesToDeliveryPartnerAsync(User user, string codeToBeAssigned);
+    Task AddLaToDeliveryPartnerAsync(User user, string custodianCode);
+    Task AddConsortiumToDeliveryPartnerAsync(User user, string consortiumCode);
 
     IEnumerable<string> SearchAllLocalAuthoritiesAsync(string searchTerm);
     IEnumerable<string> SearchAllConsortiaAsync(string searchTerm);
@@ -118,18 +119,15 @@ public class UserService(IDataAccessProvider dataAccessProvider) : IUserService
         return matchingConsortiumCodes;
     }
 
-    public async Task AssignCodesToDeliveryPartnerAsync(User user, string codeToBeAssigned)
+    public async Task AddLaToDeliveryPartnerAsync(User user, string custodianCode)
     {
-        // TODO PC-1842: Improve this logic
-        if (codeToBeAssigned.StartsWith("C"))
-        {
-            var consortium = await dataAccessProvider.GetConsortiumByConsortiumCodeAsync(codeToBeAssigned);
-            await dataAccessProvider.AddConsortiumToDeliveryPartnerAsync(user, consortium);
-        }
-        else
-        {
-            var localAuthority = await dataAccessProvider.GetLocalAuthorityByCustodianCodeAsync(codeToBeAssigned);
-            await dataAccessProvider.AddLaToDeliveryPartnerAsync(user, localAuthority);
-        }
+        var localAuthority = await dataAccessProvider.GetLocalAuthorityByCustodianCodeAsync(custodianCode);
+        await dataAccessProvider.AddLaToDeliveryPartnerAsync(user, localAuthority);
+    }
+
+    public async Task AddConsortiumToDeliveryPartnerAsync(User user, string consortiumCode)
+    {
+        var consortium = await dataAccessProvider.GetConsortiumByConsortiumCodeAsync(consortiumCode);
+        await dataAccessProvider.AddConsortiumToDeliveryPartnerAsync(user, consortium);
     }
 }

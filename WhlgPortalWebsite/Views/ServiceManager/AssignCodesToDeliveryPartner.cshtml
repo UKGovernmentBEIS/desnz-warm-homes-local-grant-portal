@@ -24,6 +24,44 @@
     }))
 </form>
 
+<h3 class="govuk-heading-m">Consortia</h3>
+@await Html.GovUkTable(new TableGovUkViewModel
+{
+    Head = new List<TableCellViewModel>
+    {
+        new()
+        {
+            Text = "Name"
+        },
+        new()
+        {
+            Text = "Actions"
+        }
+    },
+    Rows = Model.GetConsortiaToAssign().Select(consortium => new TableRowViewModel
+    {
+        Row = new List<TableCellViewModel>
+        {
+            new()
+            {
+                Text = consortium.Name
+            },
+            new()
+            {
+                Html = !consortium.AlreadyAssigned ? 
+                    @<a
+                         class="govuk-link" 
+                         href="@Url.Action(
+                                   "ConfirmLaCodeToDeliveryPartner_Get", 
+                                   "ServiceManager",
+                                   new {userId = Model.User.Id, code = consortium.Code, authorityType = AuthorityType.Consortium})">
+                        Onboard
+                    </a> : @<text>Already assigned</text>
+            }
+        }
+    }).ToList()
+})
+
 <h3 class="govuk-heading-m">Local Authorities</h3>
 @await Html.GovUkTable(new TableGovUkViewModel
 {
@@ -44,7 +82,7 @@
         {
             new()
             {
-                Text = LocalAuthorityData.LocalAuthorityNamesByCustodianCode[la.Code]
+                Text = la.Name
             },
             new()
             {
@@ -54,7 +92,7 @@
                          href="@Url.Action(
                                    "ConfirmLaCodeToDeliveryPartner_Get", 
                                    "ServiceManager",
-                                   new {userId = Model.User.Id, code = la.Code, authorityType = AuthorityType.LA})">
+                                   new {userId = Model.User.Id, code = la.Code, authorityType = AuthorityType.LocalAuthority})">
                         Onboard
                     </a> : @<text>Already assigned</text>
             }
