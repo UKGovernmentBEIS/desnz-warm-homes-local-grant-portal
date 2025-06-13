@@ -38,17 +38,25 @@
             Text = "Actions"
         }
     },
-    Rows = Model.LocalAuthorities.Select(la => new TableRowViewModel
+    Rows = Model.GetLocalAuthoritiesToAssign().Select(la => new TableRowViewModel
     {
         Row = new List<TableCellViewModel>
         {
             new()
             {
-                Text = LocalAuthorityData.LocalAuthorityNamesByCustodianCode[la.CustodianCode]
+                Text = LocalAuthorityData.LocalAuthorityNamesByCustodianCode[la.Code]
             },
             new()
             {
-                Html = @<a class="govuk-link" href="@Url.Action("ConfirmLaCodeToDeliveryPartner_Get", "ServiceManager", new {userId = Model.User.Id, code = la.CustodianCode, authorityType = AuthorityType.LA})">Onboard</a>
+                Html = !la.AlreadyAssigned ? 
+                    @<a
+                         class="govuk-link" 
+                         href="@Url.Action(
+                                   "ConfirmLaCodeToDeliveryPartner_Get", 
+                                   "ServiceManager",
+                                   new {userId = Model.User.Id, code = la.Code, authorityType = AuthorityType.LA})">
+                        Onboard
+                    </a> : @<text>Already assigned</text>
             }
         }
     }).ToList()
