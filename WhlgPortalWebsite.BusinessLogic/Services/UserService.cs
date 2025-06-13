@@ -14,9 +14,6 @@ public interface IUserService
 
     Task AddLaToDeliveryPartnerAsync(User user, string custodianCode);
     Task AddConsortiumToDeliveryPartnerAsync(User user, string consortiumCode);
-
-    IEnumerable<string> SearchAllLocalAuthoritiesAsync(string searchTerm);
-    IEnumerable<string> SearchAllConsortiaAsync(string searchTerm);
 }
 
 public class UserService(IDataAccessProvider dataAccessProvider) : IUserService
@@ -77,46 +74,6 @@ public class UserService(IDataAccessProvider dataAccessProvider) : IUserService
     public async Task<bool> IsEmailAddressInUseAsync(string emailAddress)
     {
         return await dataAccessProvider.IsEmailAddressInUseAsync(emailAddress);
-    }
-
-    public async Task AddLasToDeliveryPartnerAsync(User user, LocalAuthority localAuthority)
-    {
-        await dataAccessProvider.AddLaToDeliveryPartnerAsync(user, localAuthority);
-    }
-
-    public async Task AddConsortiaToDeliveryPartnerAsync(User user, Consortium consortium)
-    {
-        await dataAccessProvider.AddConsortiumToDeliveryPartnerAsync(user, consortium);
-    }
-
-    public IEnumerable<string> SearchAllLocalAuthoritiesAsync(string searchTerm)
-    {
-        List<string> matchingLaCodes = [];
-
-        foreach (var kvp in LocalAuthorityData.LocalAuthorityNamesByCustodianCode)
-        {
-            if (kvp.Value.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
-            {
-                matchingLaCodes.Add(kvp.Key);
-            }
-        }
-
-        return matchingLaCodes;
-    }
-
-    public IEnumerable<string> SearchAllConsortiaAsync(string searchTerm)
-    {
-        List<string> matchingConsortiumCodes = [];
-
-        foreach (var kvp in ConsortiumData.ConsortiumNamesByConsortiumCode)
-        {
-            if (kvp.Value.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
-            {
-                matchingConsortiumCodes.Add(kvp.Key);
-            }
-        }
-
-        return matchingConsortiumCodes;
     }
 
     public async Task AddLaToDeliveryPartnerAsync(User user, string custodianCode)

@@ -1,6 +1,5 @@
 @using GovUkDesignSystem
 @using GovUkDesignSystem.GovUkDesignSystemComponents
-@using WhlgPortalWebsite.BusinessLogic.Models
 @using WhlgPortalWebsite.Enums
 @model WhlgPortalWebsite.Models.AssignCodesToDeliveryPartnerViewModel
 
@@ -25,77 +24,92 @@
 </form>
 
 <h3 class="govuk-heading-m">Consortia</h3>
-@await Html.GovUkTable(new TableGovUkViewModel
+
+@if (Model.Consortia.Any())
 {
-    Head = new List<TableCellViewModel>
+    @await Html.GovUkTable(new TableGovUkViewModel
     {
-        new()
-        {
-            Text = "Name"
-        },
-        new()
-        {
-            Text = "Actions"
-        }
-    },
-    Rows = Model.GetConsortiaToAssign().Select(consortium => new TableRowViewModel
-    {
-        Row = new List<TableCellViewModel>
+        Head = new List<TableCellViewModel>
         {
             new()
             {
-                Text = consortium.Name
+                Text = "Name"
             },
             new()
             {
-                Html = !consortium.AlreadyAssigned ? 
-                    @<a
-                         class="govuk-link" 
-                         href="@Url.Action(
-                                   "ConfirmLaCodeToDeliveryPartner_Get", 
-                                   "ServiceManager",
-                                   new {userId = Model.User.Id, code = consortium.Code, authorityType = AuthorityType.Consortium})">
-                        Onboard
-                    </a> : @<text>Already assigned</text>
+                Text = "Actions"
             }
-        }
-    }).ToList()
-})
+        },
+        Rows = Model.GetConsortiaToAssign().Select(consortium => new TableRowViewModel
+        {
+            Row = new List<TableCellViewModel>
+            {
+                new()
+                {
+                    Text = consortium.Name
+                },
+                new()
+                {
+                    Html = !consortium.AlreadyAssigned ? 
+                        @<a
+                             class="govuk-link"
+                             href="@Url.Action(
+                                       "ConfirmLaCodeToDeliveryPartner_Get", 
+                                       "ServiceManager", 
+                                       new { userId = Model.User.Id, code = consortium.Code, authorityType = AuthorityType.Consortium })">
+                            Onboard
+                        </a> : @<text>Already assigned</text>
+                }
+            }
+        }).ToList()
+    })
+}
+else
+{
+    <p class="govuk-body">No Consortia found.</p>
+}
 
 <h3 class="govuk-heading-m">Local Authorities</h3>
-@await Html.GovUkTable(new TableGovUkViewModel
+@if (Model.LocalAuthorities.Any())
 {
-    Head = new List<TableCellViewModel>
+    @await Html.GovUkTable(new TableGovUkViewModel
     {
-        new()
-        {
-            Text = "Name"
-        },
-        new()
-        {
-            Text = "Actions"
-        }
-    },
-    Rows = Model.GetLocalAuthoritiesToAssign().Select(la => new TableRowViewModel
-    {
-        Row = new List<TableCellViewModel>
+        Head = new List<TableCellViewModel>
         {
             new()
             {
-                Text = la.Name
+                Text = "Name"
             },
             new()
             {
-                Html = !la.AlreadyAssigned ? 
-                    @<a
-                         class="govuk-link" 
-                         href="@Url.Action(
-                                   "ConfirmLaCodeToDeliveryPartner_Get", 
-                                   "ServiceManager",
-                                   new {userId = Model.User.Id, code = la.Code, authorityType = AuthorityType.LocalAuthority})">
-                        Onboard
-                    </a> : @<text>Already assigned</text>
+                Text = "Actions"
             }
-        }
-    }).ToList()
-})
+        },
+        Rows = Model.GetLocalAuthoritiesToAssign().Select(la => new TableRowViewModel
+        {
+            Row = new List<TableCellViewModel>
+            {
+                new()
+                {
+                    Text = la.Name
+                },
+                new()
+                {
+                    Html = !la.AlreadyAssigned ? 
+                        @<a
+                             class="govuk-link" 
+                             href="@Url.Action(
+                                       "ConfirmLaCodeToDeliveryPartner_Get", 
+                                       "ServiceManager",
+                                       new {userId = Model.User.Id, code = la.Code, authorityType = AuthorityType.LocalAuthority})">
+                            Onboard
+                        </a> : @<text>Already assigned</text>
+                }
+            }
+        }).ToList()
+    })
+}
+else
+{
+    <p class="govuk-body">No Local Authorities found.</p>
+}
