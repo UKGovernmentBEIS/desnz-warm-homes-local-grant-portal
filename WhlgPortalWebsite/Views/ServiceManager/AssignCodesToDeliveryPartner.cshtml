@@ -1,0 +1,55 @@
+@using GovUkDesignSystem
+@using GovUkDesignSystem.GovUkDesignSystemComponents
+@using WhlgPortalWebsite.BusinessLogic.Models
+@using WhlgPortalWebsite.Enums
+@model WhlgPortalWebsite.Models.AssignCodesToDeliveryPartnerViewModel
+
+@{
+    ViewBag.Title = "Warm Homes: Local Grant Portal - Assign LA/Consortia to Delivery Partner";
+}
+
+<h2 class="govuk-heading-l">Assign @Model.User.EmailAddress to an LA/Consortia</h2>
+
+<form method="get">
+    @(await Html.GovUkTextInputFor(
+        m => m.SearchTerm,
+        labelOptions: new LabelViewModel
+        {
+            Text = "Search for an LA/Consortia name"
+        }))
+
+    @(await Html.GovUkButton(new ButtonViewModel
+    {
+        Text = "Search"
+    }))
+</form>
+
+<h3 class="govuk-heading-m">Local Authorities</h3>
+@await Html.GovUkTable(new TableGovUkViewModel
+{
+    Head = new List<TableCellViewModel>
+    {
+        new()
+        {
+            Text = "Name"
+        },
+        new()
+        {
+            Text = "Actions"
+        }
+    },
+    Rows = Model.LocalAuthorities.Select(la => new TableRowViewModel
+    {
+        Row = new List<TableCellViewModel>
+        {
+            new()
+            {
+                Text = LocalAuthorityData.LocalAuthorityNamesByCustodianCode[la.CustodianCode]
+            },
+            new()
+            {
+                Html = @<a class="govuk-link" href="@Url.Action("ConfirmLaCodeToDeliveryPartner_Get", "ServiceManager", new {userId = Model.User.Id, code = la.CustodianCode, authorityType = AuthorityType.LA})">Onboard</a>
+            }
+        }
+    }).ToList()
+})
