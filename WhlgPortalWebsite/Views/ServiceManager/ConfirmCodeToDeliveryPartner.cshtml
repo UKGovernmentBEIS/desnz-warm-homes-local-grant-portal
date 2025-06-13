@@ -1,5 +1,6 @@
 @using GovUkDesignSystem
 @using GovUkDesignSystem.GovUkDesignSystemComponents
+@using WhlgPortalWebsite.Enums
 @model WhlgPortalWebsite.Models.ConfirmCodesToDeliveryPartnerViewModel
 
 @{
@@ -10,14 +11,41 @@
 
 @await Html.GovUkWarningText(new WarningTextViewModel()
 {
-    Text = "Please ensure this user has signed their DSA contract."
+    Text = "You are about to grant a user permission to read personally identifiable information."
 })
+
+
+@if (Model.AuthorityType == AuthorityType.LocalAuthority)
+{
+    <p class="govuk-body">@Model.User.EmailAddress will be assigned to manage referrals from the following Local Authorities:</p>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@Model.GetAuthorityName()</li>
+    </ul>
+}
+@if (Model.AuthorityType == AuthorityType.Consortium)
+{
+    <p class="govuk-body">@Model.User.EmailAddress will be assigned to manage the following Consortia:</p>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@Model.GetAuthorityName() (Consortium)</li>
+    </ul>
+    <p class="govuk-body">This will give them access to manage referrals from the following Local Authorities:</p>
+    <ul class="govuk-list govuk-list--bullet">
+        @foreach (var la in Model.GetAllManagedLocalAuthorityNames())
+        {
+            <li>@la</li>
+        }
+    </ul>
+}
+
+<p class="govuk-body">Take a moment to double check if you are certain this user should have access to these @Model.GetAuthorityTypePlural().</p>
+<p class="govuk-body">In particular, you should only do this for @Model.GetAuthorityTypePlural() that have signed their DSA contracts.</p>
+
 <form method="post">
     @(await Html.GovUkCheckboxFromBoolFor(
         m => m.IsConfirmed,
         new LabelViewModel()
         {
-            Text = $"Add {Model.User.EmailAddress} to {Model.GetAuthorityName()}"
+            Text = $"Add {Model.User.EmailAddress} to manage {Model.GetAuthorityName()}"
         }
     ))
 
@@ -25,5 +53,4 @@
     {
         Text = "Onboard"
     }))
-
 </form>
