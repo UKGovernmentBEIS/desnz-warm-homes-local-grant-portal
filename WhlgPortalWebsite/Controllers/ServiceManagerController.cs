@@ -40,15 +40,17 @@ public class ServiceManagerController(IUserService userService, IAuthorityServic
     }
 
     [HttpGet("assign-codes-to-delivery-partner/{userId:int}")]
-    public async Task<IActionResult> AssignCodesToDeliveryPartner_Get([FromRoute] int userId)
+    public async Task<IActionResult> AssignCodesToDeliveryPartner_Get([FromRoute] int userId,
+        [FromQuery] string searchTerm)
     {
         var user = await userService.GetUserByIdAsync(userId);
 
         var viewModel = new AssignCodesToDeliveryPartnerViewModel
         {
             User = user,
-            LocalAuthorities = (await authorityService.GetAllLasAsync()).ToList(),
-            Consortia = (await authorityService.GetAllConsortiaAsync()).ToList()
+            LocalAuthorities = (await authorityService.SearchAllLasAsync(searchTerm)).ToList(),
+            Consortia = (await authorityService.SearchAllConsortiaAsync(searchTerm)).ToList(),
+            SearchTerm = searchTerm
         };
 
         return View("AssignCodesToDeliveryPartner", viewModel);
