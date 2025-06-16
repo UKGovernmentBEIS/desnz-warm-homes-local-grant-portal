@@ -1,19 +1,18 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using FluentAssertions;
 using NUnit.Framework;
 using WhlgPortalWebsite.Models;
+using Tests.Helpers;
 
 namespace Tests.Website.Models;
 
 public class OnboardNewDeliveryPartnerViewModelTests
 {
-    private IList<ValidationResult> ValidateModel(object viewModel)
+    private ModelValidator validator;
+
+    [SetUp]
+    public void Setup()
     {
-        var context = new ValidationContext(viewModel);
-        var results = new List<ValidationResult>();
-        Validator.TryValidateObject(viewModel, context, results, true);
-        return results;
+        validator = new ModelValidator();
     }
 
     [Test]
@@ -26,7 +25,7 @@ public class OnboardNewDeliveryPartnerViewModelTests
         };
 
         // Act
-        var validationResults = ValidateModel(viewModel);
+        var validationResults = validator.ValidateModel(viewModel);
 
         // Assert
         validationResults.Should().HaveCount(0);
@@ -42,7 +41,7 @@ public class OnboardNewDeliveryPartnerViewModelTests
         };
 
         // Act
-        var validationResults = ValidateModel(viewModel);
+        var validationResults = validator.ValidateModel(viewModel);
 
         // Assert
         validationResults.Should().HaveCount(1);
@@ -60,7 +59,7 @@ public class OnboardNewDeliveryPartnerViewModelTests
         };
 
         // Act
-        var validationResults = ValidateModel(viewModel);
+        var validationResults = validator.ValidateModel(viewModel);
 
         // Assert
         validationResults.Should().HaveCount(1);
