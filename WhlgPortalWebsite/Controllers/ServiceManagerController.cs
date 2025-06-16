@@ -56,8 +56,8 @@ public class ServiceManagerController(IUserService userService, IAuthorityServic
         return View("AssignCodesToDeliveryPartner", viewModel);
     }
 
-    [HttpGet("confirm-add-LA-to-delivery-partner/{userId:int}/{authorityType}/{code}")]
-    public async Task<IActionResult> ConfirmLaCodeToDeliveryPartner_Get([FromRoute] int userId,
+    [HttpGet("confirm-add-authority-to-delivery-partner/{userId:int}/{authorityType}/{code}")]
+    public async Task<IActionResult> ConfirmAuthorityCodeToDeliveryPartner_Get([FromRoute] int userId,
         [FromRoute] AuthorityType authorityType, [FromRoute] string code)
     {
         var viewModel = new ConfirmCodesToDeliveryPartnerViewModel
@@ -70,14 +70,14 @@ public class ServiceManagerController(IUserService userService, IAuthorityServic
         return View("ConfirmCodeToDeliveryPartner", viewModel);
     }
 
-    [HttpPost("confirm-add-LA-to-delivery-partner/{userId:int}/{authorityType}/{code}")]
-    public async Task<IActionResult> ConfirmLaCodeToDeliveryPartner_Post(
+    [HttpPost("confirm-add-authority-to-delivery-partner/{userId:int}/{authorityType}/{code}")]
+    public async Task<IActionResult> ConfirmAuthorityCodeToDeliveryPartner_Post(
         ConfirmCodesToDeliveryPartnerViewModel viewModel, [FromRoute] int userId,
         [FromRoute] AuthorityType authorityType, [FromRoute] string code)
     {
         if (!ModelState.IsValid)
         {
-            return await ConfirmLaCodeToDeliveryPartner_Get(userId, authorityType, code);
+            return await ConfirmAuthorityCodeToDeliveryPartner_Get(userId, authorityType, code);
         }
 
         var user = await userService.GetUserByIdAsync(userId);

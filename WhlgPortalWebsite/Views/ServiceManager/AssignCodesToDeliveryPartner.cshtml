@@ -1,5 +1,6 @@
 @using GovUkDesignSystem
 @using GovUkDesignSystem.GovUkDesignSystemComponents
+@using WhlgPortalWebsite.Controllers
 @using WhlgPortalWebsite.Enums
 @model WhlgPortalWebsite.Models.AssignCodesToDeliveryPartnerViewModel
 
@@ -54,7 +55,7 @@
                         @<a
                              class="govuk-link"
                              href="@Url.Action(
-                                       "ConfirmLaCodeToDeliveryPartner_Get", 
+                                       nameof(ServiceManagerController.ConfirmAuthorityCodeToDeliveryPartner_Get), 
                                        "ServiceManager", 
                                        new { userId = Model.User.Id, code = consortium.Code, authorityType = AuthorityType.Consortium })">
                             Onboard
@@ -99,7 +100,7 @@ else
                         @<a
                              class="govuk-link" 
                              href="@Url.Action(
-                                       "ConfirmLaCodeToDeliveryPartner_Get", 
+                                       nameof(ServiceManagerController.ConfirmAuthorityCodeToDeliveryPartner_Get), 
                                        "ServiceManager",
                                        new {userId = Model.User.Id, code = la.Code, authorityType = AuthorityType.LocalAuthority})">
                             Onboard

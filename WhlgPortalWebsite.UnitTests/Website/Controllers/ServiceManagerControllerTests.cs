@@ -114,11 +114,11 @@ public class ServiceManagerControllerTests
     }
 
     [Test]
-    public async Task ConfirmLaCodeToDeliveryPartnerGet_ShouldReturnViewWithNewViewModel()
+    public async Task ConfirmAuthorityCodeToDeliveryPartnerGet_ShouldReturnViewWithNewViewModel()
     {
         // Act
         var result =
-            await serviceManagerController.ConfirmLaCodeToDeliveryPartner_Get(0, AuthorityType.LocalAuthority,
+            await serviceManagerController.ConfirmAuthorityCodeToDeliveryPartner_Get(0, AuthorityType.LocalAuthority,
                 "test-code");
 
         // Assert
@@ -129,7 +129,7 @@ public class ServiceManagerControllerTests
     }
 
     [Test]
-    public async Task ConfirmLaCodeToDeliveryPartnerPost_ShouldReturnToConfirmPageOnError()
+    public async Task ConfirmAuthorityCodeToDeliveryPartnerPost_ShouldReturnToConfirmPageOnError()
     {
         // Arrange
         var viewModel = new ConfirmCodesToDeliveryPartnerViewModel();
@@ -137,7 +137,7 @@ public class ServiceManagerControllerTests
 
         // Act
         var result =
-            await serviceManagerController.ConfirmLaCodeToDeliveryPartner_Post(viewModel, 1,
+            await serviceManagerController.ConfirmAuthorityCodeToDeliveryPartner_Post(viewModel, 1,
                 AuthorityType.LocalAuthority, "test-code");
 
         // Assert
@@ -147,14 +147,14 @@ public class ServiceManagerControllerTests
     }
 
     [Test]
-    public async Task ConfirmLaCodeToDeliveryPartnerPost_ShouldReturnToIndexOnSuccess()
+    public async Task ConfirmAuthorityCodeToDeliveryPartnerPost_ShouldReturnToIndexOnSuccess()
     {
         // Arrange
         var viewModel = new ConfirmCodesToDeliveryPartnerViewModel();
 
         // Act
         var result =
-            await serviceManagerController.ConfirmLaCodeToDeliveryPartner_Post(viewModel, 1,
+            await serviceManagerController.ConfirmAuthorityCodeToDeliveryPartner_Post(viewModel, 1,
                 AuthorityType.LocalAuthority, "test-code");
 
         // Assert
@@ -164,7 +164,7 @@ public class ServiceManagerControllerTests
     }
 
     [Test]
-    public async Task ConfirmLaCodeToDeliveryPartnerPost_ShouldCallOnboardLaMethodsOnSuccess()
+    public async Task ConfirmAuthorityCodeToDeliveryPartnerPost_ShouldCallOnboardLaMethodsOnSuccess()
     {
         // Arrange
         var viewModel = new ConfirmCodesToDeliveryPartnerViewModel();
@@ -176,7 +176,7 @@ public class ServiceManagerControllerTests
             .ReturnsAsync(localAuthority);
 
         // Act
-        await serviceManagerController.ConfirmLaCodeToDeliveryPartner_Post(viewModel, user.Id,
+        await serviceManagerController.ConfirmAuthorityCodeToDeliveryPartner_Post(viewModel, user.Id,
             AuthorityType.LocalAuthority, custodianCode);
 
         // Assert
@@ -190,7 +190,7 @@ public class ServiceManagerControllerTests
     }
 
     [Test]
-    public async Task ConfirmLaCodeToDeliveryPartnerPost_ShouldCallOnboardConsortiumMethodsOnSuccess()
+    public async Task ConfirmAuthorityCodeToDeliveryPartnerPost_ShouldCallOnboardConsortiumMethodsOnSuccess()
     {
         // Arrange
         var viewModel = new ConfirmCodesToDeliveryPartnerViewModel();
@@ -202,7 +202,7 @@ public class ServiceManagerControllerTests
             .ReturnsAsync(consortium);
 
         // Act
-        await serviceManagerController.ConfirmLaCodeToDeliveryPartner_Post(viewModel, user.Id,
+        await serviceManagerController.ConfirmAuthorityCodeToDeliveryPartner_Post(viewModel, user.Id,
             AuthorityType.Consortium, consortiumCode);
 
         // Assert
