@@ -17,34 +17,16 @@ public class ConfirmCodesToDeliveryPartnerViewModelTests
         validator = new ModelValidator();
     }
 
-    [Test]
-    public void ConfirmCodesToDeliveryPartnerViewModel_LocalAuthority_ShouldPassValidation()
+    [TestCase(AuthorityType.LocalAuthority)]
+    [TestCase(AuthorityType.Consortium)]
+    public void ConfirmCodesToDeliveryPartnerViewModel_ShouldPassValidation(AuthorityType authorityType)
     {
         // Arrange
-        var viewModel = new ConfirmCodesToDeliveryPartnerViewModel()
+        var viewModel = new ConfirmCodesToDeliveryPartnerViewModel
         {
             User = new User(),
             Code = "1",
-            AuthorityType = AuthorityType.LocalAuthority,
-            IsConfirmed = true
-        };
-
-        // Act
-        var validationResults = validator.ValidateModel(viewModel);
-
-        // Assert
-        validationResults.Should().HaveCount(0);
-    }
-
-    [Test]
-    public void ConfirmCodesToDeliveryPartnerViewModel_Consortium_ShouldPassValidation()
-    {
-        // Arrange
-        var viewModel = new ConfirmCodesToDeliveryPartnerViewModel()
-        {
-            User = new User(),
-            Code = "1",
-            AuthorityType = AuthorityType.Consortium,
+            AuthorityType = authorityType,
             IsConfirmed = true
         };
 
@@ -59,7 +41,7 @@ public class ConfirmCodesToDeliveryPartnerViewModelTests
     public void ConfirmCodesToDeliveryPartnerViewModel_IsConfirmedFalse_ShouldThrowError()
     {
         // Arrange
-        var viewModel = new ConfirmCodesToDeliveryPartnerViewModel()
+        var viewModel = new ConfirmCodesToDeliveryPartnerViewModel
         {
             User = new User(),
             Code = "1",

@@ -21,7 +21,7 @@ public class AssignCodesToDeliveryPartnerViewModelTests
     public void AssignCodesToDeliveryPartnerViewModel_ShouldPassValidation()
     {
         // Arrange
-        var viewModel = new AssignCodesToDeliveryPartnerViewModel()
+        var viewModel = new AssignCodesToDeliveryPartnerViewModel
         {
             User = new User(),
             SearchTerm = null,

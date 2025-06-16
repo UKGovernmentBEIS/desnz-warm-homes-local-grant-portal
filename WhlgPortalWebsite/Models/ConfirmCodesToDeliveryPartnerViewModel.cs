@@ -57,7 +57,7 @@ public class ConfirmCodesToDeliveryPartnerViewModel : IValidatableObject
         {
             yield return new ValidationResult(
                 "You must confirm the assignment to onboard.",
-                new[] { nameof(IsConfirmed) });
+                [nameof(IsConfirmed)]);
         }
     }
 }
