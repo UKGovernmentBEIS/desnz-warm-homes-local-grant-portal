@@ -9,14 +9,6 @@ namespace Tests.Website.Models;
 
 public class AssignCodesToDeliveryPartnerViewModelTests
 {
-    private ModelValidator validator;
-
-    [SetUp]
-    public void Setup()
-    {
-        validator = new ModelValidator();
-    }
-
     [Test]
     public void AssignCodesToDeliveryPartnerViewModel_ShouldPassValidation()
     {
@@ -30,7 +22,7 @@ public class AssignCodesToDeliveryPartnerViewModelTests
         };
 
         // Act
-        var validationResults = validator.ValidateModel(viewModel);
+        var validationResults = ModelValidator.ValidateModel(viewModel);
 
         // Assert
         validationResults.Should().HaveCount(0);

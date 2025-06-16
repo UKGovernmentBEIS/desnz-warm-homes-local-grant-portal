@@ -9,14 +9,6 @@ namespace Tests.Website.Models;
 
 public class ConfirmCodesToDeliveryPartnerViewModelTests
 {
-    private ModelValidator validator;
-
-    [SetUp]
-    public void Setup()
-    {
-        validator = new ModelValidator();
-    }
-
     [TestCase(AuthorityType.LocalAuthority)]
     [TestCase(AuthorityType.Consortium)]
     public void ConfirmCodesToDeliveryPartnerViewModel_ShouldPassValidation(AuthorityType authorityType)
@@ -31,7 +23,7 @@ public class ConfirmCodesToDeliveryPartnerViewModelTests
         };
 
         // Act
-        var validationResults = validator.ValidateModel(viewModel);
+        var validationResults = ModelValidator.ValidateModel(viewModel);
 
         // Assert
         validationResults.Should().HaveCount(0);
@@ -50,7 +42,7 @@ public class ConfirmCodesToDeliveryPartnerViewModelTests
         };
 
         // Act
-        var validationResults = validator.ValidateModel(viewModel);
+        var validationResults = ModelValidator.ValidateModel(viewModel);
 
         // Assert
         validationResults.Should().HaveCount(1);

@@ -7,14 +7,6 @@ namespace Tests.Website.Models;
 
 public class OnboardNewDeliveryPartnerViewModelTests
 {
-    private ModelValidator validator;
-
-    [SetUp]
-    public void Setup()
-    {
-        validator = new ModelValidator();
-    }
-
     [Test]
     public void OnboardNewDeliveryPartnerViewModel_EmailAddress_ShouldPassWhenValid()
     {
@@ -25,7 +17,7 @@ public class OnboardNewDeliveryPartnerViewModelTests
         };
 
         // Act
-        var validationResults = validator.ValidateModel(viewModel);
+        var validationResults = ModelValidator.ValidateModel(viewModel);
 
         // Assert
         validationResults.Should().HaveCount(0);
@@ -41,7 +33,7 @@ public class OnboardNewDeliveryPartnerViewModelTests
         };
 
         // Act
-        var validationResults = validator.ValidateModel(viewModel);
+        var validationResults = ModelValidator.ValidateModel(viewModel);
 
         // Assert
         validationResults.Should().HaveCount(1);
@@ -59,7 +51,7 @@ public class OnboardNewDeliveryPartnerViewModelTests
         };
 
         // Act
-        var validationResults = validator.ValidateModel(viewModel);
+        var validationResults = ModelValidator.ValidateModel(viewModel);
 
         // Assert
         validationResults.Should().HaveCount(1);

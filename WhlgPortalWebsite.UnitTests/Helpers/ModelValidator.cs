@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Tests.Helpers;
 
-public class ModelValidator
+public static class ModelValidator
 {
-    public IList<ValidationResult> ValidateModel(object viewModel)
+    public static IList<ValidationResult> ValidateModel(object viewModel)
     {
         var context = new ValidationContext(viewModel);
         var results = new List<ValidationResult>();
