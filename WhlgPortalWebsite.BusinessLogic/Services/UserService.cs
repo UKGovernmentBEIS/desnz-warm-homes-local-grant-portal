@@ -12,8 +12,8 @@ public interface IUserService
     Task<User> CreateDeliveryPartnerAsync(string emailAddress);
     Task<bool> IsEmailAddressInUseAsync(string emailAddress);
 
-    Task AddLaToDeliveryPartnerAsync(User user, string custodianCode);
-    Task AddConsortiumToDeliveryPartnerAsync(User user, string consortiumCode);
+    Task AddLaToDeliveryPartnerAsync(User user, LocalAuthority localAuthority);
+    Task AddConsortiumToDeliveryPartnerAsync(User user, Consortium consortium);
 }
 
 public class UserService(IDataAccessProvider dataAccessProvider) : IUserService
@@ -76,15 +76,13 @@ public class UserService(IDataAccessProvider dataAccessProvider) : IUserService
         return await dataAccessProvider.IsEmailAddressInUseAsync(emailAddress);
     }
 
-    public async Task AddLaToDeliveryPartnerAsync(User user, string custodianCode)
+    public async Task AddLaToDeliveryPartnerAsync(User user, LocalAuthority localAuthority)
     {
-        var localAuthority = await dataAccessProvider.GetLocalAuthorityByCustodianCodeAsync(custodianCode);
         await dataAccessProvider.AddLaToDeliveryPartnerAsync(user, localAuthority);
     }
 
-    public async Task AddConsortiumToDeliveryPartnerAsync(User user, string consortiumCode)
+    public async Task AddConsortiumToDeliveryPartnerAsync(User user, Consortium consortium)
     {
-        var consortium = await dataAccessProvider.GetConsortiumByConsortiumCodeAsync(consortiumCode);
         await dataAccessProvider.AddConsortiumToDeliveryPartnerAsync(user, consortium);
     }
 }

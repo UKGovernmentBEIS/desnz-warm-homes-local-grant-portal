@@ -170,7 +170,10 @@ public class ServiceManagerControllerTests
         var viewModel = new ConfirmCodesToDeliveryPartnerViewModel();
         var user = new User { Id = 1 };
         const string custodianCode = "test-code";
+        var localAuthority = new LocalAuthority { CustodianCode = custodianCode };
         mockUserService.Setup(x => x.GetUserByIdAsync(user.Id)).ReturnsAsync(user);
+        mockAuthorityService.Setup(x => x.GetLocalAuthorityByCustodianCodeAsync(custodianCode))
+            .ReturnsAsync(localAuthority);
 
         // Act
         await serviceManagerController.ConfirmLaCodeToDeliveryPartner_Post(viewModel, user.Id,
@@ -178,8 +181,12 @@ public class ServiceManagerControllerTests
 
         // Assert
         mockUserService.Verify(x => x.GetUserByIdAsync(user.Id), Times.Once);
-        mockUserService.Verify(x => x.AddLaToDeliveryPartnerAsync(user, custodianCode), Times.Once);
+        mockUserService.Verify(x => x.AddLaToDeliveryPartnerAsync(user, localAuthority), Times.Once);
         mockUserService.VerifyNoOtherCalls();
+
+        mockAuthorityService.Verify(x => x.GetLocalAuthorityByCustodianCodeAsync(custodianCode),
+            Times.Once);
+        mockAuthorityService.VerifyNoOtherCalls();
     }
 
     [Test]
@@ -189,7 +196,10 @@ public class ServiceManagerControllerTests
         var viewModel = new ConfirmCodesToDeliveryPartnerViewModel();
         var user = new User { Id = 1 };
         const string consortiumCode = "test-code";
+        var consortium = new Consortium { ConsortiumCode = consortiumCode };
         mockUserService.Setup(x => x.GetUserByIdAsync(user.Id)).ReturnsAsync(user);
+        mockAuthorityService.Setup(x => x.GetConsortiumByConsortiumCodeAsync(consortiumCode))
+            .ReturnsAsync(consortium);
 
         // Act
         await serviceManagerController.ConfirmLaCodeToDeliveryPartner_Post(viewModel, user.Id,
@@ -197,7 +207,10 @@ public class ServiceManagerControllerTests
 
         // Assert
         mockUserService.Verify(x => x.GetUserByIdAsync(user.Id), Times.Once);
-        mockUserService.Verify(x => x.AddConsortiumToDeliveryPartnerAsync(user, consortiumCode), Times.Once);
+        mockUserService.Verify(x => x.AddConsortiumToDeliveryPartnerAsync(user, consortium), Times.Once);
         mockUserService.VerifyNoOtherCalls();
+
+        mockAuthorityService.Verify(x => x.GetConsortiumByConsortiumCodeAsync(consortiumCode), Times.Once);
+        mockAuthorityService.VerifyNoOtherCalls();
     }
 }

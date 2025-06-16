@@ -86,12 +86,14 @@ public class ServiceManagerController(IUserService userService, IAuthorityServic
         {
             case AuthorityType.LocalAuthority:
             {
-                await userService.AddLaToDeliveryPartnerAsync(user, code);
+                var localAuthority = await authorityService.GetLocalAuthorityByCustodianCodeAsync(code);
+                await userService.AddLaToDeliveryPartnerAsync(user, localAuthority);
                 break;
             }
             case AuthorityType.Consortium:
             {
-                await userService.AddConsortiumToDeliveryPartnerAsync(user, code);
+                var consortium = await authorityService.GetConsortiumByConsortiumCodeAsync(code);
+                await userService.AddConsortiumToDeliveryPartnerAsync(user, consortium);
                 break;
             }
             default:
