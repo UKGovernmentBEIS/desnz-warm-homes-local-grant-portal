@@ -38,7 +38,7 @@
 }
 
 <p class="govuk-body">Take a moment to double check if you are certain this user should have access to these @Model.GetAuthorityTypePlural().</p>
-<p class="govuk-body">In particular, you should only do this for @Model.GetAuthorityTypePlural() that have signed their DSA contracts.</p>
+<p class="govuk-body">In particular, this should only be done for @Model.GetAuthorityTypePlural() that have signed both the WH:LG Data Sharing Agreement and Memorandum of Understanding.</p>
 
 <form method="post">
     @(await Html.GovUkCheckboxFromBoolFor(
