@@ -26,7 +26,7 @@
 
 <h3 class="govuk-heading-m">Consortia</h3>
 
-@if (Model.Consortia.Any())
+@if (Model.ConsortiaToAssign.Any())
 {
     @await Html.GovUkTable(new TableGovUkViewModel
     {
@@ -41,7 +41,7 @@
                 Text = "Actions"
             }
         },
-        Rows = Model.GetConsortiaToAssign().Select(consortium => new TableRowViewModel
+        Rows = Model.ConsortiaToAssign.Select(consortium => new TableRowViewModel
         {
             Row = new List<TableCellViewModel>
             {
@@ -71,7 +71,7 @@ else
 }
 
 <h3 class="govuk-heading-m">Local Authorities</h3>
-@if (Model.LocalAuthorities.Any())
+@if (Model.LocalAuthoritiesToAssign.Any())
 {
     @await Html.GovUkTable(new TableGovUkViewModel
     {
@@ -86,7 +86,7 @@ else
                 Text = "Actions"
             }
         },
-        Rows = Model.GetLocalAuthoritiesToAssign().Select(la => new TableRowViewModel
+        Rows = Model.LocalAuthoritiesToAssign.Select(la => new TableRowViewModel
         {
             Row = new List<TableCellViewModel>
             {

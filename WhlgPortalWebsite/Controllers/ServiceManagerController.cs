@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using WhlgPortalWebsite.BusinessLogic.Models;
 using WhlgPortalWebsite.BusinessLogic.Services;
 using WhlgPortalWebsite.Enums;
 using WhlgPortalWebsite.Filters;
@@ -44,12 +45,27 @@ public class ServiceManagerController(IUserService userService, IAuthorityServic
         [FromQuery] string searchTerm)
     {
         var user = await userService.GetUserByIdAsync(userId);
+        var localAuthorities = (await authorityService.SearchAllLasAsync(searchTerm)).ToList();
+        var consortia = (await authorityService.SearchAllConsortiaAsync(searchTerm)).ToList();
 
         var viewModel = new AssignCodesToDeliveryPartnerViewModel
         {
             User = user,
-            LocalAuthorities = (await authorityService.SearchAllLasAsync(searchTerm)).ToList(),
-            Consortia = (await authorityService.SearchAllConsortiaAsync(searchTerm)).ToList(),
+            LocalAuthoritiesToAssign = localAuthorities.Select(localAuthority =>
+                new AssignCodesToDeliveryPartnerViewModel.AssignAuthorityViewModel
+                {
+                    Name = LocalAuthorityData.LocalAuthorityNamesByCustodianCode[localAuthority.CustodianCode],
+                    Code = localAuthority.CustodianCode,
+                    AlreadyAssigned = authorityService.UserManagesLocalAuthority(user, localAuthority)
+                }
+            ).ToList(),
+            ConsortiaToAssign = consortia.Select(consortium =>
+                new AssignCodesToDeliveryPartnerViewModel.AssignAuthorityViewModel
+                {
+                    Name = ConsortiumData.ConsortiumNamesByConsortiumCode[consortium.ConsortiumCode],
+                    Code = consortium.ConsortiumCode,
+                    AlreadyAssigned = authorityService.UserManagesConsortium(user, consortium)
+                }).ToList(),
             SearchTerm = searchTerm
         };
 
@@ -60,10 +76,20 @@ public class ServiceManagerController(IUserService userService, IAuthorityServic
     public async Task<IActionResult> ConfirmAuthorityCodeToDeliveryPartner_Get([FromRoute] int userId,
         [FromRoute] AuthorityType authorityType, [FromRoute] string code)
     {
+        var managedLocalAuthorityCodes = authorityType switch
+        {
+            AuthorityType.LocalAuthority => [code],
+            AuthorityType.Consortium =>
+                ConsortiumData
+                    .ConsortiumCustodianCodesIdsByConsortiumCode[code],
+            _ => throw new InvalidOperationException("Unknown authority type")
+        };
+
         var viewModel = new ConfirmCodesToDeliveryPartnerViewModel
         {
             User = await userService.GetUserByIdAsync(userId),
             Code = code,
+            ManagedLocalAuthorityCodes = managedLocalAuthorityCodes,
             AuthorityType = authorityType
         };
 

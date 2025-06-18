@@ -13,6 +13,7 @@ public class ConfirmCodesToDeliveryPartnerViewModel : IValidatableObject
 {
     public User User { get; set; }
     public string Code { get; set; }
+    public List<string> ManagedLocalAuthorityCodes { get; set; }
     public AuthorityType AuthorityType { get; set; }
 
     [ModelBinder(typeof(GovUkCheckboxBoolBinder))]
@@ -40,15 +41,8 @@ public class ConfirmCodesToDeliveryPartnerViewModel : IValidatableObject
 
     public IEnumerable<string> GetAllManagedLocalAuthorityNames()
     {
-        return AuthorityType switch
-        {
-            AuthorityType.LocalAuthority => [GetAuthorityName()],
-            AuthorityType.Consortium =>
-                ConsortiumData
-                    .ConsortiumCustodianCodesIdsByConsortiumCode[Code]
-                    .Select(custodianCode => LocalAuthorityData.LocalAuthorityNamesByCustodianCode[custodianCode]),
-            _ => throw new InvalidOperationException("Unknown authority type")
-        };
+        return ManagedLocalAuthorityCodes
+            .Select(custodianCode => LocalAuthorityData.LocalAuthorityNamesByCustodianCode[custodianCode]);
     }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

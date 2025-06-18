@@ -9,6 +9,8 @@ public interface IAuthorityService
     Task<IEnumerable<Consortium>> SearchAllConsortiaAsync(string searchConsortiumName);
     Task<LocalAuthority> GetLocalAuthorityByCustodianCodeAsync(string custodianCode);
     Task<Consortium> GetConsortiumByConsortiumCodeAsync(string consortiumCode);
+    bool UserManagesLocalAuthority(User user, LocalAuthority localAuthority);
+    bool UserManagesConsortium(User user, Consortium consortium);
 }
 
 public class AuthorityService(IDataAccessProvider dataAccessProvider) : IAuthorityService
@@ -37,5 +39,26 @@ public class AuthorityService(IDataAccessProvider dataAccessProvider) : IAuthori
     public async Task<Consortium> GetConsortiumByConsortiumCodeAsync(string consortiumCode)
     {
         return await dataAccessProvider.GetConsortiumByConsortiumCodeAsync(consortiumCode);
+    }
+
+    public bool UserManagesLocalAuthority(User user, LocalAuthority localAuthority)
+    {
+        var managesDirectly = user
+            .LocalAuthorities
+            .Any(userLocalAuthority => userLocalAuthority.CustodianCode == localAuthority.CustodianCode);
+
+        // if the user manages a consortium, they shouldn't be able to also manage an LA in that consortium
+        var managesOwningConsortia = user
+            .Consortia
+            .Any(userConsortium => ConsortiumData
+                .ConsortiumCustodianCodesIdsByConsortiumCode[userConsortium.ConsortiumCode]
+                .Any(consortiumCustodianCode => consortiumCustodianCode == localAuthority.CustodianCode));
+
+        return managesDirectly || managesOwningConsortia;
+    }
+
+    public bool UserManagesConsortium(User user, Consortium consortium)
+    {
+        return user.Consortia.Any(userConsortium => userConsortium.ConsortiumCode == consortium.ConsortiumCode);
     }
 }
