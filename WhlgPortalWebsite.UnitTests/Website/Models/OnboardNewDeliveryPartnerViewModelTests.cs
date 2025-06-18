@@ -17,7 +17,7 @@ public class OnboardNewDeliveryPartnerViewModelTests
         };
 
         // Act
-        var validationResults = ModelValidator.ValidateModel(viewModel);
+        var validationResults = TestModelValidator.ValidateModel(viewModel);
 
         // Assert
         validationResults.Should().HaveCount(0);
@@ -33,7 +33,7 @@ public class OnboardNewDeliveryPartnerViewModelTests
         };
 
         // Act
-        var validationResults = ModelValidator.ValidateModel(viewModel);
+        var validationResults = TestModelValidator.ValidateModel(viewModel);
 
         // Assert
         validationResults.Should().HaveCount(1);
@@ -51,7 +51,7 @@ public class OnboardNewDeliveryPartnerViewModelTests
         };
 
         // Act
-        var validationResults = ModelValidator.ValidateModel(viewModel);
+        var validationResults = TestModelValidator.ValidateModel(viewModel);
 
         // Assert
         validationResults.Should().HaveCount(1);

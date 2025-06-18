@@ -23,7 +23,7 @@ public class ConfirmCodesToDeliveryPartnerViewModelTests
         };
 
         // Act
-        var validationResults = ModelValidator.ValidateModel(viewModel);
+        var validationResults = TestModelValidator.ValidateModel(viewModel);
 
         // Assert
         validationResults.Should().HaveCount(0);
@@ -42,7 +42,7 @@ public class ConfirmCodesToDeliveryPartnerViewModelTests
         };
 
         // Act
-        var validationResults = ModelValidator.ValidateModel(viewModel);
+        var validationResults = TestModelValidator.ValidateModel(viewModel);
 
         // Assert
         validationResults.Should().HaveCount(1);

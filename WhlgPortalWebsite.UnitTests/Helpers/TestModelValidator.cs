@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Tests.Helpers;
 
-public static class ModelValidator
+public static class TestModelValidator
 {
     public static IList<ValidationResult> ValidateModel(object viewModel)
     {
