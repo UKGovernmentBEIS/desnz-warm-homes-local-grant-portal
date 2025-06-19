@@ -51,6 +51,7 @@ namespace WhlgPortalWebsite
 
             services.AddMemoryCache();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAuthorityService, AuthorityService>();
             services.AddScoped<IDataAccessProvider, DataAccessProvider>();
             services.AddScoped<IFileRetrievalService, FileRetrievalService>();
             services.AddScoped<IStreamService, StreamService>();
