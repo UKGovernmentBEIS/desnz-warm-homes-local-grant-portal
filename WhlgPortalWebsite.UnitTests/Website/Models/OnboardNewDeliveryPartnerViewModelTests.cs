@@ -1,21 +1,12 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using FluentAssertions;
 using NUnit.Framework;
 using WhlgPortalWebsite.Models;
+using Tests.Helpers;
 
 namespace Tests.Website.Models;
 
 public class OnboardNewDeliveryPartnerViewModelTests
 {
-    private IList<ValidationResult> ValidateModel(object viewModel)
-    {
-        var context = new ValidationContext(viewModel);
-        var results = new List<ValidationResult>();
-        Validator.TryValidateObject(viewModel, context, results, true);
-        return results;
-    }
-
     [Test]
     public void OnboardNewDeliveryPartnerViewModel_EmailAddress_ShouldPassWhenValid()
     {
@@ -26,7 +17,7 @@ public class OnboardNewDeliveryPartnerViewModelTests
         };
 
         // Act
-        var validationResults = ValidateModel(viewModel);
+        var validationResults = TestModelValidator.ValidateModel(viewModel);
 
         // Assert
         validationResults.Should().HaveCount(0);
@@ -42,7 +33,7 @@ public class OnboardNewDeliveryPartnerViewModelTests
         };
 
         // Act
-        var validationResults = ValidateModel(viewModel);
+        var validationResults = TestModelValidator.ValidateModel(viewModel);
 
         // Assert
         validationResults.Should().HaveCount(1);
@@ -60,7 +51,7 @@ public class OnboardNewDeliveryPartnerViewModelTests
         };
 
         // Act
-        var validationResults = ValidateModel(viewModel);
+        var validationResults = TestModelValidator.ValidateModel(viewModel);
 
         // Assert
         validationResults.Should().HaveCount(1);

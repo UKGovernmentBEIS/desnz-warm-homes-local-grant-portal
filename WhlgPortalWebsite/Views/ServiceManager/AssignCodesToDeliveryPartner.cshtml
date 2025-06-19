@@ -1,0 +1,116 @@
+@using GovUkDesignSystem
+@using GovUkDesignSystem.GovUkDesignSystemComponents
+@using WhlgPortalWebsite.Controllers
+@using WhlgPortalWebsite.Enums
+@model WhlgPortalWebsite.Models.AssignCodesToDeliveryPartnerViewModel
+
+@{
+    ViewBag.Title = "Warm Homes: Local Grant Portal - Assign LA/Consortia to Delivery Partner";
+}
+
+<h2 class="govuk-heading-l">Assign @Model.User.EmailAddress to an LA/Consortia</h2>
+
+<form method="get">
+    @(await Html.GovUkTextInputFor(
+        m => m.SearchTerm,
+        labelOptions: new LabelViewModel
+        {
+            Text = "Search for an LA/Consortia name"
+        }))
+
+    @(await Html.GovUkButton(new ButtonViewModel
+    {
+        Text = "Search"
+    }))
+</form>
+
+<h3 class="govuk-heading-m">Consortia</h3>
+
+@if (Model.ConsortiaToAssign.Any())
+{
+    @await Html.GovUkTable(new TableGovUkViewModel
+    {
+        Head = new List<TableCellViewModel>
+        {
+            new()
+            {
+                Text = "Name"
+            },
+            new()
+            {
+                Text = "Actions"
+            }
+        },
+        Rows = Model.ConsortiaToAssign.Select(consortium => new TableRowViewModel
+        {
+            Row = new List<TableCellViewModel>
+            {
+                new()
+                {
+                    Text = consortium.Name
+                },
+                new()
+                {
+                    Html = !consortium.AlreadyAssigned ? 
+                        @<a
+                             class="govuk-link"
+                             href="@Url.Action(
+                                       nameof(ServiceManagerController.ConfirmAuthorityCodeToDeliveryPartner_Get), 
+                                       "ServiceManager", 
+                                       new { userId = Model.User.Id, code = consortium.Code, authorityType = AuthorityType.Consortium })">
+                            Onboard
+                        </a> : @<text>Already assigned</text>
+                }
+            }
+        }).ToList()
+    })
+}
+else
+{
+    <p class="govuk-body">No Consortia found.</p>
+}
+
+<h3 class="govuk-heading-m">Local Authorities</h3>
+@if (Model.LocalAuthoritiesToAssign.Any())
+{
+    @await Html.GovUkTable(new TableGovUkViewModel
+    {
+        Head = new List<TableCellViewModel>
+        {
+            new()
+            {
+                Text = "Name"
+            },
+            new()
+            {
+                Text = "Actions"
+            }
+        },
+        Rows = Model.LocalAuthoritiesToAssign.Select(la => new TableRowViewModel
+        {
+            Row = new List<TableCellViewModel>
+            {
+                new()
+                {
+                    Text = la.Name
+                },
+                new()
+                {
+                    Html = !la.AlreadyAssigned ? 
+                        @<a
+                             class="govuk-link" 
+                             href="@Url.Action(
+                                       nameof(ServiceManagerController.ConfirmAuthorityCodeToDeliveryPartner_Get), 
+                                       "ServiceManager",
+                                       new {userId = Model.User.Id, code = la.Code, authorityType = AuthorityType.LocalAuthority})">
+                            Onboard
+                        </a> : @<text>Already assigned</text>
+                }
+            }
+        }).ToList()
+    })
+}
+else
+{
+    <p class="govuk-body">No Local Authorities found.</p>
+}

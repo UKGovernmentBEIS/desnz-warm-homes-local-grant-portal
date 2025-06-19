@@ -5,11 +5,15 @@ namespace WhlgPortalWebsite.BusinessLogic.Services;
 public interface IUserService
 {
     Task<User> GetUserByEmailAsync(string email);
+    Task<User> GetUserByIdAsync(int userId);
     Task MarkUserAsHavingLoggedInAsync(int userId);
     Task<IEnumerable<User>> GetAllActiveDeliveryPartnersAsync();
     Task<IEnumerable<User>> SearchAllDeliveryPartnersAsync(string searchEmailAddress);
-    Task CreateDeliveryPartnerAsync(string emailAddress);
+    Task<User> CreateDeliveryPartnerAsync(string emailAddress);
     Task<bool> IsEmailAddressInUseAsync(string emailAddress);
+
+    Task AddLaToDeliveryPartnerAsync(User user, LocalAuthority localAuthority);
+    Task AddConsortiumToDeliveryPartnerAsync(User user, Consortium consortium);
 }
 
 public class UserService(IDataAccessProvider dataAccessProvider) : IUserService
@@ -19,6 +23,18 @@ public class UserService(IDataAccessProvider dataAccessProvider) : IUserService
         try
         {
             return await dataAccessProvider.GetUserByEmailAsync(emailAddress);
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new InvalidOperationException("User not found.", ex);
+        }
+    }
+
+    public async Task<User> GetUserByIdAsync(int userId)
+    {
+        try
+        {
+            return await dataAccessProvider.GetUserByIdAsync(userId);
         }
         catch (InvalidOperationException ex)
         {
@@ -50,13 +66,23 @@ public class UserService(IDataAccessProvider dataAccessProvider) : IUserService
         };
     }
 
-    public async Task CreateDeliveryPartnerAsync(string emailAddress)
+    public async Task<User> CreateDeliveryPartnerAsync(string emailAddress)
     {
-        await dataAccessProvider.CreateDeliveryPartnerAsync(emailAddress);
+        return await dataAccessProvider.CreateDeliveryPartnerAsync(emailAddress);
     }
 
     public async Task<bool> IsEmailAddressInUseAsync(string emailAddress)
     {
         return await dataAccessProvider.IsEmailAddressInUseAsync(emailAddress);
+    }
+
+    public async Task AddLaToDeliveryPartnerAsync(User user, LocalAuthority localAuthority)
+    {
+        await dataAccessProvider.AddLaToDeliveryPartnerAsync(user, localAuthority);
+    }
+
+    public async Task AddConsortiumToDeliveryPartnerAsync(User user, Consortium consortium)
+    {
+        await dataAccessProvider.AddConsortiumToDeliveryPartnerAsync(user, consortium);
     }
 }
