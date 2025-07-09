@@ -128,4 +128,10 @@ public class ServiceManagerController(IUserService userService, IAuthorityServic
 
         return RedirectToAction("Index", "Home");
     }
+
+    [HttpGet("send-reminder-emails")]
+    public IActionResult SendReminderEmails_Get()
+    {
+        return RedirectToAction(nameof(HomeController.Index), "Home");
+    }
 }

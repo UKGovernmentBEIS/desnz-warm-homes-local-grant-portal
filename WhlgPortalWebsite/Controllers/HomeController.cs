@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Hosting;
 using WhlgPortalWebsite.BusinessLogic.Models;
 using WhlgPortalWebsite.BusinessLogic.Models.Enums;
 using WhlgPortalWebsite.BusinessLogic.Services;
@@ -15,7 +17,8 @@ namespace WhlgPortalWebsite.Controllers;
 
 public class HomeController(
     IUserService userService,
-    IFileRetrievalService fileRetrievalService)
+    IFileRetrievalService fileRetrievalService,
+    IWebHostEnvironment webHostEnvironment)
     : Controller
 {
     private const int PageSize = 20;
@@ -94,7 +97,10 @@ public class HomeController(
     {
         var users = await userService.SearchAllDeliveryPartnersAsync(searchEmailAddress);
 
-        var homepageViewModel = new ServiceManagerHomepageViewModel(users);
+        var homepageViewModel = new ServiceManagerHomepageViewModel(users)
+        {
+            ShouldShowManualJobRunner = !webHostEnvironment.IsProduction()
+        };
 
         return View("ServiceManager/Index", homepageViewModel);
     }

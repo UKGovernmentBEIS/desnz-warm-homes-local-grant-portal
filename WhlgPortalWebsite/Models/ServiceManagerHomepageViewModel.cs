@@ -8,6 +8,7 @@ public class ServiceManagerHomepageViewModel
 {
     public string SearchEmailAddress { get; }
     public IEnumerable<AuthorityUserListing> UserList { get; }
+    public bool ShouldShowManualJobRunner { get; set; }
 
     public ServiceManagerHomepageViewModel(IEnumerable<User> users)
     {
