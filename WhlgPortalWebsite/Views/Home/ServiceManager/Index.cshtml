@@ -9,6 +9,14 @@
 
 <h1 class="govuk-heading-xl">Warm Homes: Local Grant Service Manager Portal</h1>
 
+@if (Model.ShowJobSuccess)
+{
+    @await Html.GovUkNotificationBanner(new NotificationBannerViewModel
+    {
+        Text = "Job run successfully"
+    })
+}
+
 <h2 class="govuk-heading-l">Manage Local Authority/Consortia Users</h2>
 <h3 class="govuk-heading-m">Add a new user</h3>
 @(await Html.GovUkButton(new ButtonViewModel
@@ -70,7 +78,7 @@
     }).ToList()
 })
 
-@if (Model.ShouldShowManualJobRunner)
+@if (Model.ShowManualJobRunner)
 {
     <h2 class="govuk-heading-l">Run regular jobs manually</h2>
     @await Html.GovUkWarningText(new WarningTextViewModel

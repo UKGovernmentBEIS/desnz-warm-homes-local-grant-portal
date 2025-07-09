@@ -55,6 +55,7 @@ namespace WhlgPortalWebsite
             services.AddScoped<IDataAccessProvider, DataAccessProvider>();
             services.AddScoped<IFileRetrievalService, FileRetrievalService>();
             services.AddScoped<IStreamService, StreamService>();
+            services.AddScoped<ReminderEmailsService>();
             services.AddSingleton<StaticAssetsVersioningService>();
             // This allows encrypted cookies to be understood across multiple web server instances
             services.AddDataProtection().PersistKeysToDbContext<WhlgDbContext>();
