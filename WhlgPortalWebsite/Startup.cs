@@ -33,17 +33,8 @@ using GlobalConfiguration = WhlgPortalWebsite.BusinessLogic.GlobalConfiguration;
 
 namespace WhlgPortalWebsite
 {
-    public class Startup
+    public class Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
     {
-        private readonly IConfiguration configuration;
-        private readonly IWebHostEnvironment webHostEnvironment;
-
-        public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
-        {
-            this.configuration = configuration;
-            this.webHostEnvironment = webHostEnvironment;
-        }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -75,58 +66,58 @@ namespace WhlgPortalWebsite
             });
 
             services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            })
-            .AddCookie(options =>
-            {
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
-                options.SlidingExpiration = true;
-                options.Cookie.HttpOnly = true;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.Lax;
-            })
-            .AddOpenIdConnect(options =>
-            {
-                options.NonceCookie.SameSite = SameSiteMode.Lax;
-                options.CorrelationCookie.SameSite = SameSiteMode.Lax;
-                
-                options.ResponseType = OpenIdConnectResponseType.Code;
-                options.MetadataAddress = configuration["Authentication:Cognito:MetadataAddress"];
-                options.ClientId = configuration["Authentication:Cognito:ClientId"];
-                options.ClientSecret = configuration["Authentication:Cognito:ClientSecret"];
-                options.Scope.Add("email");
-                options.Scope.Add("openid");
-                options.Scope.Add("profile");
-                options.SaveTokens = true; // Save tokens issued to encrypted cookies
-                options.UseTokenLifetime = false; // Don't override the cookie lifetime set above
-                options.NonceCookie.HttpOnly = true;
-                options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.CorrelationCookie.HttpOnly = true;
-                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
-
-                // We see relatively frequent errors where the user doesn't have a valid correlation cookie.
-                // This may be for a number of reasons:
-                // - The cookie expires after 15 minutes
-                // - Landing on the login screen without first hitting the app (therefore missing the cookie)
-                // - Some other unknown cause, e.g. the browser handling SameSite cookie settings incorrectly
-                //
-                // If we detect a correlation error, we redirect to the homepage where the user will be
-                // re-authenticated with a fresh correlation cookie. This introduces a small risk of an
-                // infinite redirect loop upon misconfiguration, but we expect this to be rare.
-                options.Events.OnRemoteFailure = context =>
                 {
-                    if (context.Failure?.Message.Contains("Correlation failed") is true)
-                    {
-                        context.Response.Redirect(Constants.BASE_PATH);
-                        context.HandleResponse();
-                    }
+                    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                })
+                .AddCookie(options =>
+                {
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
+                    options.SlidingExpiration = true;
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.SameSite = SameSiteMode.Lax;
+                })
+                .AddOpenIdConnect(options =>
+                {
+                    options.NonceCookie.SameSite = SameSiteMode.Lax;
+                    options.CorrelationCookie.SameSite = SameSiteMode.Lax;
 
-                    return Task.CompletedTask;
-                };
-            });
+                    options.ResponseType = OpenIdConnectResponseType.Code;
+                    options.MetadataAddress = configuration["Authentication:Cognito:MetadataAddress"];
+                    options.ClientId = configuration["Authentication:Cognito:ClientId"];
+                    options.ClientSecret = configuration["Authentication:Cognito:ClientSecret"];
+                    options.Scope.Add("email");
+                    options.Scope.Add("openid");
+                    options.Scope.Add("profile");
+                    options.SaveTokens = true; // Save tokens issued to encrypted cookies
+                    options.UseTokenLifetime = false; // Don't override the cookie lifetime set above
+                    options.NonceCookie.HttpOnly = true;
+                    options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.CorrelationCookie.HttpOnly = true;
+                    options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+
+                    // We see relatively frequent errors where the user doesn't have a valid correlation cookie.
+                    // This may be for a number of reasons:
+                    // - The cookie expires after 15 minutes
+                    // - Landing on the login screen without first hitting the app (therefore missing the cookie)
+                    // - Some other unknown cause, e.g. the browser handling SameSite cookie settings incorrectly
+                    //
+                    // If we detect a correlation error, we redirect to the homepage where the user will be
+                    // re-authenticated with a fresh correlation cookie. This introduces a small risk of an
+                    // infinite redirect loop upon misconfiguration, but we expect this to be rare.
+                    options.Events.OnRemoteFailure = context =>
+                    {
+                        if (context.Failure?.Message.Contains("Correlation failed") is true)
+                        {
+                            context.Response.Redirect(Constants.BASE_PATH);
+                            context.HandleResponse();
+                        }
+
+                        return Task.CompletedTask;
+                    };
+                });
 
             services.AddHsts(options =>
             {
@@ -172,12 +163,12 @@ namespace WhlgPortalWebsite
             services.Configure<GovUkNotifyConfiguration>(
                 configuration.GetSection(GovUkNotifyConfiguration.ConfigSection));
         }
-        
+
         private void ConfigureS3Client(IServiceCollection services)
         {
             var s3Config = new S3Configuration();
             configuration.GetSection(S3Configuration.ConfigSection).Bind(s3Config);
-            
+
             if (webHostEnvironment.IsDevelopment())
             {
                 services.AddScoped(_ =>
@@ -189,7 +180,8 @@ namespace WhlgPortalWebsite
                         ServiceURL = s3Config.LocalDevOnly_ServiceUrl,
                         ForcePathStyle = true,
                     };
-                    return new AmazonS3Client(s3Config.LocalDevOnly_AccessKey, s3Config.LocalDevOnly_SecretKey, clientConfig);
+                    return new AmazonS3Client(s3Config.LocalDevOnly_AccessKey, s3Config.LocalDevOnly_SecretKey,
+                        clientConfig);
                 });
             }
             else
@@ -260,7 +252,7 @@ namespace WhlgPortalWebsite
             {
                 endpoints
                     .MapControllers()
-                    .RequireAuthorization();  // makes all endpoints require auth by default
+                    .RequireAuthorization(); // makes all endpoints require auth by default
             });
         }
     }
