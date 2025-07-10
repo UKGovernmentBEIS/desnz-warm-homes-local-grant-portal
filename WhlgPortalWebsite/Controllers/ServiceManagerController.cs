@@ -15,7 +15,7 @@ namespace WhlgPortalWebsite.Controllers;
 public class ServiceManagerController(
     IUserService userService,
     IAuthorityService authorityService,
-    ReminderEmailsService reminderEmailsService) : Controller
+    IReminderEmailsService reminderEmailsService) : Controller
 {
     [HttpGet("onboard-delivery-partner")]
     public IActionResult OnboardDeliveryPartner_Get()

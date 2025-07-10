@@ -1,7 +1,7 @@
 ﻿namespace WhlgPortalWebsite.BusinessLogic.Services;
 
 public class RegularJobsService(
-    ReminderEmailsService reminderEmailsService)
+    IReminderEmailsService reminderEmailsService)
 {
     public async Task SendReminderEmailsAsync()
     {

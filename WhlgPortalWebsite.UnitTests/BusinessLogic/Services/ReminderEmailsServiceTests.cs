@@ -14,13 +14,13 @@ using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 namespace Tests.BusinessLogic.Services;
 
 [TestFixture]
-public class RegularJobsServiceTests
+public class ReminderEmailsServiceTests
 {
     private Mock<ILogger<RegularJobsService>> mockLogger;
     private Mock<IDataAccessProvider> mockDataAccessProvider;
     private Mock<IEmailSender> mockEmailSender;
     private Mock<IFileRetrievalService> mockFileRetrievalService;
-    private RegularJobsService underTest;
+    private ReminderEmailsService underTest;
 
     private const string EmailAddress = "test@example.com";
 
@@ -33,7 +33,7 @@ public class RegularJobsServiceTests
         mockFileRetrievalService = new Mock<IFileRetrievalService>();
         var userService = new UserService(mockDataAccessProvider.Object);
 
-        underTest = new RegularJobsService(userService, mockEmailSender.Object,
+        underTest = new ReminderEmailsService(userService, mockEmailSender.Object,
             mockFileRetrievalService.Object, mockLogger.Object);
     }
 

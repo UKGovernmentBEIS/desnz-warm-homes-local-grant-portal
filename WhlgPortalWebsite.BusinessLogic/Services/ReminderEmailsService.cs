@@ -4,11 +4,16 @@ using WhlgPortalWebsite.BusinessLogic.Services.FileService;
 
 namespace WhlgPortalWebsite.BusinessLogic.Services;
 
+public interface IReminderEmailsService
+{
+    Task SendReminderEmailsAsync();
+}
+
 public class ReminderEmailsService(
     IUserService userService,
     IEmailSender emailSender,
     IFileRetrievalService fileRetrievalService,
-    ILogger<RegularJobsService> logger)
+    ILogger<RegularJobsService> logger) : IReminderEmailsService
 {
     private readonly ILogger logger = logger;
 
