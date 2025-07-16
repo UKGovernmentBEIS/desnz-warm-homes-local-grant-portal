@@ -132,8 +132,8 @@ public class ServiceManagerController(
         return RedirectToAction("Index", "Home");
     }
 
-    [HttpGet("send-reminder-emails")]
-    public async Task<IActionResult> SendReminderEmails_Get()
+    [HttpPost("send-reminder-emails")]
+    public async Task<IActionResult> SendReminderEmails_Post()
     {
         await reminderEmailsService.SendReminderEmailsAsync();
 

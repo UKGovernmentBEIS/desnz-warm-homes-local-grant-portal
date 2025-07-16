@@ -88,7 +88,10 @@
     <h3 class="govuk-heading-m">Send unread referrals reminder email</h3>
     <p class="govuk-body">This will send emails to all onboarded Delivery Partners who have unread referrals in the portal reminding them to review them.</p>
     <p class="govuk-body">This typically runs at 07:00am GMT daily.</p>
-    <a href="@Url.Action(nameof(ServiceManagerController.SendReminderEmails_Get), "ServiceManager")" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
-        Run Job Now
-    </a>
+    <form method="post" action="@Url.Action(nameof(ServiceManagerController.SendReminderEmails_Post), "ServiceManager")">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="govuk-button" data-module="govuk-button" draggable="false" role="button">
+            Run Job Now
+        </button>
+    </form>
 }
