@@ -83,6 +83,31 @@ public class ServiceManagerControllerTests
     }
 
     [Test]
+    public async Task OnboardDeliveryPartnerPost_ShouldStripSpacesFromEmailAddress()
+    {
+        // Arrange
+        mockUserService
+            .Setup(x => x.IsEmailAddressInUseAsync("new@email.com"))
+            .ReturnsAsync(false);
+        mockUserService
+            .Setup(x => x.CreateDeliveryPartnerAsync("new@email.com"))
+            .ReturnsAsync(new User());
+
+        var viewModel = new OnboardNewDeliveryPartnerViewModel
+        {
+            EmailAddress = " new@email.com "
+        };
+
+        // Act
+        await serviceManagerController.OnboardDeliveryPartner_Post(viewModel);
+
+        // Assert
+        mockUserService.Verify(x => x.IsEmailAddressInUseAsync("new@email.com"), Times.Once);
+        mockUserService.Verify(x => x.CreateDeliveryPartnerAsync("new@email.com"), Times.Once);
+        mockUserService.VerifyNoOtherCalls();
+    }
+
+    [Test]
     public void OnboardDeliveryPartnerGet_ShouldReturnViewWithNewViewModel()
     {
         // Act
