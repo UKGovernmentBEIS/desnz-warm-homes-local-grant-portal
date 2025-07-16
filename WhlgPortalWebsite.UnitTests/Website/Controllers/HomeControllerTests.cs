@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Microsoft.AspNetCore.Hosting;
 using WhlgPortalWebsite.BusinessLogic;
 using WhlgPortalWebsite.BusinessLogic.Models;
 using WhlgPortalWebsite.BusinessLogic.Services;
@@ -9,7 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using Tests.Builders;
+using WhlgPortalWebsite.BusinessLogic.Models.Enums;
 using WhlgPortalWebsite.BusinessLogic.Services.FileService;
+using WhlgPortalWebsite.Models;
 
 namespace Tests.Website.Controllers;
 
@@ -19,6 +23,7 @@ public class HomeFileControllerTests
     private HomeController underTest;
     private Mock<IDataAccessProvider> mockDataAccessProvider;
     private Mock<IFileRetrievalService> mockFileRetrievalService;
+    private Mock<IWebHostEnvironment> mockWebHostEnvironment;
 
     private const string EmailAddress = "test@example.com";
 
@@ -27,9 +32,10 @@ public class HomeFileControllerTests
     {
         mockDataAccessProvider = new Mock<IDataAccessProvider>();
         mockFileRetrievalService = new Mock<IFileRetrievalService>();
+        mockWebHostEnvironment = new Mock<IWebHostEnvironment>();
         var userDataStore = new UserService(mockDataAccessProvider.Object);
 
-        underTest = new HomeController(userDataStore, mockFileRetrievalService.Object);
+        underTest = new HomeController(userDataStore, mockFileRetrievalService.Object, mockWebHostEnvironment.Object);
         underTest.ControllerContext.HttpContext = new HttpContextBuilder(EmailAddress).Build();
         underTest.Url = new Mock<IUrlHelper>().Object;
     }
@@ -67,9 +73,42 @@ public class HomeFileControllerTests
             .ReturnsAsync(fileData);
 
         // Act
-        var result = await underTest.Index(new List<string> { "114" }, "");
+        var result = await underTest.Index(new List<string> { "114" }, "", false);
 
         // Assert
         mockDataAccessProvider.Verify(dap => dap.MarkUserAsHavingLoggedInAsync(13));
+    }
+
+    [TestCase("Development", true)]
+    [TestCase("DEV", true)]
+    [TestCase("Staging", true)]
+    [TestCase("Production", false)]
+    public async Task Index_WhenUserIsServiceManager_OnlyShowsManualJobRunnersWhenNotOnProduction(string environmentName, bool showManualJobRunner)
+    {
+        // Arrange
+        var user = new UserBuilder(EmailAddress)
+            .WithHasLoggedIn(false)
+            .WithRole(UserRole.ServiceManager)
+            .Build();
+
+        mockDataAccessProvider
+            .Setup(dap => dap.GetUserByEmailAsync(EmailAddress))
+            .ReturnsAsync(user);
+        
+        mockWebHostEnvironment.Setup(env => env.EnvironmentName).Returns(environmentName);
+        mockDataAccessProvider.Setup(dap => dap.GetAllDeliveryPartnersAsync()).ReturnsAsync([]);
+
+        var viewModel = new ServiceManagerHomepageViewModel([])
+        {
+            ShowManualJobRunner = showManualJobRunner
+        };
+
+        // Act
+        var result = await underTest.Index([], "", false);
+
+        // Assert
+        result.Should().BeOfType<ViewResult>();
+        var viewResult = result as ViewResult;
+        viewResult!.Model.Should().BeEquivalentTo(viewModel);
     }
 }

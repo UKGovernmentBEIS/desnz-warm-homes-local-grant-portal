@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Hosting;
 using WhlgPortalWebsite.BusinessLogic.Models;
 using WhlgPortalWebsite.BusinessLogic.Models.Enums;
 using WhlgPortalWebsite.BusinessLogic.Services;
@@ -15,13 +17,15 @@ namespace WhlgPortalWebsite.Controllers;
 
 public class HomeController(
     IUserService userService,
-    IFileRetrievalService fileRetrievalService)
+    IFileRetrievalService fileRetrievalService,
+    IWebHostEnvironment webHostEnvironment)
     : Controller
 {
     private const int PageSize = 20;
 
     [HttpGet("/")]
     public async Task<IActionResult> Index([FromQuery] List<string> codes, [FromQuery] string searchEmailAddress,
+        [FromQuery] bool jobSuccess,
         int page = 1)
     {
         var userEmailAddress = HttpContext.User.GetEmailAddress();
@@ -30,7 +34,7 @@ public class HomeController(
         return userData.Role switch
         {
             UserRole.DeliveryPartner => await RenderDeliveryPartnerHomepage(codes, page, userEmailAddress, userData),
-            UserRole.ServiceManager => await RenderServiceManagerHomepage(searchEmailAddress),
+            UserRole.ServiceManager => await RenderServiceManagerHomepage(searchEmailAddress, jobSuccess),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
@@ -90,11 +94,15 @@ public class HomeController(
         return View("DeliveryPartner/ReferralFiles", homepageViewModel);
     }
 
-    private async Task<IActionResult> RenderServiceManagerHomepage(string searchEmailAddress)
+    private async Task<IActionResult> RenderServiceManagerHomepage(string searchEmailAddress, bool jobSuccess)
     {
         var users = await userService.SearchAllDeliveryPartnersAsync(searchEmailAddress);
 
-        var homepageViewModel = new ServiceManagerHomepageViewModel(users);
+        var homepageViewModel = new ServiceManagerHomepageViewModel(users)
+        {
+            ShowManualJobRunner = !webHostEnvironment.IsProduction(),
+            ShowJobSuccess = jobSuccess
+        };
 
         return View("ServiceManager/Index", homepageViewModel);
     }
