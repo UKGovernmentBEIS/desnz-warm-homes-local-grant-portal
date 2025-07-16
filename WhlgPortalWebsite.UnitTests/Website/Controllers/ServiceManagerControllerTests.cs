@@ -218,10 +218,10 @@ public class ServiceManagerControllerTests
     }
 
     [Test]
-    public async Task SendReminderEmailsGet_CallsReminderEmailsJob()
+    public async Task SendReminderEmailsPost_CallsReminderEmailsJob()
     {
         // Act
-        await serviceManagerController.SendReminderEmails_Get();
+        await serviceManagerController.SendReminderEmails_Post();
 
         // Assert
         mockReminderEmailsService.Verify(x => x.SendReminderEmailsAsync(), Times.Once);
