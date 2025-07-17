@@ -17,6 +17,7 @@ public class ServiceManagerControllerTests
 {
     private Mock<IUserService> mockUserService;
     private Mock<IAuthorityService> mockAuthorityService;
+    private Mock<IReminderEmailsService> mockReminderEmailsService;
     private ServiceManagerController serviceManagerController;
 
     [SetUp]
@@ -24,7 +25,9 @@ public class ServiceManagerControllerTests
     {
         mockUserService = new Mock<IUserService>();
         mockAuthorityService = new Mock<IAuthorityService>();
-        serviceManagerController = new ServiceManagerController(mockUserService.Object, mockAuthorityService.Object);
+        mockReminderEmailsService = new Mock<IReminderEmailsService>();
+        serviceManagerController = new ServiceManagerController(mockUserService.Object, mockAuthorityService.Object,
+            mockReminderEmailsService.Object);
     }
 
     [Test]
@@ -237,5 +240,16 @@ public class ServiceManagerControllerTests
 
         mockAuthorityService.Verify(x => x.GetConsortiumByConsortiumCodeAsync(consortiumCode), Times.Once);
         mockAuthorityService.VerifyNoOtherCalls();
+    }
+
+    [Test]
+    public async Task SendReminderEmailsPost_CallsReminderEmailsJob()
+    {
+        // Act
+        await serviceManagerController.SendReminderEmails_Post();
+
+        // Assert
+        mockReminderEmailsService.Verify(x => x.SendReminderEmailsAsync(), Times.Once);
+        mockReminderEmailsService.VerifyNoOtherCalls();
     }
 }

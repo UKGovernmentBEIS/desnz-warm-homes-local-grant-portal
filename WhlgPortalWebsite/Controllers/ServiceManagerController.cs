@@ -12,7 +12,10 @@ namespace WhlgPortalWebsite.Controllers;
 
 [TypeFilter(typeof(RequiresServiceManagerFilter))]
 [Route("service-manager")]
-public class ServiceManagerController(IUserService userService, IAuthorityService authorityService) : Controller
+public class ServiceManagerController(
+    IUserService userService,
+    IAuthorityService authorityService,
+    IReminderEmailsService reminderEmailsService) : Controller
 {
     [HttpGet("onboard-delivery-partner")]
     public IActionResult OnboardDeliveryPartner_Get()
@@ -129,5 +132,13 @@ public class ServiceManagerController(IUserService userService, IAuthorityServic
         }
 
         return RedirectToAction("Index", "Home");
+    }
+
+    [HttpPost("send-reminder-emails")]
+    public async Task<IActionResult> SendReminderEmails_Post()
+    {
+        await reminderEmailsService.SendReminderEmailsAsync();
+
+        return RedirectToAction(nameof(HomeController.Index), "Home", new { jobSuccess = true });
     }
 }

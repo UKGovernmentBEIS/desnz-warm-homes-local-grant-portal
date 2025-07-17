@@ -1,5 +1,6 @@
 ﻿@using GovUkDesignSystem
 @using GovUkDesignSystem.GovUkDesignSystemComponents
+@using WhlgPortalWebsite.Controllers
 @model WhlgPortalWebsite.Models.ServiceManagerHomepageViewModel
 
 @{
@@ -7,6 +8,14 @@
 }
 
 <h1 class="govuk-heading-xl">Warm Homes: Local Grant Service Manager Portal</h1>
+
+@if (Model.ShowJobSuccess)
+{
+    @await Html.GovUkNotificationBanner(new NotificationBannerViewModel
+    {
+        Text = "Job run successfully"
+    })
+}
 
 <h2 class="govuk-heading-l">Manage Local Authority/Consortia Users</h2>
 <h3 class="govuk-heading-m">Add a new user</h3>
@@ -68,3 +77,21 @@
         }
     }).ToList()
 })
+
+@if (Model.ShowManualJobRunner)
+{
+    <h2 class="govuk-heading-l">Run regular jobs manually</h2>
+    @await Html.GovUkWarningText(new WarningTextViewModel
+    {
+        Text = "Regular jobs can only be run manually on pre-production environments."
+    })
+    <h3 class="govuk-heading-m">Send unread referrals reminder email</h3>
+    <p class="govuk-body">This will send emails to all onboarded Delivery Partners who have unread referrals in the portal reminding them to review them.</p>
+    <p class="govuk-body">This typically runs at 07:00am GMT daily.</p>
+    <form method="post" action="@Url.Action(nameof(ServiceManagerController.SendReminderEmails_Post), "ServiceManager")">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="govuk-button" data-module="govuk-button" draggable="false" role="button">
+            Run Job Now
+        </button>
+    </form>
+}
