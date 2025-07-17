@@ -12,7 +12,10 @@ namespace WhlgPortalWebsite.Controllers;
 
 [TypeFilter(typeof(RequiresServiceManagerFilter))]
 [Route("service-manager")]
-public class ServiceManagerController(IUserService userService, IAuthorityService authorityService) : Controller
+public class ServiceManagerController(
+    IUserService userService,
+    IAuthorityService authorityService,
+    IReminderEmailsService reminderEmailsService) : Controller
 {
     [HttpGet("onboard-delivery-partner")]
     public IActionResult OnboardDeliveryPartner_Get()
@@ -29,13 +32,15 @@ public class ServiceManagerController(IUserService userService, IAuthorityServic
             return View("OnboardDeliveryPartner", viewModel);
         }
 
-        if (await userService.IsEmailAddressInUseAsync(viewModel.EmailAddress))
+        var emailAddress = viewModel.EmailAddress.Trim();
+
+        if (await userService.IsEmailAddressInUseAsync(emailAddress))
         {
             ModelState.AddModelError(nameof(viewModel.EmailAddress), "This email address is already in use.");
             return View("OnboardDeliveryPartner", viewModel);
         }
 
-        var newUser = await userService.CreateDeliveryPartnerAsync(viewModel.EmailAddress);
+        var newUser = await userService.CreateDeliveryPartnerAsync(emailAddress);
         return RedirectToAction("AssignCodesToDeliveryPartner_Get", "ServiceManager",
             new { userId = newUser.Id });
     }
@@ -127,5 +132,13 @@ public class ServiceManagerController(IUserService userService, IAuthorityServic
         }
 
         return RedirectToAction("Index", "Home");
+    }
+
+    [HttpPost("send-reminder-emails")]
+    public async Task<IActionResult> SendReminderEmails_Post()
+    {
+        await reminderEmailsService.SendReminderEmailsAsync();
+
+        return RedirectToAction(nameof(HomeController.Index), "Home", new { jobSuccess = true });
     }
 }

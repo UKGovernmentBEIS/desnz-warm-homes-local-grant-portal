@@ -17,6 +17,7 @@ public class ServiceManagerControllerTests
 {
     private Mock<IUserService> mockUserService;
     private Mock<IAuthorityService> mockAuthorityService;
+    private Mock<IReminderEmailsService> mockReminderEmailsService;
     private ServiceManagerController serviceManagerController;
 
     [SetUp]
@@ -24,7 +25,9 @@ public class ServiceManagerControllerTests
     {
         mockUserService = new Mock<IUserService>();
         mockAuthorityService = new Mock<IAuthorityService>();
-        serviceManagerController = new ServiceManagerController(mockUserService.Object, mockAuthorityService.Object);
+        mockReminderEmailsService = new Mock<IReminderEmailsService>();
+        serviceManagerController = new ServiceManagerController(mockUserService.Object, mockAuthorityService.Object,
+            mockReminderEmailsService.Object);
     }
 
     [Test]
@@ -80,6 +83,31 @@ public class ServiceManagerControllerTests
         serviceManagerController.ModelState.ContainsKey(nameof(viewModel.EmailAddress)).Should().BeTrue();
         serviceManagerController.ModelState[nameof(viewModel.EmailAddress)]!.Errors.Should().ContainSingle()
             .Which.ErrorMessage.Should().Be("This email address is already in use.");
+    }
+
+    [Test]
+    public async Task OnboardDeliveryPartnerPost_ShouldStripSpacesFromEmailAddress()
+    {
+        // Arrange
+        mockUserService
+            .Setup(x => x.IsEmailAddressInUseAsync("new@email.com"))
+            .ReturnsAsync(false);
+        mockUserService
+            .Setup(x => x.CreateDeliveryPartnerAsync("new@email.com"))
+            .ReturnsAsync(new User());
+
+        var viewModel = new OnboardNewDeliveryPartnerViewModel
+        {
+            EmailAddress = " new@email.com "
+        };
+
+        // Act
+        await serviceManagerController.OnboardDeliveryPartner_Post(viewModel);
+
+        // Assert
+        mockUserService.Verify(x => x.IsEmailAddressInUseAsync("new@email.com"), Times.Once);
+        mockUserService.Verify(x => x.CreateDeliveryPartnerAsync("new@email.com"), Times.Once);
+        mockUserService.VerifyNoOtherCalls();
     }
 
     [Test]
@@ -212,5 +240,16 @@ public class ServiceManagerControllerTests
 
         mockAuthorityService.Verify(x => x.GetConsortiumByConsortiumCodeAsync(consortiumCode), Times.Once);
         mockAuthorityService.VerifyNoOtherCalls();
+    }
+
+    [Test]
+    public async Task SendReminderEmailsPost_CallsReminderEmailsJob()
+    {
+        // Act
+        await serviceManagerController.SendReminderEmails_Post();
+
+        // Assert
+        mockReminderEmailsService.Verify(x => x.SendReminderEmailsAsync(), Times.Once);
+        mockReminderEmailsService.VerifyNoOtherCalls();
     }
 }
