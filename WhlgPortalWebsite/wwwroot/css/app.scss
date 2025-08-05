@@ -1,9 +1,6 @@
 ﻿/* This must be kept in sync with the corresponding variable in Constants.cs */
 $base-path: "/portal";
 
-/* Resets */
-@import "_reset";
-
 /* Imported from Gov.UK Frontend */
 $govuk-new-link-styles: true;
 $govuk-assets-path: "#{$base-path}/assets/";
