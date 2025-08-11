@@ -9,11 +9,11 @@
 
 <h1 class="govuk-heading-xl">Warm Homes: Local Grant Service Manager Portal</h1>
 
-@if (Model.ShowTaskSuccess)
+@if (Model.ShowJobSuccess)
 {
     @await Html.GovUkNotificationBanner(new NotificationBannerViewModel
     {
-        Text = Model.TaskSuccessText
+        Text = Model.ShowJobSuccessText,
     })
 }
 
@@ -55,11 +55,11 @@
         },
         new()
         {
-            Text = "Assign"
+            Text = "Actions"
         },
         new()
         {
-            Text = "Delete"
+            Text = ""
         }
     },
     Rows = Model.UserList.Select(user => new TableRowViewModel
@@ -76,11 +76,11 @@
             },
             new()
             {
-                Html = @<a class="govuk-link" href="@Url.Action("AssignCodesToDeliveryPartner_Get", "ServiceManager", new { userId = user.Id })">Assign to authority</a>
-        },
+                Html = @<a class="govuk-link" href="@Url.Action("AssignCodesToDeliveryPartner_Get", "ServiceManager", new {userId = user.Id})">Assign to authority</a>
+            },
             new()
             {
-                Html = @<a class="govuk-link" href="@Url.Action("ConfirmDeleteDeliveryPartner_Get", "ServiceManager", new { userId = user.Id })">Delete user</a>
+                Html = @<a class="govuk-link" href="@Url.Action("DeleteDeliveryPartner_Get", "ServiceManager", new {userId = user.Id})">Delete</a>
             }
         }
     }).ToList()
