@@ -252,4 +252,59 @@ public class ServiceManagerControllerTests
         mockReminderEmailsService.Verify(x => x.SendReminderEmailsAsync(), Times.Once);
         mockReminderEmailsService.VerifyNoOtherCalls();
     }
+
+    [Test]
+    public async Task ConfirmDeleteDeliveryPartnerUserPost_ShouldCallDeleteUserMethodsOnSuccess()
+    {
+        // Arrange
+        var viewModel = new ConfirmDeleteDeliveryPartnerViewModel();
+        var user = new User { Id = 1 };
+        mockUserService.Setup(x => x.GetUserByIdAsync(user.Id)).ReturnsAsync(user);
+        
+        // Act
+        await serviceManagerController.ConfirmDeleteDeliveryPartner_Post(viewModel, user.Id);
+        
+        // Assert
+        mockUserService.Verify(x => x.GetUserByIdAsync(user.Id), Times.Once);
+        mockUserService.Verify(x => x.DeleteUserAsync(user), Times.Once);
+        mockUserService.VerifyNoOtherCalls();
+        mockAuthorityService.VerifyNoOtherCalls();
+    }
+    
+    [Test]
+    public async Task ConfirmDeleteDeliveryPartnerUserPost_ShouldReturnToIndexOnSuccess()
+    {
+        // Arrange
+        var viewModel = new ConfirmDeleteDeliveryPartnerViewModel();
+        var user = new User { Id = 1 };
+        mockUserService.Setup(x => x.GetUserByIdAsync(user.Id)).ReturnsAsync(user);
+        mockUserService.Setup(x => x.DeleteUserAsync(user)).Returns(Task.CompletedTask);
+
+        // Act
+        var result = await serviceManagerController.ConfirmDeleteDeliveryPartner_Post(viewModel, 1);
+
+        // Assert
+        result.Should().BeOfType<RedirectToActionResult>();
+        var viewResult = result as RedirectToActionResult;
+        viewResult!.ActionName.Should().Be("Index");
+    }
+    
+    [Test]
+    public async Task ConfirmDeleteDeliveryPartnerUserPost_ShouldReturnToConfirmPageOnError()
+    {
+        // Arrange
+        var viewModel = new ConfirmDeleteDeliveryPartnerViewModel();
+        var user = new User { Id = 1 };
+        mockUserService.Setup(x => x.GetUserByIdAsync(user.Id)).ReturnsAsync(user);
+        mockUserService.Setup(x => x.DeleteUserAsync(user)).Returns(Task.CompletedTask);
+        serviceManagerController.ModelState.AddModelError(nameof(viewModel.IsConfirmed), "Example error");
+
+        // Act
+        var result = await serviceManagerController.ConfirmDeleteDeliveryPartner_Post(viewModel, 1);
+
+        // Assert
+        result.Should().BeOfType<ViewResult>();
+        var viewResult = result as ViewResult;
+        viewResult!.ViewName.Should().Be("ConfirmDeleteDeliveryPartner");
+    }
 }

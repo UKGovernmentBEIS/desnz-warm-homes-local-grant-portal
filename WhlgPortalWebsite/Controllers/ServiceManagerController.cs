@@ -27,6 +27,7 @@ public class ServiceManagerController(
     public async Task<IActionResult> OnboardDeliveryPartner_Post(
         OnboardNewDeliveryPartnerViewModel viewModel)
     {
+        // Validate the model state - the model must be passed in to ensure validation attributes are checked. Ignore IDE saying it is unused.
         if (!ModelState.IsValid)
         {
             return View("OnboardDeliveryPartner", viewModel);
@@ -76,7 +77,7 @@ public class ServiceManagerController(
 
         return View("AssignCodesToDeliveryPartner", viewModel);
     }
-
+    
     [HttpGet("delete-delivery-partner-user/{userId:int}")]
     public async Task<IActionResult> DeleteDeliveryPartner_Get([FromRoute] int userId)
     {
@@ -85,16 +86,16 @@ public class ServiceManagerController(
         {
             return NotFound();
         }
-
+    
         var viewModel = new DeleteDeliveryPartnerViewModel
         {
             UserId = user.Id,
             EmailAddress = user.EmailAddress
         };
-
+    
         return View("ConfirmDeleteDeliveryPartner", viewModel);
     }
-
+    
     [HttpPost("delete-delivery-partner-user/{userId:int}")]
     public async Task<IActionResult> DeleteDeliveryPartnerUser_Post([FromRoute] int userId)
     {
@@ -103,8 +104,38 @@ public class ServiceManagerController(
         {
             return NotFound();
         }
-
+    
         await userService.DeleteUserAsync(userId);
+        return RedirectToAction(nameof(HomeController.Index), "Home", new {jobSuccessText = "Delivery Partner deleted successfully"});
+    }
+
+    [HttpGet("confirm-delete-delivery-partner/{userId:int}")]
+    public async Task<IActionResult> ConfirmDeleteDeliveryPartner_Get([FromRoute] int userId)
+    {
+        var user = await userService.GetUserByIdAsync(userId);
+
+        var viewModel = new ConfirmDeleteDeliveryPartnerViewModel
+        {
+            UserId = user.Id,
+            EmailAddress = user.EmailAddress
+        };
+
+        return View("ConfirmDeleteDeliveryPartner", viewModel);
+    }
+
+    [HttpPost("confirm-delete-delivery-partner/{userId:int}")]
+    public async Task<IActionResult> ConfirmDeleteDeliveryPartner_Post(ConfirmDeleteDeliveryPartnerViewModel viewModel,
+        [FromRoute] int userId)
+    {
+        // Validate the model state - the model must be passed in to ensure validation attributes are checked. Ignore IDE saying it is unused.
+        if (!ModelState.IsValid)
+        {
+            return await ConfirmDeleteDeliveryPartner_Get(userId);
+        }
+
+        var user = await userService.GetUserByIdAsync(userId);
+
+        await userService.DeleteUserAsync(user);
         return RedirectToAction(nameof(HomeController.Index), "Home",
             new { taskSuccessMessage = TaskSuccessMessage.UserDeletedSuccessfully });
     }
@@ -138,6 +169,7 @@ public class ServiceManagerController(
         ConfirmCodesToDeliveryPartnerViewModel viewModel, [FromRoute] int userId,
         [FromRoute] AuthorityType authorityType, [FromRoute] string code)
     {
+        // Validate the model state - the model must be passed in to ensure validation attributes are checked. Ignore IDE saying it is unused.
         if (!ModelState.IsValid)
         {
             return await ConfirmAuthorityCodeToDeliveryPartner_Get(userId, authorityType, code);
@@ -164,9 +196,6 @@ public class ServiceManagerController(
             default:
                 throw new ArgumentOutOfRangeException(nameof(authorityType), authorityType.ToString());
         }
-
-        return RedirectToAction(nameof(HomeController.Index), "Home",
-            new { jobSuccessText = $"{authorityType.Parse()} added successfully" });
     }
 
     [HttpPost("send-reminder-emails")]

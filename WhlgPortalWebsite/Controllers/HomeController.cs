@@ -101,8 +101,6 @@ public class HomeController(
         var homepageViewModel = new ServiceManagerHomepageViewModel(users, taskSuccessMessage)
         {
             ShowManualJobRunner = !webHostEnvironment.IsProduction(),
-            ShowJobSuccess = !string.IsNullOrEmpty(jobSuccessText),
-            ShowJobSuccessText = jobSuccessText,
         };
 
         return View("ServiceManager/Index", homepageViewModel);
