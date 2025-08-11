@@ -77,6 +77,38 @@ public class ServiceManagerController(
         return View("AssignCodesToDeliveryPartner", viewModel);
     }
 
+    [HttpGet("delete-delivery-partner-user/{userId:int}")]
+    public async Task<IActionResult> DeleteDeliveryPartner_Get([FromRoute] int userId)
+    {
+        var user = await userService.GetUserByIdAsync(userId);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var viewModel = new DeleteDeliveryPartnerViewModel
+        {
+            UserId = user.Id,
+            EmailAddress = user.EmailAddress
+        };
+
+        return View("ConfirmDeleteDeliveryPartner", viewModel);
+    }
+
+    [HttpPost("delete-delivery-partner-user/{userId:int}")]
+    public async Task<IActionResult> DeleteDeliveryPartnerUser_Post([FromRoute] int userId)
+    {
+        var user = await userService.GetUserByIdAsync(userId);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        await userService.DeleteUserAsync(userId);
+        return RedirectToAction(nameof(HomeController.Index), "Home",
+            new { taskSuccessMessage = TaskSuccessMessage.UserDeletedSuccessfully });
+    }
+
     [HttpGet("confirm-add-authority-to-delivery-partner/{userId:int}/{authorityType}/{code}")]
     public async Task<IActionResult> ConfirmAuthorityCodeToDeliveryPartner_Get([FromRoute] int userId,
         [FromRoute] AuthorityType authorityType, [FromRoute] string code)
@@ -119,19 +151,22 @@ public class ServiceManagerController(
             {
                 var localAuthority = await authorityService.GetLocalAuthorityByCustodianCodeAsync(code);
                 await userService.AddLaToDeliveryPartnerAsync(user, localAuthority);
-                break;
+                return RedirectToAction(nameof(HomeController.Index), "Home",
+                    new { taskSuccessMessage = TaskSuccessMessage.LaAssignedSuccessfully });
             }
             case AuthorityType.Consortium:
             {
                 var consortium = await authorityService.GetConsortiumByConsortiumCodeAsync(code);
                 await userService.AddConsortiumToDeliveryPartnerAsync(user, consortium);
-                break;
+                return RedirectToAction(nameof(HomeController.Index), "Home",
+                    new { taskSuccessMessage = TaskSuccessMessage.ConsortiumAssignedSuccessfully });
             }
             default:
                 throw new ArgumentOutOfRangeException(nameof(authorityType), authorityType.ToString());
         }
 
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction(nameof(HomeController.Index), "Home",
+            new { jobSuccessText = $"{authorityType.Parse()} added successfully" });
     }
 
     [HttpPost("send-reminder-emails")]
@@ -139,6 +174,7 @@ public class ServiceManagerController(
     {
         await reminderEmailsService.SendReminderEmailsAsync();
 
-        return RedirectToAction(nameof(HomeController.Index), "Home", new { jobSuccess = true });
+        return RedirectToAction(nameof(HomeController.Index), "Home",
+            new { taskSuccessMessage = TaskSuccessMessage.JobRanSuccessfully });
     }
 }
