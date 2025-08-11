@@ -207,7 +207,7 @@ public class DataAccessProvider : IDataAccessProvider
         return await context.Consortia
             .SingleAsync(c => c.ConsortiumCode == consortiumCode);
     }
-    
+
     public async Task DeleteUserAsync(int userId)
     {
         var user = await context.Users

@@ -9,9 +9,10 @@ public class ConfirmDeleteDeliveryPartnerViewModel : IValidatableObject
 {
     public int UserId { get; set; }
     public string EmailAddress { get; set; } = string.Empty;
+
     [ModelBinder(typeof(GovUkCheckboxBoolBinder))]
     public bool IsConfirmed { get; set; }
-    
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (!IsConfirmed)

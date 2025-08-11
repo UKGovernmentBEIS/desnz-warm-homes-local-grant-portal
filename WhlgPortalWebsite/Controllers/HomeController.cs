@@ -94,7 +94,8 @@ public class HomeController(
         return View("DeliveryPartner/ReferralFiles", homepageViewModel);
     }
 
-    private async Task<IActionResult> RenderServiceManagerHomepage(string searchEmailAddress, TaskSuccessMessage taskSuccessMessage)
+    private async Task<IActionResult> RenderServiceManagerHomepage(string searchEmailAddress,
+        TaskSuccessMessage taskSuccessMessage)
     {
         var users = await userService.SearchAllDeliveryPartnersAsync(searchEmailAddress);
 

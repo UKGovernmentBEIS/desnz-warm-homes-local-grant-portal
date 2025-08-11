@@ -260,17 +260,17 @@ public class ServiceManagerControllerTests
         var viewModel = new ConfirmDeleteDeliveryPartnerViewModel();
         var user = new User { Id = 1 };
         mockUserService.Setup(x => x.GetUserByIdAsync(user.Id)).ReturnsAsync(user);
-        
+
         // Act
         await serviceManagerController.ConfirmDeleteDeliveryPartner_Post(viewModel, user.Id);
-        
+
         // Assert
         mockUserService.Verify(x => x.GetUserByIdAsync(user.Id), Times.Once);
         mockUserService.Verify(x => x.DeleteUserAsync(user), Times.Once);
         mockUserService.VerifyNoOtherCalls();
         mockAuthorityService.VerifyNoOtherCalls();
     }
-    
+
     [Test]
     public async Task ConfirmDeleteDeliveryPartnerUserPost_ShouldReturnToIndexOnSuccess()
     {
@@ -288,7 +288,7 @@ public class ServiceManagerControllerTests
         var viewResult = result as RedirectToActionResult;
         viewResult!.ActionName.Should().Be("Index");
     }
-    
+
     [Test]
     public async Task ConfirmDeleteDeliveryPartnerUserPost_ShouldReturnToConfirmPageOnError()
     {

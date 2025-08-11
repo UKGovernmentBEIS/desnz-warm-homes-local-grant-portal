@@ -83,7 +83,8 @@ public class HomeFileControllerTests
     [TestCase("DEV", true)]
     [TestCase("Staging", true)]
     [TestCase("Production", false)]
-    public async Task Index_WhenUserIsServiceManager_OnlyShowsManualJobRunnersWhenNotOnProduction(string environmentName, bool showManualJobRunner)
+    public async Task Index_WhenUserIsServiceManager_OnlyShowsManualJobRunnersWhenNotOnProduction(
+        string environmentName, bool showManualJobRunner)
     {
         // Arrange
         var user = new UserBuilder(EmailAddress)
@@ -94,7 +95,7 @@ public class HomeFileControllerTests
         mockDataAccessProvider
             .Setup(dap => dap.GetUserByEmailAsync(EmailAddress))
             .ReturnsAsync(user);
-        
+
         mockWebHostEnvironment.Setup(env => env.EnvironmentName).Returns(environmentName);
         mockDataAccessProvider.Setup(dap => dap.GetAllDeliveryPartnersAsync()).ReturnsAsync([]);
 

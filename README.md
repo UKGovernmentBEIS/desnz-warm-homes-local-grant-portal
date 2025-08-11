@@ -216,6 +216,7 @@ For critical bug fixes on production
 
 On each push to develop, we run a Trivy scan on the Docker image to check for vulnerabilities.
 If the scan fails, we should look into the new vulnerability and either:
+
 - Fix it
 - Add to .trivyignore if the issue is a false positive.
 
@@ -272,7 +273,9 @@ The S3 configuration is also configured in ECS, as it's linked to AWS resources
 ## Common issues
 
 ### The styling doesn't look correct locally
+
 This is likely because the CSS hasn't been built. To fix this:
+
 - Open the terminal in the root folder of the project
 - Run `git pull` to ensure you have the latest code
 - Navigate to the `WhlgPortalWebsite` directory

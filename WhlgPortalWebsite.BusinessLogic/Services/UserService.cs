@@ -86,7 +86,7 @@ public class UserService(IDataAccessProvider dataAccessProvider) : IUserService
     {
         await dataAccessProvider.AddConsortiumToDeliveryPartnerAsync(user, consortium);
     }
-    
+
     public async Task DeleteUserAsync(int userId)
     {
         await dataAccessProvider.DeleteUserAsync(userId);
