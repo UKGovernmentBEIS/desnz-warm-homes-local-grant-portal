@@ -1,14 +1,13 @@
 using System;
 
 namespace WhlgPortalWebsite.Enums;
+
 public enum TaskSuccessMessage
 {
-    NoSucessMessage,
-    UserAddedSuccessfully,
-    UserDeletedSuccessfully,
-    LaAssignedSuccessfully,
-    ConsortiumAssignedSuccessfully,
-    JobRanSuccessfully
+    UserDeleted,
+    LaAssigned,
+    ConsortiumAssigned,
+    JobRan
 }
 
 public static class TaskSuccessMessageExtensions
@@ -17,12 +16,10 @@ public static class TaskSuccessMessageExtensions
     {
         return taskSuccessMessage switch
         {
-            TaskSuccessMessage.NoSucessMessage => string.Empty,
-            TaskSuccessMessage.UserAddedSuccessfully => "User added successfully",
-            TaskSuccessMessage.UserDeletedSuccessfully => "User deleted successfully",
-            TaskSuccessMessage.LaAssignedSuccessfully => "Local Authority assigned successfully",
-            TaskSuccessMessage.ConsortiumAssignedSuccessfully => "Consortium assigned successfully",
-            TaskSuccessMessage.JobRanSuccessfully => "Job ran successfully",
+            TaskSuccessMessage.UserDeleted => "User deleted successfully",
+            TaskSuccessMessage.LaAssigned => "Local Authority assigned successfully",
+            TaskSuccessMessage.ConsortiumAssigned => "Consortium assigned successfully",
+            TaskSuccessMessage.JobRan => "Job ran successfully",
             _ => throw new ArgumentOutOfRangeException(nameof(TaskSuccessMessage), taskSuccessMessage, null)
         };
     }
