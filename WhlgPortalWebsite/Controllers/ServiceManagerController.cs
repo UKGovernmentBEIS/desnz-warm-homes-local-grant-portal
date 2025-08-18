@@ -27,7 +27,7 @@ public class ServiceManagerController(
     public async Task<IActionResult> OnboardDeliveryPartner_Post(
         OnboardNewDeliveryPartnerViewModel viewModel)
     {
-        // Validate the model state - the model must be passed in to ensure validation attributes are checked. Ignore IDE saying it is unused.
+        // Validate the model state - the model must be passed in to ensure validation attributes are checked.
         if (!ModelState.IsValid)
         {
             return View("OnboardDeliveryPartner", viewModel);
