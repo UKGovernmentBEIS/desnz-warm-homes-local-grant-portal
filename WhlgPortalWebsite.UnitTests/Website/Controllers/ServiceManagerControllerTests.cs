@@ -258,15 +258,13 @@ public class ServiceManagerControllerTests
     {
         // Arrange
         var viewModel = new ConfirmDeleteDeliveryPartnerViewModel();
-        var user = new User { Id = 1 };
-        mockUserService.Setup(x => x.GetUserByIdAsync(user.Id)).ReturnsAsync(user);
+        const int userId = 1;
 
         // Act
-        await serviceManagerController.ConfirmDeleteDeliveryPartner_Post(viewModel, user.Id);
+        await serviceManagerController.ConfirmDeleteDeliveryPartner_Post(viewModel, userId);
 
         // Assert
-        mockUserService.Verify(x => x.GetUserByIdAsync(user.Id), Times.Once);
-        mockUserService.Verify(x => x.DeleteUserAsync(user), Times.Once);
+        mockUserService.Verify(x => x.DeleteUserAsync(userId), Times.Once);
         mockUserService.VerifyNoOtherCalls();
         mockAuthorityService.VerifyNoOtherCalls();
     }
@@ -276,12 +274,11 @@ public class ServiceManagerControllerTests
     {
         // Arrange
         var viewModel = new ConfirmDeleteDeliveryPartnerViewModel();
-        var user = new User { Id = 1 };
-        mockUserService.Setup(x => x.GetUserByIdAsync(user.Id)).ReturnsAsync(user);
-        mockUserService.Setup(x => x.DeleteUserAsync(user)).Returns(Task.CompletedTask);
+        const int userId = 1;
+        mockUserService.Setup(x => x.DeleteUserAsync(userId)).Returns(Task.CompletedTask);
 
         // Act
-        var result = await serviceManagerController.ConfirmDeleteDeliveryPartner_Post(viewModel, 1);
+        var result = await serviceManagerController.ConfirmDeleteDeliveryPartner_Post(viewModel, userId);
 
         // Assert
         result.Should().BeOfType<RedirectToActionResult>();
@@ -294,13 +291,13 @@ public class ServiceManagerControllerTests
     {
         // Arrange
         var viewModel = new ConfirmDeleteDeliveryPartnerViewModel();
-        var user = new User { Id = 1 };
+        const int userId = 1;
+        var user = new User { Id = userId, EmailAddress = "example@email.com" };
         mockUserService.Setup(x => x.GetUserByIdAsync(user.Id)).ReturnsAsync(user);
-        mockUserService.Setup(x => x.DeleteUserAsync(user)).Returns(Task.CompletedTask);
         serviceManagerController.ModelState.AddModelError(nameof(viewModel.IsConfirmed), "Example error");
 
         // Act
-        var result = await serviceManagerController.ConfirmDeleteDeliveryPartner_Post(viewModel, 1);
+        var result = await serviceManagerController.ConfirmDeleteDeliveryPartner_Post(viewModel, userId);
 
         // Assert
         result.Should().BeOfType<ViewResult>();
