@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using WhlgPortalWebsite.BusinessLogic.Models;
+using WhlgPortalWebsite.Enums;
 
 namespace WhlgPortalWebsite.Models;
 
@@ -8,15 +9,28 @@ public class ServiceManagerHomepageViewModel
 {
     public string SearchEmailAddress { get; }
     public IEnumerable<AuthorityUserListing> UserList { get; }
-    public bool ShowJobSuccess { get; set; }
+    public TaskSuccessMessage? TaskSuccessMessage { get; set; }
+    public bool ShowTaskSuccess { get; set; }
+    public string TaskSuccessText { get; set; }
     public bool ShowManualJobRunner { get; set; }
 
-    public ServiceManagerHomepageViewModel(IEnumerable<User> users)
+    public ServiceManagerHomepageViewModel(IEnumerable<User> users, TaskSuccessMessage? taskSuccessMessage = null)
     {
         SearchEmailAddress = "";
         UserList = users
             .OrderBy(user => user.EmailAddress)
             .Select(user => new AuthorityUserListing(user));
+
+        if (taskSuccessMessage.HasValue)
+        {
+            ShowTaskSuccess = true;
+            TaskSuccessText = taskSuccessMessage.Value.Parse();
+        }
+        else
+        {
+            ShowTaskSuccess = false;
+            TaskSuccessText = string.Empty;
+        }
     }
 
     public class AuthorityUserListing

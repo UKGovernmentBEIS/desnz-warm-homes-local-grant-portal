@@ -73,7 +73,7 @@ public class HomeFileControllerTests
             .ReturnsAsync(fileData);
 
         // Act
-        var result = await underTest.Index(new List<string> { "114" }, "", false);
+        var result = await underTest.Index(new List<string> { "114" }, "");
 
         // Assert
         mockDataAccessProvider.Verify(dap => dap.MarkUserAsHavingLoggedInAsync(13));
@@ -100,11 +100,11 @@ public class HomeFileControllerTests
 
         var viewModel = new ServiceManagerHomepageViewModel([])
         {
-            ShowManualJobRunner = showManualJobRunner
+            ShowManualJobRunner = showManualJobRunner,
         };
 
         // Act
-        var result = await underTest.Index([], "", false);
+        var result = await underTest.Index([], "");
 
         // Assert
         result.Should().BeOfType<ViewResult>();
