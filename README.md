@@ -212,6 +212,14 @@ For critical bug fixes on production
 - If the PR is accepted, merge the branch into `main`
 - Then also merge the branch into `develop`
 
+### Trivy
+
+On each push to develop, we run a Trivy scan on the Docker image to check for vulnerabilities.
+If the scan fails, we should look into the new vulnerability and either:
+
+- Fix it
+- Add to .trivyignore if the issue is a false positive.
+
 ### Auto-Formatter
 
 When using Rider to format the code, ensure you are using the DESNZ profile, and check the documentation:
@@ -261,3 +269,15 @@ The S3 configuration is also configured in ECS, as it's linked to AWS resources
 
 - `S3__BucketName`
 - `S3__Region`
+
+## Common issues
+
+### The styling doesn't look correct locally
+
+This is likely because the CSS hasn't been built. To fix this:
+
+- Open the terminal in the root folder of the project
+- Run `git pull` to ensure you have the latest code
+- Navigate to the `WhlgPortalWebsite` directory
+- Run `npm install` to install any new dependencies
+- Run `npm run build` to build the CSS

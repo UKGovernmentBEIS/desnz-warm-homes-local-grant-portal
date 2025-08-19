@@ -25,7 +25,7 @@ public class HomeController(
 
     [HttpGet("/")]
     public async Task<IActionResult> Index([FromQuery] List<string> codes, [FromQuery] string searchEmailAddress,
-        [FromQuery] bool jobSuccess,
+        [FromQuery] TaskSuccessMessage? taskSuccessMessage = null,
         int page = 1)
     {
         var userEmailAddress = HttpContext.User.GetEmailAddress();
@@ -34,7 +34,7 @@ public class HomeController(
         return userData.Role switch
         {
             UserRole.DeliveryPartner => await RenderDeliveryPartnerHomepage(codes, page, userEmailAddress, userData),
-            UserRole.ServiceManager => await RenderServiceManagerHomepage(searchEmailAddress, jobSuccess),
+            UserRole.ServiceManager => await RenderServiceManagerHomepage(searchEmailAddress, taskSuccessMessage),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
@@ -94,15 +94,13 @@ public class HomeController(
         return View("DeliveryPartner/ReferralFiles", homepageViewModel);
     }
 
-    private async Task<IActionResult> RenderServiceManagerHomepage(string searchEmailAddress, bool jobSuccess)
+    private async Task<IActionResult> RenderServiceManagerHomepage(string searchEmailAddress,
+        TaskSuccessMessage? taskSuccessMessage)
     {
         var users = await userService.SearchAllDeliveryPartnersAsync(searchEmailAddress);
 
-        var homepageViewModel = new ServiceManagerHomepageViewModel(users)
-        {
-            ShowManualJobRunner = !webHostEnvironment.IsProduction(),
-            ShowJobSuccess = jobSuccess
-        };
+        var homepageViewModel =
+            new ServiceManagerHomepageViewModel(users, taskSuccessMessage, !webHostEnvironment.IsProduction());
 
         return View("ServiceManager/Index", homepageViewModel);
     }

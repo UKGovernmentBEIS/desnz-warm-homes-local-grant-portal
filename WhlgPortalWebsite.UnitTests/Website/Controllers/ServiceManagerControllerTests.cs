@@ -252,4 +252,56 @@ public class ServiceManagerControllerTests
         mockReminderEmailsService.Verify(x => x.SendReminderEmailsAsync(), Times.Once);
         mockReminderEmailsService.VerifyNoOtherCalls();
     }
+
+    [Test]
+    public async Task ConfirmDeleteDeliveryPartnerUserPost_ShouldCallDeleteUserMethodsOnSuccess()
+    {
+        // Arrange
+        var viewModel = new ConfirmDeleteDeliveryPartnerViewModel();
+        const int userId = 1;
+
+        // Act
+        await serviceManagerController.ConfirmDeleteDeliveryPartner_Post(viewModel, userId);
+
+        // Assert
+        mockUserService.Verify(x => x.DeleteUserAsync(userId), Times.Once);
+        mockUserService.VerifyNoOtherCalls();
+        mockAuthorityService.VerifyNoOtherCalls();
+    }
+
+    [Test]
+    public async Task ConfirmDeleteDeliveryPartnerUserPost_ShouldReturnToIndexOnSuccess()
+    {
+        // Arrange
+        var viewModel = new ConfirmDeleteDeliveryPartnerViewModel();
+        const int userId = 1;
+        mockUserService.Setup(x => x.DeleteUserAsync(userId)).Returns(Task.CompletedTask);
+
+        // Act
+        var result = await serviceManagerController.ConfirmDeleteDeliveryPartner_Post(viewModel, userId);
+
+        // Assert
+        result.Should().BeOfType<RedirectToActionResult>();
+        var viewResult = result as RedirectToActionResult;
+        viewResult!.ActionName.Should().Be("Index");
+    }
+
+    [Test]
+    public async Task ConfirmDeleteDeliveryPartnerUserPost_ShouldReturnToConfirmPageOnError()
+    {
+        // Arrange
+        var viewModel = new ConfirmDeleteDeliveryPartnerViewModel();
+        const int userId = 1;
+        var user = new User { Id = userId, EmailAddress = "example@email.com" };
+        mockUserService.Setup(x => x.GetUserByIdAsync(user.Id)).ReturnsAsync(user);
+        serviceManagerController.ModelState.AddModelError(nameof(viewModel.IsConfirmed), "Example error");
+
+        // Act
+        var result = await serviceManagerController.ConfirmDeleteDeliveryPartner_Post(viewModel, userId);
+
+        // Assert
+        result.Should().BeOfType<ViewResult>();
+        var viewResult = result as ViewResult;
+        viewResult!.ViewName.Should().Be("ConfirmDeleteDeliveryPartner");
+    }
 }

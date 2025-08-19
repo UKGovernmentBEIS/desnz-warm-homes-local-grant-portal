@@ -20,4 +20,5 @@ public interface IDataAccessProvider
     public Task AddConsortiumToDeliveryPartnerAsync(User user, Consortium consortium);
     public Task<LocalAuthority> GetLocalAuthorityByCustodianCodeAsync(string custodianCode);
     public Task<Consortium> GetConsortiumByConsortiumCodeAsync(string consortiumCode);
+    public Task DeleteUserAsync(int userId);
 }
