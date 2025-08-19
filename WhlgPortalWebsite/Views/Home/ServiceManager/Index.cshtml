@@ -9,11 +9,11 @@
 
 <h1 class="govuk-heading-xl">Warm Homes: Local Grant Service Manager Portal</h1>
 
-@if (Model.ShowJobSuccess)
+@if (Model.ShowTaskSuccess)
 {
     @await Html.GovUkNotificationBanner(new NotificationBannerViewModel
     {
-        Text = Model.JobSuccessText,
+        Text = Model.TaskSuccessText,
     })
 }
 
