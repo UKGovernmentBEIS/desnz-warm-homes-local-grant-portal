@@ -1,0 +1,31 @@
+@using GovUkDesignSystem
+@using GovUkDesignSystem.GovUkDesignSystemComponents
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model WhlgPortalWebsite.Models.ConfirmDeleteDeliveryPartnerViewModel
+
+@{
+    ViewBag.Title = "Warm Homes: Local Grant Portal - Confirm Delete Delivery Partner";
+}
+
+<h2 class="govuk-heading-l">Are you sure you want to delete @Model.EmailAddress?</h2>
+@await Html.GovUkWarningText(new WarningTextViewModel()
+{
+    Text = $"{Model.EmailAddress} will be removed from the service."
+})
+<p class="govuk-body">The user will lose access immediately to all Local Authorities they are assigned to. Double check that you are offboarding the right user and that they no longer need access to the Warm Homes: Local Grant Portal.</p>
+
+<form method="post">
+    @(await Html.GovUkCheckboxFromBoolFor(
+        m => m.IsConfirmed,
+        new LabelViewModel()
+        {
+            Text = $"Remove {Model.EmailAddress}"
+        }
+    ))
+
+    @(await Html.GovUkButton(new ButtonViewModel
+    {
+        Text = "Delete user",
+        Classes = "govuk-button--warning"
+    }))
+</form>
