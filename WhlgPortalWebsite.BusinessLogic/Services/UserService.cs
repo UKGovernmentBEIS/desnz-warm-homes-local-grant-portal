@@ -14,7 +14,7 @@ public interface IUserService
 
     Task AddLaToDeliveryPartnerAsync(User user, LocalAuthority localAuthority);
     Task AddConsortiumToDeliveryPartnerAsync(User user, Consortium consortium);
-    Task DeleteUserAsync(User user);
+    Task DeleteUserAsync(int userId);
 }
 
 public class UserService(IDataAccessProvider dataAccessProvider) : IUserService
@@ -87,8 +87,8 @@ public class UserService(IDataAccessProvider dataAccessProvider) : IUserService
         await dataAccessProvider.AddConsortiumToDeliveryPartnerAsync(user, consortium);
     }
 
-    public async Task DeleteUserAsync(User user)
+    public async Task DeleteUserAsync(int userId)
     {
-        await dataAccessProvider.DeleteUserAsync(user);
+        await dataAccessProvider.DeleteUserAsync(userId);
     }
 }

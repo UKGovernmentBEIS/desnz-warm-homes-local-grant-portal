@@ -208,9 +208,8 @@ public class DataAccessProvider : IDataAccessProvider
             .SingleAsync(c => c.ConsortiumCode == consortiumCode);
     }
 
-    public async Task DeleteUserAsync(User user)
+    public async Task DeleteUserAsync(int userId)
     {
-        context.Users.Remove(user);
-        await context.SaveChangesAsync();
+        await context.Users.Where(u => u.Id == userId).ExecuteDeleteAsync();
     }
 }

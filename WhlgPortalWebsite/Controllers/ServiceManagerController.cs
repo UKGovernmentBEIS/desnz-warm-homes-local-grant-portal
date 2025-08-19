@@ -102,9 +102,7 @@ public class ServiceManagerController(
             return await ConfirmDeleteDeliveryPartner_Get(userId);
         }
 
-        var user = await userService.GetUserByIdAsync(userId);
-
-        await userService.DeleteUserAsync(user);
+        await userService.DeleteUserAsync(userId);
         return RedirectToAction(nameof(HomeController.Index), "Home",
             new { taskSuccessMessage = TaskSuccessMessage.UserDeleted });
     }
