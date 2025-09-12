@@ -6,7 +6,7 @@
 
 .banner-customizable {
   padding: 0px 0px 0px 0px;
-  background-color: black;
+  background-color: #1d70b8;
 }
 
 .label-customizable {
@@ -108,5 +108,5 @@
 }
 
 .background-customizable {
-  background-color: #1d70b8;
+  background-color: #fff;
 }
