@@ -76,7 +76,7 @@ namespace WhlgPortalWebsite
                     options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
                     options.SlidingExpiration = true;
                     options.Cookie.HttpOnly = true;
-                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                     options.Cookie.SameSite = SameSiteMode.Lax;
                 })
                 .AddOpenIdConnect(options =>
@@ -232,12 +232,6 @@ namespace WhlgPortalWebsite
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
             app.UseStatusCodePagesWithReExecute("/error/{0}");
-
-            if (webHostEnvironment.IsDevelopment())
-            {
-                // In production we terminate TLS at the load balancer and redirect there
-                app.UseHttpsRedirection();
-            }
 
             app.UseStaticFiles();
 
