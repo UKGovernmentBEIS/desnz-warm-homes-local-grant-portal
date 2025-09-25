@@ -29,7 +29,7 @@ Use thw following template for `WhlgPortalWebsite` user secrets:
       "ClientId": "<app client id from AWS Cognito>",
       "ClientSecret": "<app client secret from AWS Cognito>",
       "MetadataAddress": "https://cognito-idp.{your-region-id}.amazonaws.com/{your-user-pool-id}/.well-known/openid-configuration",
-      "SignOutUrl": "{cognito-domain}/logout?client_id={client-id}&logout_uri=https://localhost:5001/portal/sign-out"
+      "SignOutUrl": "{cognito-domain}/logout?client_id={client-id}&logout_uri=http://localhost:5000/portal/sign-out"
     }
   },
   "GovUkNotify": {
@@ -68,7 +68,7 @@ See [here](Documentation/management-shell-scripts.md).
 
 # Local URL
 
-In a browser, visit https://localhost:5001/portal (the `/portal` is important!)
+In a browser, visit http://localhost:5000/portal (the `/portal` is important!)
 
 # Branches
 
