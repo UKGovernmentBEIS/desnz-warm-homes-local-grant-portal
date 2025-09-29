@@ -76,7 +76,9 @@ namespace WhlgPortalWebsite
                     options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
                     options.SlidingExpiration = true;
                     options.Cookie.HttpOnly = true;
-                    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                    options.Cookie.SecurePolicy = webHostEnvironment.IsDevelopment()
+                        ? CookieSecurePolicy.SameAsRequest
+                        : CookieSecurePolicy.Always;
                     options.Cookie.SameSite = SameSiteMode.Lax;
                 })
                 .AddOpenIdConnect(options =>
