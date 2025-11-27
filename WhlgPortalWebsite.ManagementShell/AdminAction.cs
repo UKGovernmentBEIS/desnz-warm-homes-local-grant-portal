@@ -177,4 +177,23 @@ public class AdminAction(IDatabaseOperation dbOperation)
 
         return consortiumCodesInCode.Except(consortiumCodesInDatabase);
     }
+
+    public void SetEmergencyMaintenanceState(EmergencyMaintenanceState state, string authorEmail)
+    {
+        var history = new EmergencyMaintenanceHistory
+        {
+            State = state,
+            ChangeDate = DateTime.UtcNow,
+            AuthorEmail = authorEmail
+        };
+
+        dbOperation.AddEmergencyMaintenanceHistory(history);
+    }
+
+    public EmergencyMaintenanceState GetEmergencyMaintenanceState()
+    {
+        var latestHistory = dbOperation.GetLatestEmergencyMaintenanceHistory();
+
+        return latestHistory?.State ?? EmergencyMaintenanceState.Disabled;
+    }
 }

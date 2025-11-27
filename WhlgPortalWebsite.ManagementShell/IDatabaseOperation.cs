@@ -24,4 +24,6 @@ public interface IDatabaseOperation
     public IEnumerable<LocalAuthority> GetAllLas();
     public IEnumerable<Consortium> GetAllConsortia();
     public void CreateLasAndConsortia(IEnumerable<string> custodianCodes, IEnumerable<string> consortiumCodes);
+    public void AddEmergencyMaintenanceHistory(EmergencyMaintenanceHistory history);
+    public EmergencyMaintenanceHistory? GetLatestEmergencyMaintenanceHistory();
 }
