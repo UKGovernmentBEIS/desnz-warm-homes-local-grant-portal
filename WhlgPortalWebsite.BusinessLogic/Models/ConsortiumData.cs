@@ -41,6 +41,8 @@ public static class ConsortiumData
         { "C_0026", "West Midlands Combined Authority" },
         { "C_0027", "Westmorland and Furness Council" },
         { "C_0028", "Staffordshire" },
+        { "C_0029", "Leicestershire" },
+        { "C_0030", "Central Lincolnshire" },
     };
     
     public static readonly Dictionary<string, List<string>> ConsortiumCustodianCodesIdsByConsortiumCode = 
