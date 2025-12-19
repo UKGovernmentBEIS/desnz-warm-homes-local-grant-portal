@@ -25,4 +25,11 @@ public class ErrorController: Controller
             _ => throw new ArgumentOutOfRangeException()
         };
     }
+
+    [HttpGet("deleted-user")]
+    [AllowAnonymous]
+    public IActionResult DeletedUser()
+    {
+        return View("DeletedUser");
+    }
 }
