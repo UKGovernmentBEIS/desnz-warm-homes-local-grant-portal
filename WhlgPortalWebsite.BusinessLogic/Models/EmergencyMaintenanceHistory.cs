@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace WhlgPortalWebsite.BusinessLogic.Models;
 
 public enum EmergencyMaintenanceState
@@ -10,8 +8,6 @@ public enum EmergencyMaintenanceState
 
 public class EmergencyMaintenanceHistory : IEntityWithRowVersioning
 {
-    public uint Version { get; set; }
-
     public int Id { get; set; }
 
     public EmergencyMaintenanceState State { get; set; }
@@ -19,8 +15,5 @@ public class EmergencyMaintenanceHistory : IEntityWithRowVersioning
     public DateTime ChangeDate { get; set; }
 
     public string AuthorEmail { get; set; }
-
-    public EmergencyMaintenanceHistory()
-    {
-    }
+    public uint Version { get; set; }
 }

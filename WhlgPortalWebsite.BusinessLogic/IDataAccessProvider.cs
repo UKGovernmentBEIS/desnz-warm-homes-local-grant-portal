@@ -23,5 +23,4 @@ public interface IDataAccessProvider
     public Task DeleteUserAsync(int userId);
     public Task<EmergencyMaintenanceHistory> GetLatestEmergencyMaintenanceHistoryAsync();
     public Task AddEmergencyMaintenanceHistory(EmergencyMaintenanceHistory history);
-
 }

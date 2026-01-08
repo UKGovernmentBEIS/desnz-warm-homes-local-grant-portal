@@ -505,14 +505,14 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
     {
         DisplayMaintenanceStateWarnings();
 
-        EmergencyMaintenanceState? argEmergencyMaintenanceState = ParseEmergencyMaintenanceStateInput(args);
+        var argEmergencyMaintenanceState = ParseEmergencyMaintenanceStateInput(args);
         if (argEmergencyMaintenanceState is null) return;
 
-        var emergencyMaintenanceVerb =
+        var argEmergencyMaintenanceVerb =
             argEmergencyMaintenanceState == EmergencyMaintenanceState.Enabled ? "ENABLE" : "DISABLE";
         var liveEmergencyMaintenanceState = adminAction.GetEmergencyMaintenanceState();
 
-        DisplayMaintenanceStateDetails(emergencyMaintenanceVerb, liveEmergencyMaintenanceState);
+        DisplayMaintenanceStateDetails(argEmergencyMaintenanceVerb, liveEmergencyMaintenanceState);
 
         if (argEmergencyMaintenanceState == liveEmergencyMaintenanceState)
         {
@@ -521,7 +521,7 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
             return;
         }
 
-        var confirmation = GetUserConfirmationForSettingMaintenanceState(emergencyMaintenanceVerb);
+        var confirmation = GetUserConfirmationForSettingMaintenanceState(argEmergencyMaintenanceVerb);
         if (!confirmation) return;
 
         var authorEmail = GetUserEmailForAudit();
@@ -542,10 +542,10 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
             outputProvider.Output("Exiting without changes...");
             return null;
         }
-        
+
         return authorEmail;
     }
-    
+
     private bool GetUserConfirmationForSettingMaintenanceState(string emergencyMaintenanceVerb)
     {
         outputProvider.Output("!!!!!!!!!!!!!!!!!!!!!!");
@@ -561,13 +561,19 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
         return confirmation;
     }
 
-    private void DisplayMaintenanceStateDetails(string emergencyMaintenanceVerb, EmergencyMaintenanceState liveEmergencyMaintenanceState)
+    private void DisplayMaintenanceStateDetails(string emergencyMaintenanceVerb,
+        EmergencyMaintenanceState liveEmergencyMaintenanceState)
     {
         var isMaintenanceStateEnabled = liveEmergencyMaintenanceState == EmergencyMaintenanceState.Enabled;
 
         outputProvider.Output("Details:");
         outputProvider.Output($"Request is to {emergencyMaintenanceVerb} emergency maintenance mode.");
-        outputProvider.Output($"Portal is currently {(isMaintenanceStateEnabled ? "IN" : "NOT IN")} emergency maintenance mode. Referrals cannot be submitted.");
+        outputProvider.Output(
+            $"Portal emergency maintenance mode is currently {(isMaintenanceStateEnabled ? "ENABLED" : "DISABLED")}.");
+        if (isMaintenanceStateEnabled)
+        {
+            outputProvider.Output("Referrals cannot be viewed.");
+        }
     }
 
     private void DisplayMaintenanceStateWarnings()
@@ -587,7 +593,7 @@ public class CommandHandler(AdminAction adminAction, IOutputProvider outputProvi
     {
         try
         {
-            return Enum.Parse<EmergencyMaintenanceState>(args[0].Trim(), ignoreCase: true);
+            return Enum.Parse<EmergencyMaintenanceState>(args[0].Trim(), true);
         }
         catch (Exception e) when (e is ArgumentException or IndexOutOfRangeException)
         {

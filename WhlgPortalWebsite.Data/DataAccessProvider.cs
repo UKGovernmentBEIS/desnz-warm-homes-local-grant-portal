@@ -229,5 +229,4 @@ public class DataAccessProvider : IDataAccessProvider
         context.EmergencyMaintenanceHistories.Add(history);
         await context.SaveChangesAsync();
     }
-
 }

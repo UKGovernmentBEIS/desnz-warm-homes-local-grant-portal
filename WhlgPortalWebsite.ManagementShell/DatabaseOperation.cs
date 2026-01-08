@@ -161,13 +161,10 @@ public class DatabaseOperation(WhlgDbContext dbContext, OutputProvider outputPro
             dbContext.Consortia.AddRange(consortia);
         });
     }
-    
+
     public void AddEmergencyMaintenanceHistory(EmergencyMaintenanceHistory history)
     {
-        PerformTransaction(() =>
-        {
-            dbContext.EmergencyMaintenanceHistories.Add(history);
-        });
+        PerformTransaction(() => { dbContext.EmergencyMaintenanceHistories.Add(history); });
     }
 
     public EmergencyMaintenanceHistory? GetLatestEmergencyMaintenanceHistory()
