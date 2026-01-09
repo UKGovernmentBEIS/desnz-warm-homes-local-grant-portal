@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WhlgPortalWebsite.Controllers;
 
 [Route("error")]
-public class ErrorController: Controller
+public class ErrorController : Controller
 {
     [HttpGet]
     [HttpPost]
@@ -14,7 +14,7 @@ public class ErrorController: Controller
     {
         return View("ServiceIssue");
     }
-    
+
     [HttpGet("{code:int}")]
     public IActionResult HandleErrorsWithStatusCode(int code)
     {

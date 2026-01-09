@@ -24,7 +24,7 @@ public class ErrorHandlingFilterTests
     }
 
     [Test]
-    public void OnException_WhenUserIsDeleted_RedirectsToDeletedUserPage()
+    public void OnException_WhenIsUserNotFoundException_RedirectsToDeletedUserPage()
     {
         // Arrange
         var exception = new InvalidOperationException("User not found.");
@@ -40,6 +40,26 @@ public class ErrorHandlingFilterTests
         var redirectToActionResult = context.Result as RedirectToActionResult;
         redirectToActionResult.ActionName.Should().Be("DeletedUser");
         redirectToActionResult.ControllerName.Should().Be("Error");
+    }
+
+    [Test]
+    public void OnException_WhenIsCustomErrorPageException_ShowsCustomErrorPage()
+    {
+        // Arrange
+        var exception = new PropertyReferenceNotFoundException(); // Custom error page exception.
+        var context = CreateExceptionContext(exception);
+
+        // Act
+        underTest.OnException(context);
+
+        // Assert
+        context.ExceptionHandled.Should().BeFalse();
+        context.Result.Should().BeOfType<ViewResult>();
+
+        var viewResult = context.Result as ViewResult;
+        viewResult.ViewName.Should().Be(exception.ViewName);
+        viewResult.StatusCode.Should().Be(exception.StatusCode);
+        viewResult.Model.Should().Be(exception);
     }
 
     private static ExceptionContext CreateExceptionContext(Exception exception)
