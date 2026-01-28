@@ -162,6 +162,16 @@ public class DatabaseOperation(WhlgDbContext dbContext, OutputProvider outputPro
         });
     }
 
+    public void AddEmergencyMaintenanceHistory(EmergencyMaintenanceHistory history)
+    {
+        PerformTransaction(() => { dbContext.EmergencyMaintenanceHistories.Add(history); });
+    }
+
+    public EmergencyMaintenanceHistory? GetLatestEmergencyMaintenanceHistory()
+    {
+        return dbContext.EmergencyMaintenanceHistories.OrderByDescending(emh => emh.ChangeDate).FirstOrDefault();
+    }
+
     private void PerformTransaction(Action transaction)
     {
         using var dbContextTransaction = dbContext.Database.BeginTransaction();

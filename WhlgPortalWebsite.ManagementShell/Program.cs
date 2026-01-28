@@ -82,6 +82,9 @@ public static class Program
             case Subcommand.AddAllMissingAuthoritiesToDatabase:
                 commandHandler.AddAllMissingAuthoritiesToDatabase();
                 break;
+            case Subcommand.SetEmergencyMaintenanceState:
+                commandHandler.TrySetMaintenanceState(args.Skip(1).ToArray());
+                break;
             default:
                 outputProvider.Output("Invalid terminal command entered. Please refer to the documentation");
                 return;
@@ -97,6 +100,7 @@ public static class Program
         RemoveConsortia,
         AddServiceManager,
         FixAllUserOwnedConsortia,
-        AddAllMissingAuthoritiesToDatabase
+        AddAllMissingAuthoritiesToDatabase,
+        SetEmergencyMaintenanceState
     }
 }
