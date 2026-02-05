@@ -13,4 +13,11 @@ public class OutputProvider : IOutputProvider
         var inputString = Console.ReadLine();
         return inputString?.Trim().ToLower() == "y";
     }
+
+    public string? GetString(string outputString)
+    {
+        Console.WriteLine(outputString);
+        var inputString = Console.ReadLine();
+        return inputString?.Trim();
+    }
 }

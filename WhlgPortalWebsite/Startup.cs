@@ -47,6 +47,7 @@ namespace WhlgPortalWebsite
             services.AddScoped<IFileRetrievalService, FileRetrievalService>();
             services.AddScoped<IStreamService, StreamService>();
             services.AddScoped<IReminderEmailsService, ReminderEmailsService>();
+            services.AddScoped<EmergencyMaintenanceService>();
             services.AddSingleton<StaticAssetsVersioningService>();
             // This allows encrypted cookies to be understood across multiple web server instances
             services.AddDataProtection().PersistKeysToDbContext<WhlgDbContext>();
@@ -200,6 +201,12 @@ namespace WhlgPortalWebsite
             services.AddScoped<S3ReferralFileKeyService>();
         }
 
+        private void ConfigureEmergencyMaintenance(IApplicationBuilder app)
+        {
+            // Add emergency maintenance middleware to return 503 Service Unavailable if required
+            app.UseMiddleware<EmergencyMaintenanceMiddleware>();
+        }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -238,6 +245,8 @@ namespace WhlgPortalWebsite
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            ConfigureEmergencyMaintenance(app);
 
             app.UseMiddleware<SecurityHeadersMiddleware>();
 

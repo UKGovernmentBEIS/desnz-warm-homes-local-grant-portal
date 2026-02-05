@@ -13,6 +13,7 @@ public class WhlgDbContext(DbContextOptions<WhlgDbContext> options) : DbContext(
     public DbSet<LocalAuthority> LocalAuthorities { get; set; }
     public DbSet<Consortium> Consortia { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<EmergencyMaintenanceHistory> EmergencyMaintenanceHistories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -66,8 +67,27 @@ public class WhlgDbContext(DbContextOptions<WhlgDbContext> options) : DbContext(
             .Property(cf => cf.LastDownloaded)
             .HasColumnType("timestamp without time zone");
 
+        SetupEmergencyMaintenanceHistory(modelBuilder);
+
         AddAllRowVersioning(modelBuilder);
     }
+
+    private void SetupEmergencyMaintenanceHistory(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<EmergencyMaintenanceHistory>()
+            .Property(emh => emh.Id)
+            .ValueGeneratedOnAdd();
+        modelBuilder.Entity<EmergencyMaintenanceHistory>()
+            .HasKey("Id");
+        modelBuilder.Entity<EmergencyMaintenanceHistory>()
+            .Property(emh => emh.ChangeDate)
+            .HasColumnType("timestamp with time zone");
+        modelBuilder.Entity<EmergencyMaintenanceHistory>()
+            .HasIndex(emh => emh.ChangeDate);
+
+        AddRowVersionColumn(modelBuilder.Entity<EmergencyMaintenanceHistory>());
+    }
+
 
     private void AddAllRowVersioning(ModelBuilder modelBuilder)
     {
