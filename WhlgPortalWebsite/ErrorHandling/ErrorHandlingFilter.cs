@@ -2,28 +2,31 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using WhlgPortalWebsite.Helpers;
 
-namespace WhlgPortalWebsite.ErrorHandling
+namespace WhlgPortalWebsite.ErrorHandling;
+
+public class ErrorHandlingFilter : ExceptionFilterAttribute
 {
-    public class ErrorHandlingFilter : ExceptionFilterAttribute
+    public override void OnException(ExceptionContext context)
     {
-        public override void OnException(ExceptionContext context)
+        if (context.Exception is CustomErrorPageException customErrorPageException)
         {
-            if (context.Exception is CustomErrorPageException customErrorPageException)
+            context.Result = new ViewResult
             {
-                context.Result = new ViewResult
+                StatusCode = customErrorPageException.StatusCode,
+                ViewName = customErrorPageException.ViewName,
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), context.ModelState)
                 {
-                    StatusCode = customErrorPageException.StatusCode,
-                    ViewName = customErrorPageException.ViewName,
-                    ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), context.ModelState)
-                    {
-                        // For this type of custom error page, we use the exception itself as the model
-                        Model = customErrorPageException
-                    }
-
-                };
-            }
+                    // For this type of custom error page, we use the exception itself as the model
+                    Model = customErrorPageException
+                }
+            };
         }
-
+        else if (context.Exception.IsUserNotFoundException())
+        {
+            context.ExceptionHandled = true;
+            context.Result = new RedirectToActionResult("DeletedUser", "Error", null);
+        }
     }
 }
