@@ -100,7 +100,7 @@ public class HomeController(
         var users = await userService.SearchAllDeliveryPartnersAsync(searchEmailAddress);
 
         var homepageViewModel =
-            new ServiceManagerHomepageViewModel(users, taskSuccessMessage, !webHostEnvironment.IsProduction());
+            new ServiceManagerHomepageViewModel(users, taskSuccessMessage);
 
         return View("ServiceManager/Index", homepageViewModel);
     }

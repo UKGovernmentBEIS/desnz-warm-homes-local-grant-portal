@@ -11,16 +11,13 @@ public class ServiceManagerHomepageViewModel
     public IEnumerable<AuthorityUserListing> UserList { get; }
     public bool ShowTaskSuccess { get; set; }
     public string TaskSuccessText { get; set; }
-    public bool ShowManualJobRunner { get; set; }
 
-    public ServiceManagerHomepageViewModel(IEnumerable<User> users, TaskSuccessMessage? taskSuccessMessage = null,
-        bool showManualJobRunner = false)
+    public ServiceManagerHomepageViewModel(IEnumerable<User> users, TaskSuccessMessage? taskSuccessMessage = null)
     {
         SearchEmailAddress = "";
         UserList = users
             .OrderBy(user => user.EmailAddress)
             .Select(user => new AuthorityUserListing(user));
-        ShowManualJobRunner = showManualJobRunner;
 
         if (taskSuccessMessage.HasValue)
         {

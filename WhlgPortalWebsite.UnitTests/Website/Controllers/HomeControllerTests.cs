@@ -79,12 +79,12 @@ public class HomeFileControllerTests
         mockDataAccessProvider.Verify(dap => dap.MarkUserAsHavingLoggedInAsync(13));
     }
 
-    [TestCase("Development", true)]
-    [TestCase("DEV", true)]
-    [TestCase("Staging", true)]
-    [TestCase("Production", false)]
-    public async Task Index_WhenUserIsServiceManager_OnlyShowsManualJobRunnersWhenNotOnProduction(
-        string environmentName, bool showManualJobRunner)
+    [TestCase("Development")]
+    [TestCase("DEV")]
+    [TestCase("Staging")]
+    [TestCase("Production")]
+    public async Task Index_WhenUserIsServiceManager_ShowsManualJobRunners(
+        string environmentName)
     {
         // Arrange
         var user = new UserBuilder(EmailAddress)
@@ -99,7 +99,7 @@ public class HomeFileControllerTests
         mockWebHostEnvironment.Setup(env => env.EnvironmentName).Returns(environmentName);
         mockDataAccessProvider.Setup(dap => dap.GetAllDeliveryPartnersAsync()).ReturnsAsync([]);
 
-        var viewModel = new ServiceManagerHomepageViewModel([], null, showManualJobRunner);
+        var viewModel = new ServiceManagerHomepageViewModel([], null);
 
         // Act
         var result = await underTest.Index([], "");
