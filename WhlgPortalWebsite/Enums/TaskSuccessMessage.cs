@@ -21,7 +21,7 @@ public static class TaskSuccessMessageExtensions
             TaskSuccessMessage.LaAssigned => "Local Authority assigned successfully",
             TaskSuccessMessage.ConsortiumAssigned => "Consortium assigned successfully",
             TaskSuccessMessage.JobRan => "Job ran successfully",
-            TaskSuccessMessage.JobConfirmationRequired => "You must confirm before running this job",
+            TaskSuccessMessage.JobConfirmationRequired => "You must tick the confirmation box to run the job",
             _ => throw new ArgumentOutOfRangeException(nameof(TaskSuccessMessage), taskSuccessMessage, null)
         };
     }
