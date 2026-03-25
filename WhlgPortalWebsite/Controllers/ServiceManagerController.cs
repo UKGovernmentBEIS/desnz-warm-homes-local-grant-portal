@@ -166,8 +166,14 @@ public class ServiceManagerController(
     }
 
     [HttpPost("send-reminder-emails")]
-    public async Task<IActionResult> SendReminderEmails_Post()
+    public async Task<IActionResult> SendReminderEmails_Post([FromForm] bool confirmRunJob = false)
     {
+        if (!confirmRunJob)
+        {
+            return RedirectToAction(nameof(HomeController.Index), "Home",
+                new { taskSuccessMessage = TaskSuccessMessage.JobConfirmationRequired });
+        }
+
         await reminderEmailsService.SendReminderEmailsAsync();
 
         return RedirectToAction(nameof(HomeController.Index), "Home",

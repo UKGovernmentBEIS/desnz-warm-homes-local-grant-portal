@@ -7,7 +7,8 @@ public enum TaskSuccessMessage
     UserDeleted,
     LaAssigned,
     ConsortiumAssigned,
-    JobRan
+    JobRan,
+    JobConfirmationRequired
 }
 
 public static class TaskSuccessMessageExtensions
@@ -20,6 +21,7 @@ public static class TaskSuccessMessageExtensions
             TaskSuccessMessage.LaAssigned => "Local Authority assigned successfully",
             TaskSuccessMessage.ConsortiumAssigned => "Consortium assigned successfully",
             TaskSuccessMessage.JobRan => "Job ran successfully",
+            TaskSuccessMessage.JobConfirmationRequired => "You must confirm before running this job",
             _ => throw new ArgumentOutOfRangeException(nameof(TaskSuccessMessage), taskSuccessMessage, null)
         };
     }
