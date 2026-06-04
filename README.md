@@ -1,4 +1,4 @@
-# Warm Homes: Local Grant Portal BETA
+# Warm Homes: Local Grant Portal BETA 
 
 This repository was cloned
 from [HUG2 Portal](https://github.com/UKGovernmentBEIS/desnz-home-energy-retrofit-portal-beta) in December 2024, keeping
