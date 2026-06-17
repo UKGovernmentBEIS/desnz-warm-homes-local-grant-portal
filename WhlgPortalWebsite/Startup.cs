@@ -125,6 +125,7 @@ namespace WhlgPortalWebsite
                             context.Response.Cookies.Append(oidcRetryCookie, "1", new CookieOptions
                             {
                                 HttpOnly = true,
+                                Path = Constants.BASE_PATH,
                                 // This will make the cookie environment agnostic
                                 Secure = context.Request.IsHttps,
                                 MaxAge = TimeSpan.FromMinutes(15),
