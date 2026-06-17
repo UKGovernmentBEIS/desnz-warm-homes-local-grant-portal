@@ -108,11 +108,7 @@ namespace WhlgPortalWebsite
                     // - The user cancelling login at the Cognito page (Cognito returns an error, no code)
                     // - Navigating directly to /signin-oidc without a code query parameter
                     // - Some other unknown cause, e.g. the browser handling SameSite cookie settings incorrectly
-                    //
-                    // For the first failure we redirect to the homepage where the user will be re-authenticated
-                    // with a fresh correlation cookie. A short-lived retry cookie tracks that we have already
-                    // redirected once: if the failure recurs before that cookie expires we stop suppressing it
-                    // so that genuine configuration or IdP outages surface as errors rather than silent loops.
+
                     const string oidcRetryCookie = "oidc-retry";
 
                     options.Events.OnRemoteFailure = context =>
