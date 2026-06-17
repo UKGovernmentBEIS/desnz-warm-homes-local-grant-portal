@@ -93,3 +93,4 @@ The S3 configuration is also configured in ECS, as it's linked to AWS resources
 
 - `S3__BucketName`
 - `S3__Region`
+ 
