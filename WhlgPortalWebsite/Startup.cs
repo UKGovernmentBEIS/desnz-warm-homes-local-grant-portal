@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.S3;
@@ -19,6 +18,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using WhlgPortalWebsite.BusinessLogic;
 using WhlgPortalWebsite.BusinessLogic.ExternalServices.EmailSending;
@@ -101,23 +101,46 @@ namespace WhlgPortalWebsite
                     options.CorrelationCookie.HttpOnly = true;
                     options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
 
-                    // We see relatively frequent errors where the user doesn't have a valid correlation cookie.
-                    // This may be for a number of reasons:
-                    // - The cookie expires after 15 minutes
+                    // We see relatively frequent errors where the OIDC remote auth flow fails. This may be for
+                    // a number of reasons:
+                    // - The correlation/nonce cookie expires after 15 minutes
                     // - Landing on the login screen without first hitting the app (therefore missing the cookie)
+                    // - The user cancelling login at the Cognito page (Cognito returns an error, no code)
+                    // - Navigating directly to /signin-oidc without a code query parameter
                     // - Some other unknown cause, e.g. the browser handling SameSite cookie settings incorrectly
-                    //
-                    // If we detect a correlation error, we redirect to the homepage where the user will be
-                    // re-authenticated with a fresh correlation cookie. This introduces a small risk of an
-                    // infinite redirect loop upon misconfiguration, but we expect this to be rare.
+
+                    const string oidcRetryCookie = "oidc-retry";
+
                     options.Events.OnRemoteFailure = context =>
                     {
-                        if (context.Failure?.Message.Contains("Correlation failed") is true)
+                        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Startup>>();
+
+                        if (context.Request.Cookies.ContainsKey(oidcRetryCookie))
                         {
+                            logger.LogError(context.Failure, "OIDC remote authentication failure on retry");
+                        }
+                        else
+                        {
+                            logger.LogWarning(context.Failure, "OIDC remote authentication failure");
+                            context.Response.Cookies.Append(oidcRetryCookie, "1", new CookieOptions
+                            {
+                                HttpOnly = true,
+                                Path = Constants.BASE_PATH,
+                                // This will make the cookie environment agnostic
+                                Secure = context.Request.IsHttps,
+                                MaxAge = TimeSpan.FromMinutes(15),
+                                SameSite = SameSiteMode.Lax,
+                            });
                             context.Response.Redirect(Constants.BASE_PATH);
                             context.HandleResponse();
                         }
 
+                        return Task.CompletedTask;
+                    };
+
+                    options.Events.OnTokenValidated = context =>
+                    {
+                        context.Response.Cookies.Delete(oidcRetryCookie);
                         return Task.CompletedTask;
                     };
                 });
