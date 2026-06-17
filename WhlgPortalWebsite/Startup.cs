@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.S3;
@@ -19,6 +18,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using WhlgPortalWebsite.BusinessLogic;
 using WhlgPortalWebsite.BusinessLogic.ExternalServices.EmailSending;
@@ -109,13 +109,40 @@ namespace WhlgPortalWebsite
                     // - Navigating directly to /signin-oidc without a code query parameter
                     // - Some other unknown cause, e.g. the browser handling SameSite cookie settings incorrectly
                     //
-                    // For any remote failure we redirect to the homepage where the user will be re-authenticated
-                    // with a fresh correlation cookie. This introduces a small risk of an infinite redirect loop
-                    // upon misconfiguration, but we expect this to be rare.
+                    // For the first failure we redirect to the homepage where the user will be re-authenticated
+                    // with a fresh correlation cookie. A short-lived retry cookie tracks that we have already
+                    // redirected once: if the failure recurs before that cookie expires we stop suppressing it
+                    // so that genuine configuration or IdP outages surface as errors rather than silent loops.
+                    const string oidcRetryCookie = "oidc-retry";
+
                     options.Events.OnRemoteFailure = context =>
                     {
-                        context.Response.Redirect(Constants.BASE_PATH);
-                        context.HandleResponse();
+                        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Startup>>();
+
+                        if (context.Request.Cookies.ContainsKey(oidcRetryCookie))
+                        {
+                            logger.LogError(context.Failure, "OIDC remote authentication failure on retry");
+                        }
+                        else
+                        {
+                            logger.LogWarning(context.Failure, "OIDC remote authentication failure");
+                            context.Response.Cookies.Append(oidcRetryCookie, "1", new CookieOptions
+                            {
+                                HttpOnly = true,
+                                // This will make the cookie environment agnostic
+                                Secure = context.Request.IsHttps,
+                                MaxAge = TimeSpan.FromMinutes(15),
+                                SameSite = SameSiteMode.Lax,
+                            });
+                            context.Response.Redirect(Constants.BASE_PATH);
+                            context.HandleResponse();
+                        }
+                        return Task.CompletedTask;
+                    };
+
+                    options.Events.OnTokenValidated = context =>
+                    {
+                        context.Response.Cookies.Delete(oidcRetryCookie);
                         return Task.CompletedTask;
                     };
                 });
