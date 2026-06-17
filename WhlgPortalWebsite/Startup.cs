@@ -133,6 +133,7 @@ namespace WhlgPortalWebsite
                             context.Response.Redirect(Constants.BASE_PATH);
                             context.HandleResponse();
                         }
+
                         return Task.CompletedTask;
                     };
 
