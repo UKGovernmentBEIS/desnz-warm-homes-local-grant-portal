@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using WhlgPortalWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -114,6 +115,21 @@ namespace WhlgPortalWebsite
                     // upon misconfiguration, but we expect this to be rare.
                     options.Events.OnRemoteFailure = context =>
                     {
+                        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Startup>>();
+                        var failureMessage = context.Failure?.Message;
+                        var isExpectedFailure =
+                            failureMessage?.Contains("Correlation failed") is true ||
+                            failureMessage?.Contains("message.State is null or empty") is true;
+
+                        if (isExpectedFailure)
+                        {
+                            logger.LogWarning("OnRemoteFailure: {ErrorMessage}", failureMessage);
+                        }
+                        else
+                        {
+                            logger.LogError(context.Failure, "OnRemoteFailure: {ErrorMessage}", failureMessage);
+                        }
+
                         context.Response.Redirect(Constants.BASE_PATH);
                         context.HandleResponse();
                         return Task.CompletedTask;
