@@ -117,9 +117,9 @@ namespace WhlgPortalWebsite
                     {
                         var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Startup>>();
                         var failureMessage = context.Failure?.Message;
-                        var isExpectedFailure =
-                            failureMessage?.Contains("Correlation failed") is true ||
-                            failureMessage?.Contains("message.State is null or empty") is true;
+                        var isExpectedFailure = failureMessage is not null && (
+                            failureMessage.Contains("Correlation failed") ||
+                            failureMessage.Contains("message.State is null or empty"));
 
                         if (isExpectedFailure)
                         {
