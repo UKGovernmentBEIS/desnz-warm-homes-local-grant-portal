@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.S3;
@@ -13,12 +14,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using WhlgPortalWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using WhlgPortalWebsite.BusinessLogic;
 using WhlgPortalWebsite.BusinessLogic.ExternalServices.EmailSending;
@@ -108,39 +109,29 @@ namespace WhlgPortalWebsite
                     // - The user cancelling login at the Cognito page (Cognito returns an error, no code)
                     // - Navigating directly to /signin-oidc without a code query parameter
                     // - Some other unknown cause, e.g. the browser handling SameSite cookie settings incorrectly
-
-                    const string oidcRetryCookie = "oidc-retry";
-
+                    //
+                    // For any remote failure we redirect to the homepage where the user will be re-authenticated
+                    // with a fresh correlation cookie. This introduces a small risk of an infinite redirect loop
+                    // upon misconfiguration, but we expect this to be rare.
                     options.Events.OnRemoteFailure = context =>
                     {
                         var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Startup>>();
+                        var failureMessage = context.Failure?.Message;
+                        var isExpectedFailure =
+                            failureMessage?.Contains("Correlation failed") is true ||
+                            failureMessage?.Contains("message.State is null or empty") is true;
 
-                        if (context.Request.Cookies.ContainsKey(oidcRetryCookie))
+                        if (isExpectedFailure)
                         {
-                            logger.LogError(context.Failure, "OIDC remote authentication failure on retry");
+                            logger.LogWarning("OnRemoteFailure: {ErrorMessage}", failureMessage);
                         }
                         else
                         {
-                            logger.LogWarning(context.Failure, "OIDC remote authentication failure");
-                            context.Response.Cookies.Append(oidcRetryCookie, "1", new CookieOptions
-                            {
-                                HttpOnly = true,
-                                Path = Constants.BASE_PATH,
-                                // This will make the cookie environment agnostic
-                                Secure = context.Request.IsHttps,
-                                MaxAge = TimeSpan.FromMinutes(15),
-                                SameSite = SameSiteMode.Lax,
-                            });
-                            context.Response.Redirect(Constants.BASE_PATH);
-                            context.HandleResponse();
+                            logger.LogError(context.Failure, "OnRemoteFailure: {ErrorMessage}", failureMessage);
                         }
 
-                        return Task.CompletedTask;
-                    };
-
-                    options.Events.OnTokenValidated = context =>
-                    {
-                        context.Response.Cookies.Delete(oidcRetryCookie);
+                        context.Response.Redirect(Constants.BASE_PATH);
+                        context.HandleResponse();
                         return Task.CompletedTask;
                     };
                 });
