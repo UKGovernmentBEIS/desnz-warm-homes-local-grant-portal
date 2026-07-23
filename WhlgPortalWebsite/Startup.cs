@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using WhlgPortalWebsite.BusinessLogic.Services.S3ReferralFileKeyGenerator;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -101,23 +102,36 @@ namespace WhlgPortalWebsite
                     options.CorrelationCookie.HttpOnly = true;
                     options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
 
-                    // We see relatively frequent errors where the user doesn't have a valid correlation cookie.
-                    // This may be for a number of reasons:
-                    // - The cookie expires after 15 minutes
+                    // We see relatively frequent errors where the OIDC remote auth flow fails. This may be for
+                    // a number of reasons:
+                    // - The correlation/nonce cookie expires after 15 minutes
                     // - Landing on the login screen without first hitting the app (therefore missing the cookie)
+                    // - The user cancelling login at the Cognito page (Cognito returns an error, no code)
+                    // - Navigating directly to /signin-oidc without a code query parameter
                     // - Some other unknown cause, e.g. the browser handling SameSite cookie settings incorrectly
                     //
-                    // If we detect a correlation error, we redirect to the homepage where the user will be
-                    // re-authenticated with a fresh correlation cookie. This introduces a small risk of an
-                    // infinite redirect loop upon misconfiguration, but we expect this to be rare.
+                    // For any remote failure we redirect to the homepage where the user will be re-authenticated
+                    // with a fresh correlation cookie. This introduces a small risk of an infinite redirect loop
+                    // upon misconfiguration, but we expect this to be rare.
                     options.Events.OnRemoteFailure = context =>
                     {
-                        if (context.Failure?.Message.Contains("Correlation failed") is true)
+                        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Startup>>();
+                        var failureMessage = context.Failure?.Message;
+                        var isExpectedFailure = failureMessage is not null && (
+                            failureMessage.Contains("Correlation failed") ||
+                            failureMessage.Contains("message.State is null or empty"));
+
+                        if (isExpectedFailure)
                         {
-                            context.Response.Redirect(Constants.BASE_PATH);
-                            context.HandleResponse();
+                            logger.LogWarning("OnRemoteFailure: {ErrorMessage}", failureMessage);
+                        }
+                        else
+                        {
+                            logger.LogError(context.Failure, "OnRemoteFailure: {ErrorMessage}", failureMessage);
                         }
 
+                        context.Response.Redirect(Constants.BASE_PATH);
+                        context.HandleResponse();
                         return Task.CompletedTask;
                     };
                 });

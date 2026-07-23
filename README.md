@@ -1,4 +1,4 @@
-# Warm Homes: Local Grant Portal BETA
+# Warm Homes: Local Grant Portal BETA 
 
 This repository was cloned
 from [HUG2 Portal](https://github.com/UKGovernmentBEIS/desnz-home-energy-retrofit-portal-beta) in December 2024, keeping
@@ -93,3 +93,4 @@ The S3 configuration is also configured in ECS, as it's linked to AWS resources
 
 - `S3__BucketName`
 - `S3__Region`
+ 
