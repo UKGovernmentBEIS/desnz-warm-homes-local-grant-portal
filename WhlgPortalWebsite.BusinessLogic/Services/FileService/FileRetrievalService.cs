@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Security;
 using WhlgPortalWebsite.BusinessLogic.ExternalServices.S3FileReader;
 using WhlgPortalWebsite.BusinessLogic.Models;
@@ -45,12 +46,17 @@ public class FileRetrievalService(
                         && d.Year == data.Year
                         && d.Month == data.Month
                     );
+                    if (s3O.LastModified == null)
+                    {
+                        throw new InvalidOperationException("LastModified of S3Object was null");
+                    }
+                        
                     return new LocalAuthorityFileData
                     (
                         data.CustodianCode,
                         data.Month,
                         data.Year,
-                        s3O.LastModified,
+                        s3O.LastModified.Value,
                         downloadData?.LastDownloaded
                     );
                 }
