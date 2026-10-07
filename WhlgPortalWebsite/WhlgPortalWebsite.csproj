@@ -1,26 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <LangVersion>12</LangVersion>
+        <TargetFramework>net10.0</TargetFramework>
+        <LangVersion>14</LangVersion>
         <UserSecretsId>b05a1249-b368-4866-addb-a537726db09b</UserSecretsId>
         <RootNamespace>WhlgPortalWebsite</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="CabinetOffice.GovUkDesignSystem" Version="1.0.0-d9624ec0" />
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.15" />
-      <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="8.0.15" />
-      <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.15" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.15" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.15">
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.12" />
+      <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="10.0.12" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.12" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Microsoft.Identity.Web" Version="3.8.4" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
-      <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+      <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.12" />
     </ItemGroup>
 
     <ItemGroup>
