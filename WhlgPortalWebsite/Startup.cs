@@ -245,7 +245,7 @@ namespace WhlgPortalWebsite
 
             // TODO: We know all traffic to the container is from AWS, but ideally we
             // would still specify the IP and networks of the ALB here
-            forwardedHeaderOptions.KnownNetworks.Clear();
+            forwardedHeaderOptions.KnownIPNetworks.Clear();
             forwardedHeaderOptions.KnownProxies.Clear();
 
             app.UseForwardedHeaders(forwardedHeaderOptions);
